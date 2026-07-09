@@ -1,28 +1,41 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Playwright.NUnit;
+using Microsoft.Playwright;
 using NUnit.Framework;
 using PlaywrightTAF.Core.Configuration;
 
 namespace PlaywrightTAF.Tests.UiTests;
 
-public abstract class BaseTest : PageTest
+public abstract class BaseTest
 {
+    protected IPlaywright Playwright = null!;
+    protected IBrowser Browser = null!;
+    protected IBrowserContext Context = null!;
+    protected IPage Page = null!;
+
     [SetUp]
     public async Task SetUpAsync()
     {
+        Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
+
+        Browser = await Playwright.Chromium.LaunchAsync(
+            new BrowserTypeLaunchOptions
+            {
+                Headless = false,
+                SlowMo = 500
+            });
+
+        Context = await Browser.NewContextAsync();
+
+        Page = await Context.NewPageAsync();
+
         await Page.GotoAsync(ConfigurationReader.Current.BaseUrl);
     }
 
     [TearDown]
     public async Task TearDownAsync()
     {
-        if (TestContext.CurrentContext.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
-        {
-            await Page.ScreenshotAsync(new()
-            {
-                Path = $"TestResults/screenshots/{TestContext.CurrentContext.Test.Name}.png",
-                FullPage = true
-            });
-        }
+        await Context.CloseAsync();
+        await Browser.CloseAsync();
+        Playwright.Dispose();
     }
 }
