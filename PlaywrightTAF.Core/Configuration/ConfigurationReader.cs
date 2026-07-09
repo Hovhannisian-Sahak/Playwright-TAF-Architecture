@@ -4,7 +4,7 @@ namespace PlaywrightTAF.Core.Configuration;
 
 public static class ConfigurationReader
 {
-    public static AppConfiguration Current { get; } = Load();
+    public static AppConfiguration Current => Load();
 
     public static AppConfiguration Load(string? basePath = null)
     {
