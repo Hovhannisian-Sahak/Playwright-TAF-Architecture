@@ -1,0 +1,23 @@
+﻿# Build results
+[Bb]in/
+[Oo]bj/
+
+# Rider
+.idea/
+*.sln.DotSettings.user
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Test results
+TestResults/
+*.trx
+
+# Playwright
+.playwright/
+
+# OS files
+.DS_Store
+Thumbs.db
