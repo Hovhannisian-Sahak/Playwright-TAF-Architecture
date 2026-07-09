@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightTAF.API", "PlaywrightTAF.API\PlaywrightTAF.API.csproj", "{8114100F-57CC-479E-8C6D-56624B1CD55B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightTAF.UI", "PlaywrightTAF.UI\PlaywrightTAF.UI.csproj", "{9373CFF5-FE56-4337-93F6-1348073C3032}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightTAF.Core", "PlaywrightTAF.Core\PlaywrightTAF.Core.csproj", "{AE3CA20F-D2E0-4D6B-864A-3133FF599FBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightTAF.Tests", "PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj", "{4CCC279B-C9D4-4F48-A427-4316E38C7080}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8114100F-57CC-479E-8C6D-56624B1CD55B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8114100F-57CC-479E-8C6D-56624B1CD55B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8114100F-57CC-479E-8C6D-56624B1CD55B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8114100F-57CC-479E-8C6D-56624B1CD55B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9373CFF5-FE56-4337-93F6-1348073C3032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9373CFF5-FE56-4337-93F6-1348073C3032}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9373CFF5-FE56-4337-93F6-1348073C3032}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9373CFF5-FE56-4337-93F6-1348073C3032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE3CA20F-D2E0-4D6B-864A-3133FF599FBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE3CA20F-D2E0-4D6B-864A-3133FF599FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE3CA20F-D2E0-4D6B-864A-3133FF599FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE3CA20F-D2E0-4D6B-864A-3133FF599FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CCC279B-C9D4-4F48-A427-4316E38C7080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CCC279B-C9D4-4F48-A427-4316E38C7080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CCC279B-C9D4-4F48-A427-4316E38C7080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CCC279B-C9D4-4F48-A427-4316E38C7080}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
