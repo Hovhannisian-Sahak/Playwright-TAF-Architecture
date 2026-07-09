@@ -11,7 +11,7 @@ public sealed class MainPage : BasePage
 
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
 
-    private ILocator Body => Page.Locator(".orangehrm-login-branding");
+    private ILocator Body => Page.Locator("#app");
 
     public Task OpenMainPageAsync()
     {
@@ -23,8 +23,8 @@ public sealed class MainPage : BasePage
         return Body.IsVisibleAsync();
     }
 
-    public Task<string> GetBodyTextAsync()
-    {
-        return Body.InnerTextAsync();
-    }
+    // public Task<string> GetBodyTextAsync()
+    // {
+    //     return Body.InnerTextAsync();
+    // }
 }

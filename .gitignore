@@ -21,3 +21,6 @@ TestResults/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Appsettings
+PlaywrightTAF.Tests/appsettings.json
