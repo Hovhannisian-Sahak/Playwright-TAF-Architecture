@@ -1,4 +1,7 @@
-﻿# Build results
+﻿# Playwright authentication states
+Authentication/AuthStates/*.json
+
+# Build results
 [Bb]in/
 [Oo]bj/
 

@@ -11,7 +11,7 @@ public sealed class MainPage : BasePage
 
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
 
-    private ILocator Body => Page.Locator("#app");
+    private ILocator Body => Page.Locator(".oxd-userdropdown-name");
 
     public Task OpenMainPageAsync()
     {
