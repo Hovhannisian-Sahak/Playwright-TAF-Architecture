@@ -1,22 +1,55 @@
-﻿using PlaywrightTAF.API.Clients;
-using PlaywrightTAF.API.Services;
-using PlaywrightTAF.Core.RequestModels;
-
 namespace PlaywrightTAF.Core.Authentication;
 
 public class TokenProvider
 {
+    private static readonly TimeSpan DefaultTokenLifetime = TimeSpan.FromMinutes(30);
+    private DateTimeOffset? _expiresAt;
     private string? _token;
 
-    public async Task<string> GetTokenAsync()
+    public string GetToken()
     {
-        if (_token != null)
+        if (IsTokenExpired())
         {
-            return _token;
+            Clear();
         }
 
-        var auth = new AuthService(new AuthApiClient());
-        _token = await auth.Login("test@mail.com", "Password123");
+        if (string.IsNullOrWhiteSpace(_token))
+        {
+            throw new InvalidOperationException("Token is not set. Login or register before making authenticated API calls.");
+        }
+
         return _token;
+    }
+
+    public void SetToken(string token)
+    {
+        SetToken(token, DefaultTokenLifetime);
+    }
+
+    public void SetToken(string token, TimeSpan lifetime)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new ArgumentException("Token cannot be empty.", nameof(token));
+        }
+
+        if (lifetime <= TimeSpan.Zero)
+        {
+            throw new ArgumentException("Token lifetime must be greater than zero.", nameof(lifetime));
+        }
+
+        _token = token;
+        _expiresAt = DateTimeOffset.UtcNow.Add(lifetime);
+    }
+
+    public void Clear()
+    {
+        _token = null;
+        _expiresAt = null;
+    }
+
+    private bool IsTokenExpired()
+    {
+        return _expiresAt.HasValue && DateTimeOffset.UtcNow >= _expiresAt.Value;
     }
 }
