@@ -14,8 +14,7 @@ public class UserService
 
     public async Task<UserData> GetCurrentUser(string token)
     {
-        var response =
-            await _userClient.GetCurrentUserAsync(token);
+        var response = await _userClient.GetCurrentUserAsync(token);
 
         return response!.user;
     }

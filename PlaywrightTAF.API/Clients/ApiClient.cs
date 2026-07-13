@@ -15,22 +15,21 @@ public abstract class ApiClient
     protected async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request)
         where T : class
     {
-        RestResponse<T> response =
-            await Client.ExecuteAsync<T>(request);
+        RestResponse<T> response = await Client.ExecuteAsync<T>(request);
 
         EnsureSuccessfulResponse(response);
 
         if (response.Data is null)
-            throw new InvalidOperationException(
-                $"API response did not contain a '{typeof(T).Name}' body. Content: {response.Content}");
+        {
+            throw new InvalidOperationException($"API response did not contain a '{typeof(T).Name}' body. Content: {response.Content}");
+        }
 
         return response;
     }
 
     protected async Task<RestResponse> ExecuteAsync(RestRequest request)
     {
-        RestResponse response =
-            await Client.ExecuteAsync(request);
+        RestResponse response = await Client.ExecuteAsync(request);
 
         EnsureSuccessfulResponse(response);
 
@@ -40,14 +39,14 @@ public abstract class ApiClient
     private static void EnsureSuccessfulResponse(RestResponse response)
     {
         if (response.IsSuccessful)
+        {
             return;
+        }
 
-        string message =
-            string.IsNullOrWhiteSpace(response.Content)
-                ? response.ErrorMessage ?? "No response content."
-                : response.Content;
+        string message = string.IsNullOrWhiteSpace(response.Content)
+            ? response.ErrorMessage ?? "No response content."
+            : response.Content;
 
-        throw new InvalidOperationException(
-            $"API request failed with status {(int)response.StatusCode} ({response.StatusCode}). {message}");
+        throw new InvalidOperationException($"API request failed with status {(int)response.StatusCode} ({response.StatusCode}). {message}");
     }
 }

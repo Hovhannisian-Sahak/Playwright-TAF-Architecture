@@ -5,7 +5,6 @@ public class RegisterRequest
     public UserRegister user { get; set; } = new();
 }
 
-
 public class UserRegister
 {
     public string username { get; set; } = string.Empty;

@@ -14,32 +14,32 @@ public class AuthService
 
     public async Task<string> Login(string email, string password)
     {
-        var response =
-            await _authClient.LoginAsync(
-                new LoginRequest
+        var response = await _authClient.LoginAsync(
+            new LoginRequest
+            {
+                user = new UserLogin
                 {
-                    user = new UserLogin
-                    {
-                        email = email,
-                        password = password
-                    }
-                });
+                    email = email,
+                    password = password
+                }
+            });
+
         return response!.user.token;
     }
 
     public async Task<string> Register(string username, string email, string password)
     {
-        var response =
-            await _authClient.RegisterAsync(
-                new RegisterRequest
+        var response = await _authClient.RegisterAsync(
+            new RegisterRequest
+            {
+                user = new UserRegister
                 {
-                    user = new UserRegister
-                    {
-                        username = username,
-                        email = email,
-                        password = password
-                    }
-                });
+                    username = username,
+                    email = email,
+                    password = password
+                }
+            });
+
         return response!.user.token;
     }
 }

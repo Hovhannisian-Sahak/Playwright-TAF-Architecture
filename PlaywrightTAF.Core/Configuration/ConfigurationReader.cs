@@ -4,8 +4,7 @@ namespace PlaywrightTAF.Core.Configuration;
 
 public static class ConfigurationReader
 {
-    private static readonly Lazy<AppConfiguration> CachedConfiguration =
-        new(() => Load());
+    private static readonly Lazy<AppConfiguration> CachedConfiguration = new(() => Load());
 
     public static AppConfiguration Current => CachedConfiguration.Value;
 
@@ -43,25 +42,36 @@ public static class ConfigurationReader
     private static void Validate(AppConfiguration config)
     {
         if (string.IsNullOrWhiteSpace(config.BaseUrl))
+        {
             throw new InvalidOperationException("BaseUrl is required.");
+        }
 
         if (!Uri.IsWellFormedUriString(config.BaseUrl, UriKind.Absolute))
+        {
             throw new InvalidOperationException($"Invalid BaseUrl: {config.BaseUrl}");
+        }
 
         if (string.IsNullOrWhiteSpace(config.ApiBaseUrl))
+        {
             throw new InvalidOperationException("ApiBaseUrl is required.");
+        }
 
         if (!Uri.IsWellFormedUriString(config.ApiBaseUrl, UriKind.Absolute))
+        {
             throw new InvalidOperationException($"Invalid ApiBaseUrl: {config.ApiBaseUrl}");
+        }
 
         if (config.DefaultTimeoutMilliseconds <= 0)
+        {
             throw new InvalidOperationException("DefaultTimeoutMilliseconds must be greater than 0.");
+        }
 
         string[] supportedBrowsers = { "chromium", "firefox", "webkit" };
 
         if (!supportedBrowsers.Contains(config.Browser.ToLowerInvariant()))
-            throw new InvalidOperationException(
-                $"Unsupported browser '{config.Browser}'. Supported values: chromium, firefox, webkit.");
+        {
+            throw new InvalidOperationException($"Unsupported browser '{config.Browser}'. Supported values: chromium, firefox, webkit.");
+        }
 
         ValidateCredentials(config.Admin, "Admin");
         ValidateCredentials(config.User, "User");
@@ -85,10 +95,7 @@ public static class ConfigurationReader
         return int.TryParse(value, out int parsedValue) ? parsedValue : defaultValue;
     }
 
-    private static Authentication.Credentials GetCredentials(
-        IConfiguration configuration,
-        string sectionName,
-        Authentication.Credentials defaultCredentials)
+    private static Authentication.Credentials GetCredentials(IConfiguration configuration, string sectionName, Authentication.Credentials defaultCredentials)
     {
         IConfigurationSection section = configuration.GetSection(sectionName);
 
@@ -99,14 +106,16 @@ public static class ConfigurationReader
         };
     }
 
-    private static void ValidateCredentials(
-        Authentication.Credentials credentials,
-        string sectionName)
+    private static void ValidateCredentials(Authentication.Credentials credentials, string sectionName)
     {
         if (string.IsNullOrWhiteSpace(credentials.Username))
+        {
             throw new InvalidOperationException($"{sectionName}:Username is required.");
+        }
 
         if (string.IsNullOrWhiteSpace(credentials.Password))
+        {
             throw new InvalidOperationException($"{sectionName}:Password is required.");
+        }
     }
 }

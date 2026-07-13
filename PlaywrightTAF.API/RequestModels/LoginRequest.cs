@@ -5,7 +5,6 @@ public class LoginRequest
     public UserLogin user { get; set; } = new();
 }
 
-
 public class UserLogin
 {
     public string email { get; set; } = string.Empty;

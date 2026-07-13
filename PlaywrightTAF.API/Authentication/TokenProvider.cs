@@ -7,6 +7,7 @@ namespace PlaywrightTAF.Core.Authentication;
 public class TokenProvider
 {
     private string? _token;
+
     public async Task<string> GetTokenAsync()
     {
         if (_token != null)

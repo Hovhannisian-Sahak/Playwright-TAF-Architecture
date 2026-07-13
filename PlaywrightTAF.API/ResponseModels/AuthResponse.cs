@@ -5,7 +5,6 @@ public class AuthResponse
     public UserData user { get; set; } = new();
 }
 
-
 public class UserData
 {
     public string username { get; set; } = string.Empty;

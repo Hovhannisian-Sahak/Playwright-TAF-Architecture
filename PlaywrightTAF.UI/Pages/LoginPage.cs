@@ -8,6 +8,7 @@ public class LoginPage : BasePage
     public LoginPage(IPage page) : base(page)
     {
     }
+
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
 
     private ILocator UsernameInput => Page.GetByPlaceholder("username");
@@ -24,7 +25,6 @@ public class LoginPage : BasePage
         await UsernameInput.FillAsync(username);
         await PasswordInput.FillAsync(password);
         await LoginButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(
-            LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }
