@@ -17,7 +17,7 @@ public class UserApiClient : ApiClient
             new RestRequest(
                 ApiEndpoints.CurrentUser,
                 Method.Get);
-        
+
         request.AddHeader(
             "Authorization",
             $"Token {token}");

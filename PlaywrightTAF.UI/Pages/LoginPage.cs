@@ -9,11 +9,11 @@ public class LoginPage : BasePage
     {
     }
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
-    
+
     private ILocator UsernameInput => Page.GetByPlaceholder("username");
     private ILocator PasswordInput => Page.GetByPlaceholder("password");
     private ILocator LoginButton => Page.GetByRole(AriaRole.Button, new() { Name = "Login" });
-    
+
     public Task OpenLoginPageAsync()
     {
         return OpenAsync();

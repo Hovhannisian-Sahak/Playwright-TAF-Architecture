@@ -13,7 +13,7 @@ public sealed class AppConfiguration
     public bool Headless { get; init; } = true;
 
     public int DefaultTimeoutMilliseconds { get; init; } = 30000;
-    
+
     public Credentials Admin { get; init; } = new Credentials
     {
         Username = "Admin",

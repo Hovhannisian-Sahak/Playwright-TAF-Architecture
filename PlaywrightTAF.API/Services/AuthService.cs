@@ -26,7 +26,7 @@ public class AuthService
                 });
         return response!.user.token;
     }
-    
+
     public async Task<string> Register(string username, string email, string password)
     {
         var response =
