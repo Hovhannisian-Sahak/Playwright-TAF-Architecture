@@ -4,7 +4,10 @@ namespace PlaywrightTAF.Core.Configuration;
 
 public static class ConfigurationReader
 {
-    public static AppConfiguration Current => Load();
+    private static readonly Lazy<AppConfiguration> CachedConfiguration =
+        new(() => Load());
+
+    public static AppConfiguration Current => CachedConfiguration.Value;
 
     public static AppConfiguration Load(string? basePath = null)
     {
@@ -14,17 +17,29 @@ public static class ConfigurationReader
             .AddEnvironmentVariables("TAF_")
             .Build();
 
-        var config= new AppConfiguration
+        var config = new AppConfiguration
         {
             BaseUrl = GetString(configuration, "BaseUrl", "https://opensource-demo.orangehrmlive.com/"),
             ApiBaseUrl = GetString(configuration, "ApiBaseUrl", "https://example.com"),
             Browser = GetString(configuration, "Browser", "chromium"),
             Headless = GetBool(configuration, "Headless", false),
-            DefaultTimeoutMilliseconds = GetInt(configuration, "DefaultTimeoutMilliseconds", 30000)
+            DefaultTimeoutMilliseconds = GetInt(configuration, "DefaultTimeoutMilliseconds", 30000),
+            Admin = GetCredentials(configuration, "Admin", new Authentication.Credentials
+            {
+                Username = "Admin",
+                Password = "admin123"
+            }),
+            User = GetCredentials(configuration, "User", new Authentication.Credentials
+            {
+                Username = "Users",
+                Password = "users123"
+            })
         };
+
         Validate(config);
         return config;
     }
+
     private static void Validate(AppConfiguration config)
     {
         if (string.IsNullOrWhiteSpace(config.BaseUrl))
@@ -32,6 +47,12 @@ public static class ConfigurationReader
 
         if (!Uri.IsWellFormedUriString(config.BaseUrl, UriKind.Absolute))
             throw new InvalidOperationException($"Invalid BaseUrl: {config.BaseUrl}");
+
+        if (string.IsNullOrWhiteSpace(config.ApiBaseUrl))
+            throw new InvalidOperationException("ApiBaseUrl is required.");
+
+        if (!Uri.IsWellFormedUriString(config.ApiBaseUrl, UriKind.Absolute))
+            throw new InvalidOperationException($"Invalid ApiBaseUrl: {config.ApiBaseUrl}");
 
         if (config.DefaultTimeoutMilliseconds <= 0)
             throw new InvalidOperationException("DefaultTimeoutMilliseconds must be greater than 0.");
@@ -41,7 +62,11 @@ public static class ConfigurationReader
         if (!supportedBrowsers.Contains(config.Browser.ToLowerInvariant()))
             throw new InvalidOperationException(
                 $"Unsupported browser '{config.Browser}'. Supported values: chromium, firefox, webkit.");
+
+        ValidateCredentials(config.Admin, "Admin");
+        ValidateCredentials(config.User, "User");
     }
+
     private static string GetString(IConfiguration configuration, string key, string defaultValue)
     {
         string? value = configuration[key];
@@ -58,5 +83,30 @@ public static class ConfigurationReader
     {
         string? value = configuration[key];
         return int.TryParse(value, out int parsedValue) ? parsedValue : defaultValue;
+    }
+
+    private static Authentication.Credentials GetCredentials(
+        IConfiguration configuration,
+        string sectionName,
+        Authentication.Credentials defaultCredentials)
+    {
+        IConfigurationSection section = configuration.GetSection(sectionName);
+
+        return new Authentication.Credentials
+        {
+            Username = GetString(section, "Username", defaultCredentials.Username),
+            Password = GetString(section, "Password", defaultCredentials.Password)
+        };
+    }
+
+    private static void ValidateCredentials(
+        Authentication.Credentials credentials,
+        string sectionName)
+    {
+        if (string.IsNullOrWhiteSpace(credentials.Username))
+            throw new InvalidOperationException($"{sectionName}:Username is required.");
+
+        if (string.IsNullOrWhiteSpace(credentials.Password))
+            throw new InvalidOperationException($"{sectionName}:Password is required.");
     }
 }

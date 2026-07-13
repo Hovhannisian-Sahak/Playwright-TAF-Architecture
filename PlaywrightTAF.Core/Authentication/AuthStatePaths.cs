@@ -4,13 +4,14 @@ namespace PlaywrightTAF.Core.Authentication;
 public static class AuthStatePaths
 {
     private static readonly string Root =
-        Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "..",
-            "..",
-            "..",
-            "Authentication",
-            "AuthStates");
+        Path.GetFullPath(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "Authentication",
+                "AuthStates"));
 
 
     public static string Admin =>
@@ -19,4 +20,9 @@ public static class AuthStatePaths
 
     public static string User =>
         Path.Combine(Root, "userState.json");
+
+    public static void EnsureDirectoryExists()
+    {
+        Directory.CreateDirectory(Root);
+    }
 }
