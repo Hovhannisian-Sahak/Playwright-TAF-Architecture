@@ -71,18 +71,22 @@ pipeline {
     }
 
     post {
-
+    
         always {
-
-            archiveArtifacts artifacts: '**/TestResults/**/*', fingerprint: true
-
+    
+            archiveArtifacts artifacts: '**/TestResults/**/*',
+                             fingerprint: true
+    
+            archiveArtifacts artifacts: '**/*.png',
+                             allowEmptyArchive: true
+    
             junit allowEmptyResults: true,
                   testResults: '**/*.trx'
-
+    
             allure(
                 includeProperties: false,
                 jdk: '',
-                results: [[path: '**/allure-results']]
+                results: [[path: 'PlaywrightTAF.Tests/bin/Release/net8.0/allure-results']]
             )
         }
 
