@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PlaywrightTAF.Core.Models;
 using PlaywrightTAF.Tests.Base;
 
 namespace PlaywrightTAF.Tests.ApiTests;
@@ -9,6 +10,7 @@ namespace PlaywrightTAF.Tests.ApiTests;
 public class ArticleApiTests : BaseApiTest
 {
     [Test]
+    [Category("API")]
     public async Task CreateArticle_ShouldReturnCreatedArticle()
     {
         string articleSuffix = Guid.NewGuid().ToString("N");
@@ -42,6 +44,7 @@ public class ArticleApiTests : BaseApiTest
     }
 
     [Test]
+    [Category("API")]
     public async Task GetArticle_ShouldReturnCreatedArticle()
     {
         var createdArticle = await CreateTestArticle();
@@ -66,6 +69,7 @@ public class ArticleApiTests : BaseApiTest
     }
 
     [Test]
+    [Category("API")]
     public async Task UpdateArticle_ShouldReturnUpdatedArticle()
     {
         var createdArticle = await CreateTestArticle();
@@ -103,6 +107,7 @@ public class ArticleApiTests : BaseApiTest
     }
 
     [Test]
+    [Category("API")]
     public async Task DeleteArticle_ShouldDeleteCreatedArticle()
     {
         var createdArticle = await CreateTestArticle();
@@ -110,7 +115,7 @@ public class ArticleApiTests : BaseApiTest
         Assert.DoesNotThrowAsync(async () => await ArticleService.DeleteArticle(createdArticle.slug));
     }
 
-    private Task<PlaywrightTAF.Core.Models.ArticleData> CreateTestArticle()
+    private Task<ArticleData> CreateTestArticle()
     {
         string articleSuffix = Guid.NewGuid().ToString("N");
 

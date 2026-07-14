@@ -10,6 +10,7 @@ namespace PlaywrightTAF.Tests.UiTests;
 public class LoginTests : UiBaseTest
 {
     [Test]
+    [Category("UI")]
     public async Task LoginWithValidCredentials()
     {
         var loginPage = new LoginPage(Page);

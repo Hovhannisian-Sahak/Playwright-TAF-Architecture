@@ -7,6 +7,7 @@ namespace PlaywrightTAF.Tests.UiTests;
 public class ProfileTests : UserTest
 {
     [Test]
+    [Category("UI")]
     public async Task UserCanOpenProfile()
     {
         await Page.GotoAsync("/profile");

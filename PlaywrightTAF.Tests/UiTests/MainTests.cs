@@ -9,6 +9,7 @@ namespace PlaywrightTAF.Tests.UiTests;
 public sealed class MainPageTests : UiBaseTest
 {
     [Test]
+    [Category("UI")]
     public async Task MainPageShouldOpen()
     {
         var mainPage = new MainPage(Page);

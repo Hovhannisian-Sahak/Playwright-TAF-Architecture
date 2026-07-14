@@ -1,0 +1,77 @@
+﻿pipeline {
+    agent any
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+    }
+
+    environment {
+        DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+        CONFIGURATION = 'Release'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Restore NuGet Packages') {
+            steps {
+                bat 'dotnet restore'
+            }
+        }
+
+        stage('Build Solution') {
+            steps {
+                bat 'dotnet build --configuration %CONFIGURATION% --no-restore'
+            }
+        }
+
+        stage('Install Playwright Browsers') {
+            steps {
+                bat 'pwsh PlaywrightTAF.Tests\\bin\\Release\\net9.0\\playwright.ps1 install'
+            }
+        }
+
+        stage('Run API Tests') {
+            steps {
+                bat 'dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj --filter TestCategory=API --configuration %CONFIGURATION% --logger trx'
+            }
+        }
+
+        stage('Run UI Tests') {
+            steps {
+                bat 'dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj --filter TestCategory=UI --configuration %CONFIGURATION% --logger trx'
+            }
+        }
+    }
+
+    post {
+
+        always {
+
+            archiveArtifacts artifacts: '**/TestResults/**/*', fingerprint: true
+
+            junit allowEmptyResults: true,
+                  testResults: '**/*.trx'
+
+            allure(
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
+            )
+        }
+
+        success {
+            echo 'Build completed successfully.'
+        }
+
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
