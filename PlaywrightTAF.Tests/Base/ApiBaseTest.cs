@@ -1,12 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using Allure.NUnit;
 using NUnit.Framework;
 using PlaywrightTAF.API.Clients;
 using PlaywrightTAF.API.Services;
 using PlaywrightTAF.Core.Authentication;
 
 namespace PlaywrightTAF.Tests.Base;
-
+[AllureNUnit]
 public abstract class BaseApiTest
 {
     protected const string TestPassword = "Password123";

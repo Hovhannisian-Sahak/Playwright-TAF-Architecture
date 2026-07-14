@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
+using Allure.NUnit;
 using Microsoft.Playwright;
 using NUnit.Framework;
 using PlaywrightTAF.Core.Configuration;
 
 namespace PlaywrightTAF.Tests.Base;
-
+[AllureNUnit]
 public abstract class UiBaseTest
 {
     protected IPlaywright Playwright = null!;
