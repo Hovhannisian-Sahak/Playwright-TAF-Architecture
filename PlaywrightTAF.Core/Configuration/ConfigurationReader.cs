@@ -19,7 +19,7 @@ public static class ConfigurationReader
         var config = new AppConfiguration
         {
             BaseUrl = GetString(configuration, "BaseUrl", "https://opensource-demo.orangehrmlive.com/"),
-            ApiBaseUrl = GetString(configuration, "ApiBaseUrl", "https://example.com"),
+            ApiBaseUrl = GetString(configuration, "ApiBaseUrl", "https://conduit-api.bondaracademy.com"),
             Browser = GetString(configuration, "Browser", "chromium"),
             Headless = GetBool(configuration, "Headless", false),
             DefaultTimeoutMilliseconds = GetInt(configuration, "DefaultTimeoutMilliseconds", 30000),

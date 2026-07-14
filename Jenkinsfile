@@ -38,17 +38,36 @@ pipeline {
              }
         }
 
-        stage('Run API Tests') {
-            steps {
-                bat 'dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj --filter TestCategory=API --configuration %CONFIGURATION% --logger trx'
-            }
-        }
-
-        stage('Run UI Tests') {
-            steps {
-                bat 'dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj --filter TestCategory=UI --configuration %CONFIGURATION% --logger trx'
-            }
-        }
+       stage('Run Tests')
+       {
+           parallel
+           {
+               stage('API Tests')
+               {
+                   steps
+                   {
+                       bat '''
+                       dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
+                       --filter TestCategory=API ^
+                       --configuration Release
+                       '''
+                   }
+               }
+       
+       
+               stage('UI Tests')
+               {
+                   steps
+                   {
+                       bat '''
+                       dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
+                       --filter TestCategory=UI ^
+                       --configuration Release
+                       '''
+                   }
+               }
+           }
+       }
     }
 
     post {
