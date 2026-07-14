@@ -46,6 +46,15 @@ public abstract class UiBaseTest
     [TearDown]
     public async Task TearDownAsync()
     {
+        if (TestContext.CurrentContext.Result.Outcome.Status 
+            == NUnit.Framework.Interfaces.TestStatus.Failed)
+        {
+            await Page.ScreenshotAsync(new()
+            {
+                Path = $"screenshots/{TestContext.CurrentContext.Test.Name}.png"
+            });
+        }
+
         await Context.CloseAsync();
         await Browser.CloseAsync();
         Playwright.Dispose();
