@@ -32,9 +32,10 @@ pipeline {
         }
 
         stage('Install Playwright Browsers') {
-            steps {
-                bat 'pwsh PlaywrightTAF.Tests\\bin\\Release\\net9.0\\playwright.ps1 install'
-            }
+             steps {
+                 bat 'dotnet tool install --global Microsoft.Playwright.CLI'
+                 bat 'playwright install'
+             }
         }
 
         stage('Run API Tests') {
