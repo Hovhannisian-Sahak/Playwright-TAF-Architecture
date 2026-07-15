@@ -96,7 +96,10 @@ pipeline {
     
             archiveArtifacts artifacts: '**/*.png',
                              allowEmptyArchive: true
-    
+
+            archiveArtifacts artifacts: '**/logs/**/*.log',
+                             allowEmptyArchive: true
+
             junit allowEmptyResults: true,
                   testResults: '**/*.trx'
     

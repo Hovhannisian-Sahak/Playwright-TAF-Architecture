@@ -17,6 +17,8 @@ Authentication/AuthStates/*.json
 # Test results
 TestResults/
 *.trx
+logs/
+**/logs/
 
 # Playwright
 .playwright/
