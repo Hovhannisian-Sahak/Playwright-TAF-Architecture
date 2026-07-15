@@ -1,7 +1,27 @@
 $ErrorActionPreference = 'Stop'
 
 $configPath = Join-Path $PSScriptRoot '..\PlaywrightTAF.Tests\ReportPortal.config.json'
-$config = Get-Content $configPath -Raw | ConvertFrom-Json
+
+if (Test-Path $configPath) {
+    $config = Get-Content $configPath -Raw | ConvertFrom-Json
+} else {
+    $config = [PSCustomObject]@{
+        enabled = $false
+        server = [PSCustomObject]@{
+            url = 'https://demo.reportportal.io'
+            project = 'hovhannisian-sahak_personal'
+            authentication = [PSCustomObject]@{
+                uuid = ''
+            }
+        }
+        launch = [PSCustomObject]@{
+            name = 'Playwright Automation'
+            description = 'Playwright Tests'
+            debugMode = $false
+            tags = @('playwright', 'nunit')
+        }
+    }
+}
 
 if ([string]::IsNullOrWhiteSpace($env:REPORTPORTAL_API_KEY)) {
     $config.enabled = $false
