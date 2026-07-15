@@ -27,12 +27,6 @@ pipeline {
             }
         }
 
-        stage('Build Solution') {
-            steps {
-                bat 'dotnet build --configuration %CONFIGURATION% --no-restore'
-            }
-        }
-
         stage('Configure ReportPortal') {
             steps {
                 withCredentials([
@@ -43,6 +37,12 @@ pipeline {
                 ]) {
                     bat 'powershell -NoProfile -ExecutionPolicy Bypass -File ci\\ConfigureReportPortal.ps1'
                 }
+            }
+        }
+
+        stage('Build Solution') {
+            steps {
+                bat 'dotnet build --configuration %CONFIGURATION% --no-restore'
             }
         }
 
@@ -64,7 +64,8 @@ pipeline {
                        bat '''
                        dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
                        --filter TestCategory=API ^
-                       --configuration Release
+                       --configuration Release ^
+                       --no-build
                        '''
                    }
                }
@@ -77,7 +78,8 @@ pipeline {
                        bat '''
                        dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
                        --filter TestCategory=UI ^
-                       --configuration Release
+                       --configuration Release ^
+                       --no-build
                        '''
                    }
                }
