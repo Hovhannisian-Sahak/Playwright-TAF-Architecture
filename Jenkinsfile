@@ -33,7 +33,7 @@ pipeline {
 
        stage('Configure ReportPortal') {
            environment {
-               REPORTPORTAL_URL = "https://demo.reportportal.io",
+               REPORTPORTAL_URL = 'https://demo.reportportal.io',
                REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
            }
            steps {
