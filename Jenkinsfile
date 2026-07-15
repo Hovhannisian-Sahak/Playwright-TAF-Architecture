@@ -31,6 +31,27 @@ pipeline {
             }
         }
 
+       stage('Configure ReportPortal') {
+           environment {
+               REPORTPORTAL_URL = "https://demo.reportportal.io",
+               REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
+           }
+           steps {
+               withCredentials([string(credentialsId: 'reportportal-api-key', variable: 'REPORTPORTAL_API_KEY')]) {
+                   bat '''
+                   powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+                   "$path = 'PlaywrightTAF.Tests\\ReportPortal.config.json'; ^
+                   $config = Get-Content $path -Raw | ConvertFrom-Json; ^
+                   $config.enabled = $true; ^
+                   $config.server.url = $env:REPORTPORTAL_URL; ^
+                   $config.server.project = $env:REPORTPORTAL_PROJECT; ^
+                   $config.server.authentication.uuid = $env:REPORTPORTAL_API_KEY; ^
+                   $config.launch.name = 'Playwright Automation #' + $env:BUILD_NUMBER; ^
+                   $config | ConvertTo-Json -Depth 10 | Set-Content $path -Encoding UTF8"
+                   '''
+               }
+           }
+
         stage('Install Playwright Browsers') {
              steps {
                  bat 'dotnet tool install --global Microsoft.Playwright.CLI'
