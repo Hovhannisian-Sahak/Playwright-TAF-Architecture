@@ -9,6 +9,8 @@ pipeline {
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         CONFIGURATION = 'Release'
+        REPORTPORTAL_URL = 'https://demo.reportportal.io'
+        REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
     }
 
     stages {
@@ -32,10 +34,6 @@ pipeline {
         }
 
        stage('Configure ReportPortal') {
-           environment {
-               REPORTPORTAL_URL = 'https://demo.reportportal.io',
-               REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
-           }
            steps {
                withCredentials([string(credentialsId: 'reportportal-api-key', variable: 'REPORTPORTAL_API_KEY')]) {
                    bat '''
