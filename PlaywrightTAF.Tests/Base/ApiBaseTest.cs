@@ -5,11 +5,16 @@ using NUnit.Framework;
 using PlaywrightTAF.API.Clients;
 using PlaywrightTAF.API.Services;
 using PlaywrightTAF.Core.Authentication;
+using PlaywrightTAF.Core.Logging;
+using Serilog;
 
 namespace PlaywrightTAF.Tests.Base;
+
 [AllureNUnit]
 public abstract class BaseApiTest
 {
+    private static readonly ILogger Logger = LogProvider.ForContext<BaseApiTest>();
+
     protected const string TestPassword = "Password123";
 
     protected AuthService AuthService = null!;
@@ -22,6 +27,8 @@ public abstract class BaseApiTest
     [SetUp]
     public async Task BaseSetup()
     {
+        Logger.Information("Starting API test setup for {TestName}", TestContext.CurrentContext.Test.FullName);
+
         AuthService = new AuthService(new AuthApiClient());
         TokenProvider = new TokenProvider();
         ArticleService = new ArticleService(new ArticleApiClient(), TokenProvider);
@@ -34,5 +41,6 @@ public abstract class BaseApiTest
         string token = await AuthService.Login(TestEmail, TestPassword);
 
         TokenProvider.SetToken(token);
+        Logger.Information("API test user prepared: {Username} / {Email}", TestUsername, TestEmail);
     }
 }

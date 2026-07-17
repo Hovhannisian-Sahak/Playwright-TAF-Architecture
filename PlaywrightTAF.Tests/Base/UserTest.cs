@@ -1,16 +1,11 @@
-using Microsoft.Playwright;
 using PlaywrightTAF.Core.Authentication;
+using PlaywrightTAF.Core.Configuration;
 
 namespace PlaywrightTAF.Tests.Base;
 
-public abstract class UserTest : UiBaseTest
+public abstract class UserTest : AuthenticatedUiBaseTest
 {
-    protected override BrowserNewContextOptions CreateContextOptions()
-    {
-        return new BrowserNewContextOptions
-        {
-            BaseURL = Configuration.BaseUrl,
-            StorageStatePath = AuthStatePaths.User
-        };
-    }
+    protected override Credentials Credentials => ConfigurationReader.Current.User;
+
+    protected override string StorageStatePath => AuthStatePaths.User;
 }

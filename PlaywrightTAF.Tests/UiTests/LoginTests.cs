@@ -9,6 +9,8 @@ namespace PlaywrightTAF.Tests.UiTests;
 [TestFixture]
 public class LoginTests : UiBaseTest
 {
+    protected override bool ShouldLoginThroughUi => false;
+
     [Test]
     [Category("UI")]
     public async Task LoginWithValidCredentials()

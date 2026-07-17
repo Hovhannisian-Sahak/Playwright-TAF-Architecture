@@ -1,0 +1,20 @@
+{
+  "enabled": false,
+  "server": {
+    "url": "https://demo.reportportal.io",
+    "project": "hovhannisian-sahak_personal",
+    "apiKey": "",
+    "authentication": {
+      "uuid": ""
+    }
+  },
+  "launch": {
+    "name": "Playwright Automation",
+    "description": "Playwright Tests",
+    "debugMode": false,
+    "tags": [
+      "playwright",
+      "nunit"
+    ]
+  }
+}
