@@ -8,120 +8,124 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class UserManagementTests : UiBaseTest
 {
+    private const string EmployeeName = "Ranga  Akunuri";
+    private const string UserPassword = "TestUser123!@#Aa";
+
     [Test]
     [Category("UI")]
     public async Task AdminCanAddUser()
     {
         var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
-        // click Admin button
+        await OpenAddUserFormAsync();
+        await CreateAdminUserAsync(newUsername);
+        await SearchUserAsync(newUsername);
+
+        await ExpectUserExistsAsync(newUsername);
+
+        await DeleteFirstSearchResultAsync();
+        await SearchUserAsync(newUsername);
+
+        await ExpectUserDoesNotExistAsync(newUsername);
+    }
+
+    private ILocator SearchFilter => Page.Locator(".oxd-table-filter");
+    private ILocator TableBody => Page.Locator(".oxd-table-body");
+    private ILocator NoRecordsFoundText =>
+        Page.Locator(".orangehrm-horizontal-padding")
+            .GetByText("No Records Found", new() { Exact = true });
+
+    private ILocator UsernameInput => Page
+        .Locator(".oxd-input-group")
+        .Filter(new() { HasText = "Username" })
+        .Locator("input");
+
+    private ILocator PasswordInput => Page.Locator("input[type='password']").Nth(0);
+    private ILocator ConfirmPasswordInput => Page.Locator("input[type='password']").Nth(1);
+
+    private async Task OpenAddUserFormAsync()
+    {
         await Page.Locator(".oxd-main-menu li").First.ClickAsync();
-        // click Add button
         await Page.GetByRole(AriaRole.Button, new() { Name = " Add " }).ClickAsync();
-        // select user role
+    }
+
+    private async Task CreateAdminUserAsync(string username)
+    {
+        await SelectDropdownOptionAsync(0, "Admin");
+        await SelectEmployeeAsync(EmployeeName);
+        await SelectDropdownOptionAsync(1, "Enabled");
+
+        await UsernameInput.FillAsync(username);
+        await PasswordInput.FillAsync(UserPassword);
+        await ConfirmPasswordInput.FillAsync(UserPassword);
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
+
+        await Page.GetByText("Success", new() { Exact = true }).WaitForAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    private async Task SelectDropdownOptionAsync(int dropdownIndex, string option)
+    {
         await Page.Locator(".oxd-select-wrapper")
-            .Nth(0)
+            .Nth(dropdownIndex)
             .ClickAsync();
 
         await Page.GetByRole(AriaRole.Listbox)
-            .GetByText("Admin", new()
-            {
-                Exact = true
-            })
+            .GetByText(option, new() { Exact = true })
             .ClickAsync();
-       // type for hints
-       await Page
-           .Locator("input[placeholder='Type for hints...']")
-           .FillAsync("Ranga  Akunuri");
-       
-       await Page.Locator(".oxd-autocomplete-option")
-           .Filter(new() { HasText = "Ranga  Akunuri" })
-           .First
-           .ClickAsync();
-        // select status
-        await Page.Locator(".oxd-select-wrapper")
-            .Nth(1)
-            .ClickAsync();
+    }
 
-        await Page.GetByRole(AriaRole.Listbox)
-            .GetByText("Enabled", new()
-            {
-                Exact = true
-            })
+    private async Task SelectEmployeeAsync(string employeeName)
+    {
+        await Page.Locator("input[placeholder='Type for hints...']")
+            .FillAsync(employeeName);
+
+        await Page.Locator(".oxd-autocomplete-option")
+            .Filter(new() { HasText = employeeName })
+            .First
             .ClickAsync();
-        // fill username
-        var username = Page
+    }
+
+    private async Task SearchUserAsync(string username)
+    {
+        var searchUsername = SearchFilter
             .Locator(".oxd-input-group")
             .Filter(new() { HasText = "Username" })
             .Locator("input");
 
-        await username.FillAsync(newUsername);
-        // fill password
-        var password = Page.Locator("input[type='password']").Nth(0);
-        await password.FillAsync("TestUser123!@#Aa");
-        // confirm password
-        var confirmPassword = Page.Locator("input[type='password']").Nth(1);
-        await confirmPassword.FillAsync("TestUser123!@#Aa");
-        // click Save button
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
-        // wait for success message
-        await Page.GetByText("Success", new() { Exact = true }).WaitForAsync();
-        // wait for page load
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        // fill search username
-        var searchUsername = Page
-            .Locator(".oxd-table-filter .oxd-input-group")
-            .Filter(new() { HasText = "Username" })
-            .Locator("input");
+        await searchUsername.FillAsync(username);
+        await Expect(searchUsername).ToHaveValueAsync(username);
 
-        await searchUsername.FillAsync(newUsername);
-        await Expect(searchUsername).ToHaveValueAsync(newUsername);
-        // submit search
-        await Page
-            .Locator(".oxd-table-filter")
+        await SearchFilter
             .GetByRole(AriaRole.Button, new() { Name = "Search" })
             .ClickAsync();
-        // assert search result exists
-        await Expect(
-            Page.Locator(".oxd-table-body")
-        ).ToContainTextAsync(newUsername);
-        
-        // assert search result count is 1
-        await Expect(
-            Page.Locator("text=(1) Record Found")
-        ).ToBeVisibleAsync();
-        
-        // delete created user
-        await Page
-            .Locator(".oxd-table-cell-actions").Locator("button").Nth(0)
+    }
+
+    private async Task ExpectUserExistsAsync(string username)
+    {
+        await Expect(TableBody).ToContainTextAsync(username);
+        await Expect(Page.Locator("text=(1) Record Found")).ToBeVisibleAsync();
+    }
+
+    private async Task DeleteFirstSearchResultAsync()
+    {
+        await Page.Locator(".oxd-table-cell-actions")
+            .Locator("button")
+            .Nth(0)
             .ClickAsync();
-        
-        // confirm deletion
-        await Page
-            .Locator(".orangehrm-modal-footer").Locator("button").Nth(1)
+
+        await Page.Locator(".orangehrm-modal-footer")
+            .Locator("button")
+            .Nth(1)
             .ClickAsync();
-        
-        // wait for success message
+
         await Page.GetByText("Successfully Deleted", new() { Exact = true }).WaitForAsync();
-        // wait for page load
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        // search for DELETED user
+    }
 
-        await searchUsername.FillAsync(newUsername);
-        await Expect(searchUsername).ToHaveValueAsync(newUsername);
-        // submit search
-        await Page
-            .Locator(".oxd-table-filter")
-            .GetByRole(AriaRole.Button, new() { Name = "Search" })
-            .ClickAsync();
-        // assert no record result
-        await Expect(Page.Locator(".orangehrm-horizontal-padding"))
-            .ToContainTextAsync("No Records Found");
-
-        // assert search result does not exist
-        await Expect(
-            Page.Locator(".oxd-table-body")
-        ).Not.ToContainTextAsync(newUsername);
-
+    private async Task ExpectUserDoesNotExistAsync(string username)
+    {
+        await Expect(NoRecordsFoundText).ToBeVisibleAsync();
+        await Expect(TableBody).Not.ToContainTextAsync(username);
     }
 }
