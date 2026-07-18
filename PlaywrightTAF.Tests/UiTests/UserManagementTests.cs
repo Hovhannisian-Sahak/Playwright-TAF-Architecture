@@ -10,7 +10,7 @@ public class UserManagementTests : UiBaseTest
 {
     [Test]
     [Category("UI")]
-    public async Task UserCanOpenUserManagementPage()
+    public async Task AdminCanAddUser()
     {
         var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
@@ -91,8 +91,37 @@ public class UserManagementTests : UiBaseTest
             Page.Locator("text=(1) Record Found")
         ).ToBeVisibleAsync();
         
-        //assert page url
-        Assert.That(Page.Url,
-            Does.Contain("/admin/viewSystemUsers"));
+        // delete created user
+        await Page
+            .Locator(".oxd-table-cell-actions").Locator("button").Nth(0)
+            .ClickAsync();
+        
+        // confirm deletion
+        await Page
+            .Locator(".orangehrm-modal-footer").Locator("button").Nth(1)
+            .ClickAsync();
+        
+        // wait for success message
+        await Page.GetByText("Successfully Deleted", new() { Exact = true }).WaitForAsync();
+        // wait for page load
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        // search for DELETED user
+
+        await searchUsername.FillAsync(newUsername);
+        await Expect(searchUsername).ToHaveValueAsync(newUsername);
+        // submit search
+        await Page
+            .Locator(".oxd-table-filter")
+            .GetByRole(AriaRole.Button, new() { Name = "Search" })
+            .ClickAsync();
+        // assert no record result
+        await Expect(Page.Locator(".orangehrm-horizontal-padding"))
+            .ToContainTextAsync("No Records Found");
+
+        // assert search result does not exist
+        await Expect(
+            Page.Locator(".oxd-table-body")
+        ).Not.ToContainTextAsync(newUsername);
+
     }
 }
