@@ -10,7 +10,7 @@ public class UserManagementTests : UiBaseTest
 {
     private const string EmployeeName = "Ranga  Akunuri";
     private const string UserPassword = "TestUser123!@#Aa";
-
+    private const string ChangePassword = "TestUser123!@#Aab";
     [Test]
     [Category("UI")]
     public async Task AdminCanAddUser()
@@ -24,9 +24,42 @@ public class UserManagementTests : UiBaseTest
         await ExpectUserExistsAsync(newUsername);
 
         await DeleteFirstSearchResultAsync();
+    }
+    [Test]
+    [Category("UI")]
+    public async Task AdminCanDeleteUser()
+    {
+        var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+        await OpenAddUserFormAsync();
+        await CreateAdminUserAsync(newUsername);
+        await SearchUserAsync(newUsername);
+
+        await ExpectUserExistsAsync(newUsername);
+
+        await DeleteFirstSearchResultAsync();
         await SearchUserAsync(newUsername);
 
         await ExpectUserDoesNotExistAsync(newUsername);
+    }
+    [Test]
+    [Category("UI")]
+    public async Task AdminCanChangeUserNameAndPassword()
+    {
+        var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var changedUsername = $"ChangedAdminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+        await OpenAddUserFormAsync();
+        await CreateAdminUserAsync(newUsername);
+        await SearchUserAsync(newUsername);
+
+        await ExpectUserExistsAsync(newUsername);
+
+        await EditFirstSearchResultAsync(changedUsername);
+        await SearchUserAsync(changedUsername);
+        
+        await ExpectUserExistsAsync(changedUsername);
+        await DeleteFirstSearchResultAsync();
     }
 
     private ILocator SearchFilter => Page.Locator(".oxd-table-filter");
@@ -120,6 +153,28 @@ public class UserManagementTests : UiBaseTest
             .ClickAsync();
 
         await Page.GetByText("Successfully Deleted", new() { Exact = true }).WaitForAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+    
+    private async Task EditFirstSearchResultAsync(string changedUsername)
+    {
+        await Page.Locator(".oxd-table-cell-actions")
+            .Locator("button")
+            .Nth(1)
+            .ClickAsync();
+
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await Page.Locator(".oxd-checkbox-input").ClickAsync();
+        await Page.Locator(".user-password-row").WaitForAsync();
+
+        await PasswordInput.FillAsync(ChangePassword);
+        await ConfirmPasswordInput.FillAsync(ChangePassword);
+        await UsernameInput.FillAsync(changedUsername);
+
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
+
+        await Page.GetByText("Successfully Updated", new() { Exact = true }).WaitForAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
