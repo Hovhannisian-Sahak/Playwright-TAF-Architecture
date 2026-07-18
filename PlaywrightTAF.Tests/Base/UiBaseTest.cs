@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Allure.Net.Commons;
 using Allure.NUnit;
 using Microsoft.Playwright;
 using NUnit.Framework;
@@ -81,18 +82,7 @@ public abstract class UiBaseTest
         if (TestContext.CurrentContext.Result.Outcome.Status
             == NUnit.Framework.Interfaces.TestStatus.Failed)
         {
-            Directory.CreateDirectory("screenshots");
-            string screenshotPath = $"screenshots/{TestContext.CurrentContext.Test.Name}.png";
-
-            await Page.ScreenshotAsync(new()
-            {
-                Path = screenshotPath
-            });
-
-            Logger.Error(
-                "UI test failed: {TestName}. Screenshot saved to {ScreenshotPath}",
-                TestContext.CurrentContext.Test.FullName,
-                screenshotPath);
+            await CaptureFailureScreenshotAsync();
         }
         else
         {
@@ -102,6 +92,41 @@ public abstract class UiBaseTest
                 TestContext.CurrentContext.Test.FullName);
         }
 
+    }
+
+    private async Task CaptureFailureScreenshotAsync()
+    {
+        Directory.CreateDirectory("screenshots");
+
+        string testName = TestContext.CurrentContext.Test.Name;
+        string screenshotPath = Path.Combine("screenshots", $"{testName}.png");
+
+        try
+        {
+            byte[] screenshot = await Page.ScreenshotAsync(new()
+            {
+                Path = screenshotPath,
+                FullPage = true
+            });
+
+            AllureApi.AddAttachment(
+                $"{testName} failure screenshot",
+                "image/png",
+                screenshot,
+                ".png");
+
+            Logger.Error(
+                "UI test failed: {TestName}. Screenshot saved to {ScreenshotPath} and attached to Allure.",
+                TestContext.CurrentContext.Test.FullName,
+                screenshotPath);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(
+                ex,
+                "UI test failed: {TestName}. Could not capture or attach screenshot.",
+                TestContext.CurrentContext.Test.FullName);
+        }
     }
 
     [OneTimeTearDown]
