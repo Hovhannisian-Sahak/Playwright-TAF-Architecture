@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Allure.NUnit;
@@ -106,17 +107,17 @@ public abstract class UiBaseTest
     [OneTimeTearDown]
     public virtual async Task OneTimeTearDownAsync()
     {
-        try
-        {
-            if (ShouldLoginThroughUi)
-            {
-                await LogoutThroughUiAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.Warning(ex, "UI logout failed during one-time cleanup.");
-        }
+        // try
+        // {
+        //     if (ShouldLoginThroughUi)
+        //     {
+        //         await LogoutThroughUiAsync();
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     Logger.Warning(ex, "UI logout failed during one-time cleanup.");
+        // }
 
         await Context.CloseAsync();
         await Browser.CloseAsync();

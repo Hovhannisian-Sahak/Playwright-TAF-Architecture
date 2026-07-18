@@ -3,7 +3,7 @@ using Microsoft.Playwright;
 using System;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
-
+using static Microsoft.Playwright.Assertions;
 namespace PlaywrightTAF.Tests.UiTests;
 
 public class UserManagementTests : UiBaseTest
@@ -12,7 +12,7 @@ public class UserManagementTests : UiBaseTest
     [Category("UI")]
     public async Task UserCanOpenUserManagementPage()
     {
-        var employeeName = await Page.Locator(".oxd-userdropdown-name").InnerTextAsync();
+        var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
         // click Admin button
         await Page.Locator(".oxd-main-menu li").First.ClickAsync();
@@ -32,10 +32,10 @@ public class UserManagementTests : UiBaseTest
        // type for hints
        await Page
            .Locator("input[placeholder='Type for hints...']")
-           .FillAsync(employeeName);
+           .FillAsync("Ranga  Akunuri");
        
        await Page.Locator(".oxd-autocomplete-option")
-           .Filter(new() { HasText = employeeName })
+           .Filter(new() { HasText = "Ranga  Akunuri" })
            .First
            .ClickAsync();
         // select status
@@ -55,7 +55,7 @@ public class UserManagementTests : UiBaseTest
             .Filter(new() { HasText = "Username" })
             .Locator("input");
 
-        await username.FillAsync($"taf{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
+        await username.FillAsync(newUsername);
         // fill password
         var password = Page.Locator("input[type='password']").Nth(0);
         await password.FillAsync("TestUser123!@#Aa");
@@ -66,7 +66,33 @@ public class UserManagementTests : UiBaseTest
         await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
         // wait for success message
         await Page.GetByText("Success", new() { Exact = true }).WaitForAsync();
-        // Assert.That(Page.Url,
-        //     Does.Contain("admin/user-management"));
+        // wait for page load
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        // fill search username
+        var searchUsername = Page
+            .Locator(".oxd-table-filter .oxd-input-group")
+            .Filter(new() { HasText = "Username" })
+            .Locator("input");
+
+        await searchUsername.FillAsync(newUsername);
+        await Expect(searchUsername).ToHaveValueAsync(newUsername);
+        // submit search
+        await Page
+            .Locator(".oxd-table-filter")
+            .GetByRole(AriaRole.Button, new() { Name = "Search" })
+            .ClickAsync();
+        // assert search result exists
+        await Expect(
+            Page.Locator(".oxd-table-body")
+        ).ToContainTextAsync(newUsername);
+        
+        // assert search result count is 1
+        await Expect(
+            Page.Locator("text=(1) Record Found")
+        ).ToBeVisibleAsync();
+        
+        //assert page url
+        Assert.That(Page.Url,
+            Does.Contain("/admin/viewSystemUsers"));
     }
 }
