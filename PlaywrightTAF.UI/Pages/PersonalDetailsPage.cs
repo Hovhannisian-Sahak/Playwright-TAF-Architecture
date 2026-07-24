@@ -12,59 +12,77 @@ public class PersonalDetailsPage : BasePage
 
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
 
+    private ILocator MyInfoLink => Page.GetByRole(AriaRole.Link, new() { Name = "My Info" });
+    private ILocator PersonalDetailsHeading => Page.GetByRole(AriaRole.Heading, new() { Name = "Personal Details" });
+    private ILocator LastNameInput => Page.Locator("input[name='lastName']");
+    private ILocator Dropdowns => Page.Locator(".oxd-select-wrapper");
+    private ILocator DateInputs => Page.Locator(".oxd-date-input input");
+    private ILocator DatePickerIcons => Page.Locator(".oxd-date-input i");
+    private ILocator CalendarYearSelector => Page.Locator(".oxd-calendar-selector-year-selected > .oxd-icon");
+    private ILocator CalendarMonthSelector => Page.Locator(".oxd-calendar-selector-month-selected > .oxd-icon");
+    private ILocator CalendarDates => Page.Locator(".oxd-calendar-date");
+    private ILocator CalendarMenu => Page.GetByRole(AriaRole.Menu);
+    private ILocator SaveButtons => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
+    private ILocator SuccessfullyUpdatedText => Page.GetByText("Successfully Updated", new() { Exact = true });
+    private ILocator AddAttachmentButton => Page.GetByRole(AriaRole.Button, new() { Name = "Add" });
+    private ILocator AttachmentCard => Page.Locator(".orangehrm-card-container").Nth(2);
+    private ILocator FileButton => Page.Locator(".oxd-file-button");
+    private ILocator FileInput => Page.Locator(".oxd-file-input-div");
+    private ILocator CommentInput => Page.GetByPlaceholder("Type comment here");
+    private ILocator SuccessfullySavedText => Page.GetByText("Successfully Saved", new() { Exact = true });
+    private ILocator Listbox => Page.GetByRole(AriaRole.Listbox);
+
     public async Task OpenPersonalDetailsAsync()
     {
-        await Page.GetByRole(AriaRole.Link, new() { Name = "My Info" }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Personal Details" })).ToBeVisibleAsync();
+        await MyInfoLink.ClickAsync();
+        await Expect(PersonalDetailsHeading).ToBeVisibleAsync();
     }
 
     public override Task<bool> IsLoadedAsync()
     {
-        return Page.GetByRole(AriaRole.Heading, new() { Name = "Personal Details" }).IsVisibleAsync();
+        return PersonalDetailsHeading.IsVisibleAsync();
     }
 
     public async Task FillLastNameAsync(string lastName)
     {
-        var lastNameInput = Page.Locator("input[name='lastName']");
-
-        await lastNameInput.ClearAsync();
-        await lastNameInput.FillAsync(lastName);
-        await Expect(lastNameInput).ToHaveValueAsync(lastName);
+        await LastNameInput.ClearAsync();
+        await LastNameInput.FillAsync(lastName);
+        await Expect(LastNameInput).ToHaveValueAsync(lastName);
     }
 
     public async Task SelectNationalityAsync(string nationality)
     {
         await SelectDropdownOptionAsync(0, nationality);
-        await Expect(Page.Locator(".oxd-select-wrapper").Nth(0)).ToContainTextAsync(nationality);
+        await Expect(Dropdowns.Nth(0)).ToContainTextAsync(nationality);
     }
 
     public async Task SetBirthDateAsync()
     {
         const string expectedBirthDate = "2025-19-11";
-        var birthDateInput = Page.Locator(".oxd-date-input input").Nth(1);
+        var birthDateInput = DateInputs.Nth(1);
 
-        await Page.Locator(".oxd-date-input i").Nth(1).ClickAsync();
-        await Page.Locator(".oxd-calendar-selector-year-selected > .oxd-icon").ClickAsync();
-        await Page.GetByRole(AriaRole.Menu).GetByText("2025", new() { Exact = true }).ClickAsync();
+        await DatePickerIcons.Nth(1).ClickAsync();
+        await CalendarYearSelector.ClickAsync();
+        await CalendarMenu.GetByText("2025", new() { Exact = true }).ClickAsync();
 
-        await Page.Locator(".oxd-calendar-selector-month-selected > .oxd-icon").ClickAsync();
-        await Page.GetByRole(AriaRole.Menu).GetByText("November", new() { Exact = true }).ClickAsync();
+        await CalendarMonthSelector.ClickAsync();
+        await CalendarMenu.GetByText("November", new() { Exact = true }).ClickAsync();
 
-        await Page.Locator(".oxd-calendar-date").GetByText("19", new() { Exact = true }).ClickAsync();
+        await CalendarDates.GetByText("19", new() { Exact = true }).ClickAsync();
 
         await Expect(birthDateInput).ToHaveValueAsync(expectedBirthDate);
     }
 
     public async Task SavePersonalDetailsAsync()
     {
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).First.ClickAsync();
-        await Page.GetByText("Successfully Updated", new() { Exact = true }).WaitForAsync();
+        await SaveButtons.First.ClickAsync();
+        await SuccessfullyUpdatedText.WaitForAsync();
     }
 
     public async Task OpenAttachmentFormAsync()
     {
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Add" }).ClickAsync();
-        await Page.Locator(".orangehrm-card-container").Nth(2).WaitForAsync(new()
+        await AddAttachmentButton.ClickAsync();
+        await AttachmentCard.WaitForAsync(new()
         {
             State = WaitForSelectorState.Visible
         });
@@ -78,28 +96,25 @@ public class PersonalDetailsPage : BasePage
         }
 
         var fileChooserTask = Page.WaitForFileChooserAsync();
-        await Page.Locator(".oxd-file-button").ClickAsync();
+        await FileButton.ClickAsync();
         var chooser = await fileChooserTask;
 
         await chooser.SetFilesAsync(filePath);
 
-        await Expect(Page.Locator(".oxd-file-input-div")).ToContainTextAsync(Path.GetFileName(filePath));
+        await Expect(FileInput).ToContainTextAsync(Path.GetFileName(filePath));
 
-        var commentInput = Page.GetByPlaceholder("Type comment here");
-        await commentInput.FillAsync(comment);
-        await Expect(commentInput).ToHaveValueAsync(comment);
+        await CommentInput.FillAsync(comment);
+        await Expect(CommentInput).ToHaveValueAsync(comment);
 
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).Nth(2).ClickAsync();
-        await Page.GetByText("Successfully Saved", new() { Exact = true }).WaitForAsync();
+        await SaveButtons.Nth(2).ClickAsync();
+        await SuccessfullySavedText.WaitForAsync();
     }
 
     private async Task SelectDropdownOptionAsync(int dropdownIndex, string option)
     {
-        await Page.Locator(".oxd-select-wrapper")
-            .Nth(dropdownIndex)
-            .ClickAsync();
+        await Dropdowns.Nth(dropdownIndex).ClickAsync();
 
-        await Page.GetByRole(AriaRole.Listbox)
+        await Listbox
             .GetByText(option, new() { Exact = true })
             .ClickAsync();
     }

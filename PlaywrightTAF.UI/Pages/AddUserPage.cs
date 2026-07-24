@@ -9,16 +9,25 @@ public class AddUserPage : UserManagementPageBase
     {
     }
 
+    private ILocator AddButton => Page.GetByRole(AriaRole.Button, new() { Name = " Add " });
+    private ILocator AddUserHeading => Page.GetByRole(AriaRole.Heading, new() { Name = "Add User" });
+    private ILocator Dropdowns => Page.Locator(".oxd-select-wrapper");
+    private ILocator EmployeeNameInput => Page.Locator("input[placeholder='Type for hints...']");
+    private ILocator EmployeeOptions => Page.Locator(".oxd-autocomplete-option");
+    private ILocator SaveButton => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
+    private ILocator SuccessText => Page.GetByText("Success", new() { Exact = true });
+    private ILocator Listbox => Page.GetByRole(AriaRole.Listbox);
+
     public async Task OpenAddUserFormAsync()
     {
         await OpenUserManagementAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = " Add " }).ClickAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Add User" })).ToBeVisibleAsync();
+        await AddButton.ClickAsync();
+        await Expect(AddUserHeading).ToBeVisibleAsync();
     }
 
     public override Task<bool> IsLoadedAsync()
     {
-        return Page.GetByRole(AriaRole.Heading, new() { Name = "Add User" }).IsVisibleAsync();
+        return AddUserHeading.IsVisibleAsync();
     }
 
     public async Task CreateAdminUserAsync(string username, string employeeName, string password)
@@ -30,29 +39,26 @@ public class AddUserPage : UserManagementPageBase
         await UsernameInput.FillAsync(username);
         await PasswordInput.FillAsync(password);
         await ConfirmPasswordInput.FillAsync(password);
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
+        await SaveButton.ClickAsync();
 
-        await Page.GetByText("Success", new() { Exact = true }).WaitForAsync();
+        await SuccessText.WaitForAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
     private async Task SelectDropdownOptionAsync(int dropdownIndex, string option)
     {
-        await Page.Locator(".oxd-select-wrapper")
-            .Nth(dropdownIndex)
-            .ClickAsync();
+        await Dropdowns.Nth(dropdownIndex).ClickAsync();
 
-        await Page.GetByRole(AriaRole.Listbox)
+        await Listbox
             .GetByText(option, new() { Exact = true })
             .ClickAsync();
     }
 
     private async Task SelectEmployeeAsync(string employeeName)
     {
-        await Page.Locator("input[placeholder='Type for hints...']")
-            .FillAsync(employeeName);
+        await EmployeeNameInput.FillAsync(employeeName);
 
-        await Page.Locator(".oxd-autocomplete-option")
+        await EmployeeOptions
             .Filter(new() { HasText = employeeName })
             .First
             .ClickAsync();

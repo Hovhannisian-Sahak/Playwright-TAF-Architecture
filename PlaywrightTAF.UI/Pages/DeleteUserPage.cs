@@ -8,19 +8,23 @@ public class DeleteUserPage : UserManagementPageBase
     {
     }
 
+    private ILocator FirstDeleteButton => Page.Locator(".oxd-table-cell-actions")
+        .Locator("button")
+        .Nth(0);
+
+    private ILocator ConfirmDeleteButton => Page.Locator(".orangehrm-modal-footer")
+        .Locator("button")
+        .Nth(1);
+
+    private ILocator SuccessfullyDeletedText => Page.GetByText("Successfully Deleted", new() { Exact = true });
+
     public async Task DeleteFirstSearchResultAsync()
     {
-        await Page.Locator(".oxd-table-cell-actions")
-            .Locator("button")
-            .Nth(0)
-            .ClickAsync();
+        await FirstDeleteButton.ClickAsync();
 
-        await Page.Locator(".orangehrm-modal-footer")
-            .Locator("button")
-            .Nth(1)
-            .ClickAsync();
+        await ConfirmDeleteButton.ClickAsync();
 
-        await Page.GetByText("Successfully Deleted", new() { Exact = true }).WaitForAsync();
+        await SuccessfullyDeletedText.WaitForAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

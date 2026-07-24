@@ -21,10 +21,20 @@ public abstract class UserManagementPageBase : BasePage
 
     protected ILocator PasswordInput => Page.Locator("input[type='password']").Nth(0);
     protected ILocator ConfirmPasswordInput => Page.Locator("input[type='password']").Nth(1);
+    protected ILocator AdminMenuLink => Page.GetByRole(AriaRole.Link, new() { Name = "Admin" });
+    protected ILocator SearchUsernameInput => SearchFilter
+        .Locator(".oxd-input-group")
+        .Filter(new() { HasText = "Username" })
+        .Locator("input");
+
+    private ILocator SearchButton => SearchFilter.GetByRole(AriaRole.Button, new() { Name = "Search" });
+    private ILocator OneRecordFoundText => Page.Locator("text=(1) Record Found");
+    private ILocator NoRecordsFoundText => Page.Locator(".orangehrm-horizontal-padding")
+        .GetByText("No Records Found", new() { Exact = true });
 
     protected async Task OpenUserManagementAsync()
     {
-        await Page.GetByRole(AriaRole.Link, new() { Name = "Admin" }).ClickAsync();
+        await AdminMenuLink.ClickAsync();
         await Expect(SearchFilter).ToBeVisibleAsync();
     }
 
@@ -35,31 +45,21 @@ public abstract class UserManagementPageBase : BasePage
 
     public async Task SearchUserAsync(string username)
     {
-        var searchUsername = SearchFilter
-            .Locator(".oxd-input-group")
-            .Filter(new() { HasText = "Username" })
-            .Locator("input");
+        await SearchUsernameInput.FillAsync(username);
+        await Expect(SearchUsernameInput).ToHaveValueAsync(username);
 
-        await searchUsername.FillAsync(username);
-        await Expect(searchUsername).ToHaveValueAsync(username);
-
-        await SearchFilter
-            .GetByRole(AriaRole.Button, new() { Name = "Search" })
-            .ClickAsync();
+        await SearchButton.ClickAsync();
     }
 
     public async Task ExpectUserExistsAsync(string username)
     {
         await Expect(TableBody).ToContainTextAsync(username);
-        await Expect(Page.Locator("text=(1) Record Found")).ToBeVisibleAsync();
+        await Expect(OneRecordFoundText).ToBeVisibleAsync();
     }
 
     public async Task ExpectUserDoesNotExistAsync(string username)
     {
-        var noRecordsFoundText = Page.Locator(".orangehrm-horizontal-padding")
-            .GetByText("No Records Found", new() { Exact = true });
-
-        await Expect(noRecordsFoundText).ToBeVisibleAsync();
+        await Expect(NoRecordsFoundText).ToBeVisibleAsync();
         await Expect(TableBody).Not.ToContainTextAsync(username);
     }
 }
