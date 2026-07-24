@@ -24,6 +24,13 @@ public class LoginPage : BasePage
         return OpenAsync();
     }
 
+    public override async Task<bool> IsLoadedAsync()
+    {
+        return await UsernameInput.IsVisibleAsync()
+               && await PasswordInput.IsVisibleAsync()
+               && await LoginButton.IsVisibleAsync();
+    }
+
     public async Task LoginAsync(string username, string password)
     {
         Logger.Information("Logging in as {Username}", username);

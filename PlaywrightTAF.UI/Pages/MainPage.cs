@@ -20,7 +20,7 @@ public sealed class MainPage : BasePage
         return OpenAsync();
     }
 
-    public Task<bool> IsLoadedAsync()
+    public override Task<bool> IsLoadedAsync()
     {
         return Body.IsVisibleAsync();
     }

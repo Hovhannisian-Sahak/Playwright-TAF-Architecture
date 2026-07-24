@@ -30,6 +30,8 @@ public abstract class BasePage
         return Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
+    public abstract Task<bool> IsLoadedAsync();
+
     public Task<string> GetTitleAsync()
     {
         return Page.TitleAsync();
