@@ -26,7 +26,7 @@ public static class AuthSetup
         var browser = await browserType.LaunchAsync(
             new()
             {
-                Headless = configuration.Headless
+                Headless = true
             });
 
         var context = await browser.NewContextAsync(
