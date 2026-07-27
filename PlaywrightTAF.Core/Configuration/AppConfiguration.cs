@@ -6,7 +6,7 @@ public sealed class AppConfiguration
 {
     public string BaseUrl { get; init; } = "https://opensource-demo.orangehrmlive.com/";
 
-    public string ApiBaseUrl { get; init; } = "https://example.com";
+    public string ApiBaseUrl { get; init; } = "https://conduit-api.bondaracademy.com";
 
     public string Browser { get; init; } = "chromium";
 
