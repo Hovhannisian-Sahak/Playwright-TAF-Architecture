@@ -4,6 +4,7 @@
     <ProjectReference Include="..\PlaywrightTAF.Core\PlaywrightTAF.Core.csproj" />
     <ProjectReference Include="..\PlaywrightTAF.UI\PlaywrightTAF.UI.csproj" />
     <ProjectReference Include="..\PlaywrightTAF.API\PlaywrightTAF.API.csproj" />
+    <ProjectReference Include="..\Performance\Performance.csproj" />
   </ItemGroup>
 
   <ItemGroup>
