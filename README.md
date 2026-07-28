@@ -84,6 +84,7 @@ NUnit test project that references Core, UI, and API projects.
 - `UiTests/UserManagementTests.cs` covers add, delete, edit, personal details, and file upload flows.
 - `UiTests/AdminCorporateBrandingTests.cs` covers Corporate Branding color selection and publishing.
 - `UserPermissionTests.cs` verifies the user role does not navigate to an admin page.
+- `PerformanceTests/CreateArticlePerformanceTests.cs` wraps the standalone performance runner in NUnit so Allure and ReportPortal can capture the performance gate as a normal test.
 
 ## Configuration
 
@@ -178,6 +179,12 @@ Run UI category tests:
 
 ```powershell
 dotnet test PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj --filter TestCategory=UI
+```
+
+Run performance category tests:
+
+```powershell
+dotnet test PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj --filter TestCategory=Performance
 ```
 
 Run Release tests:
@@ -292,7 +299,15 @@ See `REPORTPORTAL.md` for the focused ReportPortal notes.
 
 ## Performance Testing
 
-`Performance` is a standalone .NET 8 console app for a basic Conduit API load test. It is not currently included in `PlaywrightTAF.sln`.
+`Performance` is a .NET 8 console app for a basic Conduit API load test and is included in `PlaywrightTAF.sln`.
+
+`PlaywrightTAF.Tests` references the `Performance` project and exposes the scenario through an NUnit test:
+
+```text
+PlaywrightTAF.Tests/PerformanceTests/CreateArticlePerformanceTests.cs
+```
+
+That wrapper lets Allure and ReportPortal record the performance run like the rest of the NUnit suite.
 
 The scenario:
 
@@ -309,6 +324,8 @@ Files:
 
 - `Program.cs` wires options, HTTP client, scenario, metrics, cancellation, output, and threshold checks.
 - `PerformanceOptions.cs` parses command-line options.
+- `PerformanceTestRunner.cs` contains the reusable run logic used by both the console app and the NUnit wrapper.
+- `PerformanceRunResult.cs` stores options, results, pass/fail status, and threshold failure text.
 - `Clients/ConduitApiClient.cs` sends register, create article, and delete article requests.
 - `Clients/ConduitEndpoints.cs` stores endpoint constants.
 - `Scenarios/CreateArticleScenario.cs` runs each virtual user loop.
@@ -328,6 +345,24 @@ Run for 60 seconds with 3 virtual users:
 dotnet run --project Performance\Performance.csproj -- --vus 3 --duration-seconds 60
 ```
 
+Run through NUnit, Allure, and ReportPortal:
+
+```powershell
+dotnet test PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj --filter TestCategory=Performance
+```
+
+Run through NUnit with custom settings:
+
+```powershell
+$env:PERF_VUS = "3"
+$env:PERF_DURATION_SECONDS = "60"
+$env:PERF_REQUEST_DELAY_SECONDS = "1"
+$env:PERF_MAX_P95_MS = "1000"
+$env:PERF_MAX_FAILURE_RATE = "0.01"
+
+dotnet test PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj --filter TestCategory=Performance
+```
+
 Options:
 
 ```text
@@ -337,6 +372,17 @@ Options:
 --request-delay-seconds     Delay between iterations per virtual user. Default: 1
 --max-p95-ms                Maximum allowed P95 POST duration. Default: 1000
 --max-failure-rate          Maximum allowed failure rate. Default: 0.01
+```
+
+The NUnit wrapper reads these environment variables and passes them to the performance runner:
+
+```text
+PERF_BASE_URL
+PERF_VUS
+PERF_DURATION_SECONDS
+PERF_REQUEST_DELAY_SECONDS
+PERF_MAX_P95_MS
+PERF_MAX_FAILURE_RATE
 ```
 
 The process exits with code `1` when failure rate or P95 exceeds the configured thresholds.
@@ -351,7 +397,8 @@ The process exits with code `1` when failure rate or P95 exceeds the configured 
 4. `dotnet build --configuration Release --no-restore`.
 5. Playwright browser installation.
 6. API and UI tests in parallel using category filters.
-7. Artifact publishing for TRX files, screenshots, logs, and Allure results.
+7. Performance tests through the NUnit `Performance` category.
+8. Artifact publishing for TRX files, screenshots, logs, and Allure results.
 
 Jenkins expects a string credential:
 
@@ -379,6 +426,12 @@ Run UI tests in Release:
 
 ```powershell
 dotnet test PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj --filter TestCategory=UI --configuration Release
+```
+
+Run performance tests in Release:
+
+```powershell
+dotnet test PlaywrightTAF.Tests\PlaywrightTAF.Tests.csproj --filter TestCategory=Performance --configuration Release
 ```
 
 Run the performance test:

@@ -1,0 +1,15 @@
+using Performance.Metrics;
+
+namespace Performance;
+
+public sealed record PerformanceRunResult(
+    PerformanceOptions Options,
+    PerformanceResults Results)
+{
+    public bool Passed =>
+        Results.FailureRate <= Options.MaxFailureRate
+        && Results.P95Ms <= Options.MaxP95Ms;
+
+    public string ThresholdFailureMessage =>
+        $"Performance thresholds failed. Expected failure rate <= {Options.MaxFailureRate:P2}, p95 <= {Options.MaxP95Ms:N0} ms.";
+}

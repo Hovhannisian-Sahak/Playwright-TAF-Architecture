@@ -11,6 +11,11 @@ pipeline {
         CONFIGURATION = 'Release'
         REPORTPORTAL_URL = 'https://demo.reportportal.io'
         REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
+        PERF_VUS = '3'
+        PERF_DURATION_SECONDS = '60'
+        PERF_REQUEST_DELAY_SECONDS = '1'
+        PERF_MAX_P95_MS = '1000'
+        PERF_MAX_FAILURE_RATE = '0.01'
     }
 
     stages {
@@ -83,6 +88,17 @@ pipeline {
                        '''
                    }
                }
+           }
+       }
+       
+       stage('Run Performance Tests') {
+           steps {
+               bat '''
+               dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
+               --filter TestCategory=Performance ^
+               --configuration Release ^
+               --no-build
+               '''
            }
        }
     }

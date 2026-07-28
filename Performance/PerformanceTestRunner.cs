@@ -1,0 +1,60 @@
+using Performance.Clients;
+using Performance.Metrics;
+using Performance.Scenarios;
+
+namespace Performance;
+
+public sealed class PerformanceTestRunner
+{
+    public async Task<PerformanceRunResult> RunAsync(
+        PerformanceOptions options,
+        TextWriter? output = null,
+        TextWriter? error = null)
+    {
+        output ??= Console.Out;
+        error ??= Console.Error;
+
+        using var httpClient = new HttpClient
+        {
+            BaseAddress = new Uri(options.BaseUrl)
+        };
+
+        var apiClient = new ConduitApiClient(httpClient);
+        var metrics = new PerformanceMetrics();
+        var scenario = new CreateArticleScenario(apiClient, metrics, options.RequestDelay);
+
+        using var cancellation = new CancellationTokenSource(options.Duration);
+
+        await output.WriteLineAsync(
+            $"Running POST /api/articles performance test: vus={options.VirtualUsers}, duration={options.Duration.TotalSeconds}s, baseUrl={options.BaseUrl}");
+
+        var tasks = Enumerable
+            .Range(1, options.VirtualUsers)
+            .Select(virtualUser => scenario.RunVirtualUserAsync(virtualUser, cancellation.Token))
+            .ToArray();
+
+        await Task.WhenAll(tasks);
+
+        var runResult = new PerformanceRunResult(options, metrics.GetResults());
+
+        await WriteResultsAsync(output, runResult.Results);
+
+        if (!runResult.Passed)
+        {
+            await error.WriteLineAsync(runResult.ThresholdFailureMessage);
+        }
+
+        return runResult;
+    }
+
+    private static async Task WriteResultsAsync(TextWriter output, PerformanceResults results)
+    {
+        await output.WriteLineAsync();
+        await output.WriteLineAsync("Results");
+        await output.WriteLineAsync($"Requests: {results.Requests}");
+        await output.WriteLineAsync($"Failures: {results.Failures}");
+        await output.WriteLineAsync($"Failure rate: {results.FailureRate:P2}");
+        await output.WriteLineAsync($"Average POST duration: {results.AverageMs:N0} ms");
+        await output.WriteLineAsync($"P95 POST duration: {results.P95Ms:N0} ms");
+    }
+}
