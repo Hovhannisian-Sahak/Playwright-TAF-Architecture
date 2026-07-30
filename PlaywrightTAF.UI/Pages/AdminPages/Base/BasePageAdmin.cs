@@ -22,14 +22,16 @@ public class BasePageAdmin : BasePage
     public async Task OpenAdminPageAsync()
     {
         await AdminMenuLink.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await Page.WaitForURLAsync($"**{AdminUsersPath}");
+        await Page.Locator("text=System Users").WaitForAsync(new() { State = WaitForSelectorState.Visible });
     }
 
     public async Task ClickToOpenCorporateBrandingAsync()
     {
         await CorporateBrandingMenuLink.ClickAsync();
         await Page.WaitForURLAsync($"**{CorporateBrandingPath}");
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page
+            .GetByRole(AriaRole.Heading, new() { Name = "Corporate Branding" })
+            .WaitForAsync(new() { State = WaitForSelectorState.Visible });
     }
 }

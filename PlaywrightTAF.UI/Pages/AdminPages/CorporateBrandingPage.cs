@@ -18,6 +18,8 @@ public class AdminCorporateBrandingPage : BasePageAdmin
         .Locator(".oxd-input");
 
     private ILocator PublishButton => Page.GetByRole(AriaRole.Button, new() { Name = "Publish" });
+    private ILocator SuccessfullyUpdatedText => Page.GetByText("Successfully Updated", new() { Exact = true });
+
     protected override string PageUrl => new Uri(new Uri(ConfigurationReader.Current.BaseUrl), CorporateBrandingPath).ToString();
     public override async Task<bool> IsLoadedAsync()
     {
@@ -28,19 +30,24 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     }
     public async Task ChooseColorAsync()
     {
-        // click button to choose color
         await ColorPickerButton.ClickAsync();
-        // waiting color picker to be visible
         await ColorPicker.WaitForAsync(new()
         {
             State = WaitForSelectorState.Visible
         });
-        // fill color picker
-        await ColorPickerInput.FillAsync("#ff0000");
+
+        var currentColor = await ColorPickerInput.InputValueAsync();
+        var nextColor = currentColor.Equals("#ff0000", StringComparison.OrdinalIgnoreCase)
+            ? "#00ff00"
+            : "#ff0000";
+
+        await ColorPickerInput.FillAsync(nextColor);
     }
 
     public async Task ClickPublishAsync()
     {
         await PublishButton.ClickAsync();
+        await SuccessfullyUpdatedText.WaitForAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

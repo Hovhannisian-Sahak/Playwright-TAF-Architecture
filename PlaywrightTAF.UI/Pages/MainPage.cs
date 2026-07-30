@@ -13,7 +13,11 @@ public sealed class MainPage : BasePage
 
     private ILocator Body => Page.Locator(".oxd-userdropdown-name");
     private ILocator UserDropdown => Page.Locator(".oxd-userdropdown-tab");
-    private ILocator LogoutLink => Page.GetByRole(AriaRole.Link, new() { Name = "Logout" });
+    private ILocator LogoutLink => Page.GetByRole(AriaRole.Menuitem, new() { Name = "Logout" });
+    
+    private ILocator UserDropdownMenu => Page.Locator(".oxd-dropdown-menu");
+    private ILocator UsernameInput => Page.GetByPlaceholder("username");
+    private ILocator PasswordInput => Page.GetByPlaceholder("password");
 
     public Task OpenMainPageAsync()
     {
@@ -22,18 +26,17 @@ public sealed class MainPage : BasePage
 
     public override Task<bool> IsLoadedAsync()
     {
-        return Body.IsVisibleAsync();
+        return UsernameInput.IsVisibleAsync();
     }
 
     public async Task LogoutAsync()
     {
         await UserDropdown.ClickAsync();
+        await UserDropdownMenu.WaitForAsync(new() { State = WaitForSelectorState.Visible });
         await LogoutLink.ClickAsync();
+        await Page.WaitForURLAsync("**/web/index.php/auth/login");
+        await UsernameInput.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await PasswordInput.WaitForAsync(new() { State = WaitForSelectorState.Visible });
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
-
-    // public Task<string> GetBodyTextAsync()
-    // {
-    //     return Body.InnerTextAsync();
-    // }
 }

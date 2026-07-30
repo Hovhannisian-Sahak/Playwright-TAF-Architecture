@@ -18,6 +18,7 @@ public class LoginPage : BasePage
     private ILocator UsernameInput => Page.GetByPlaceholder("username");
     private ILocator PasswordInput => Page.GetByPlaceholder("password");
     private ILocator LoginButton => Page.GetByRole(AriaRole.Button, new() { Name = "Login" });
+    private ILocator UserDropdownName => Page.Locator(".oxd-userdropdown-name");
 
     public Task OpenLoginPageAsync()
     {
@@ -37,6 +38,7 @@ public class LoginPage : BasePage
         await UsernameInput.FillAsync(username);
         await PasswordInput.FillAsync(password);
         await LoginButton.ClickAsync();
+        await UserDropdownName.WaitForAsync(new() { State = WaitForSelectorState.Visible });
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         Logger.Information("Login submitted for {Username}; current URL is {CurrentUrl}", username, CurrentUrl);
     }
