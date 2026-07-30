@@ -1,4 +1,5 @@
-﻿using Microsoft.Playwright;
+using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
 using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.UI.Pages.AdminPages.Base;
 
@@ -18,7 +19,10 @@ public class AdminCorporateBrandingPage : BasePageAdmin
         .Locator(".oxd-input");
 
     private ILocator PublishButton => Page.GetByRole(AriaRole.Button, new() { Name = "Publish" });
-    private ILocator SuccessfullyUpdatedText => Page.GetByText("Successfully Updated", new() { Exact = true });
+    private ILocator ResetToDefaultButton => Page.GetByRole(AriaRole.Button, new() { Name = "Reset to Default" });
+    private ILocator SuccessfullySavedText => Page.GetByText("Successfully Saved", new() { Exact = true });
+    private ILocator FileButton => Page.Locator(".oxd-file-button").Nth(0);
+    private ILocator FileInput => Page.Locator(".oxd-file-input-div").Nth(0);
 
     protected override string PageUrl => new Uri(new Uri(ConfigurationReader.Current.BaseUrl), CorporateBrandingPath).ToString();
     public override async Task<bool> IsLoadedAsync()
@@ -42,12 +46,37 @@ public class AdminCorporateBrandingPage : BasePageAdmin
             : "#ff0000";
 
         await ColorPickerInput.FillAsync(nextColor);
+        await Page.Keyboard.PressAsync("Escape");
+        await ColorPicker.WaitForAsync(new()
+        {
+            State = WaitForSelectorState.Hidden
+        });
+    }
+
+    public async Task ResetToDefaultAsync()
+    {
+        await ResetToDefaultButton.ClickAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    public async Task ChooseClientLogoAsync(string filePath)
+    {
+        var fileChooserTask = Page.WaitForFileChooserAsync();
+        await FileButton.WaitForAsync(new()
+        {
+            State = WaitForSelectorState.Visible
+        });
+        await FileButton.ClickAsync();
+        var chooser = await fileChooserTask;
+        await chooser.SetFilesAsync(filePath);
+
+        await Expect(FileInput).ToContainTextAsync(Path.GetFileName(filePath));
     }
 
     public async Task ClickPublishAsync()
     {
         await PublishButton.ClickAsync();
-        await SuccessfullyUpdatedText.WaitForAsync();
+        await Expect(SuccessfullySavedText).ToBeVisibleAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }
