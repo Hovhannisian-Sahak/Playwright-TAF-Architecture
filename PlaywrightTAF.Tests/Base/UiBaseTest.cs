@@ -24,9 +24,13 @@ public abstract class UiBaseTest
     protected IPage Page = null!;
     protected AppConfiguration Configuration = null!;
 
-    protected virtual bool ShouldLoginThroughUi => true;
+    protected virtual bool ShouldLoginThroughUi { get; } = true;
+
+    protected virtual bool ShouldLogoutThroughUi => ShouldLoginThroughUi;
 
     protected virtual Credentials UiCredentials => Configuration.Admin;
+
+    protected virtual string InitialUrl => Configuration.BaseUrl;
 
     [OneTimeSetUp]
     public virtual async Task OneTimeSetUpAsync()
@@ -60,7 +64,13 @@ public abstract class UiBaseTest
 
         Page.SetDefaultTimeout(Configuration.DefaultTimeoutMilliseconds);
 
-        await Page.GotoAsync(Configuration.BaseUrl);
+        await Page.GotoAsync(
+            InitialUrl,
+            new()
+            {
+                WaitUntil = WaitUntilState.Commit,
+                Timeout = Configuration.DefaultTimeoutMilliseconds * 2
+            });
         Logger.Information("UI test page initialized at {CurrentUrl}", Page.Url);
 
         if (ShouldLoginThroughUi)
@@ -132,21 +142,17 @@ public abstract class UiBaseTest
     [OneTimeTearDown]
     public virtual async Task OneTimeTearDownAsync()
     {
-        // try
-        // {
-        //     if (ShouldLoginThroughUi)
-        //     {
-        //         await LogoutThroughUiAsync();
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     Logger.Warning(ex, "UI logout failed during one-time cleanup.");
-        // }
+        if (Context is not null)
+        {
+            await Context.CloseAsync();
+        }
 
-        await Context.CloseAsync();
-        await Browser.CloseAsync();
-        Playwright.Dispose();
+        if (Browser is not null)
+        {
+            await Browser.CloseAsync();
+        }
+
+        Playwright?.Dispose();
     }
 
     protected virtual BrowserNewContextOptions CreateContextOptions()
@@ -162,6 +168,7 @@ public abstract class UiBaseTest
         var loginPage = new LoginPage(Page);
         await loginPage.OpenLoginPageAsync();
         await loginPage.LoginAsync(UiCredentials.Username, UiCredentials.Password);
+
     }
 
     protected virtual async Task LogoutThroughUiAsync()

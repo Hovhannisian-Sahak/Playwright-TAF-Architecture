@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -22,6 +23,10 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
     protected abstract string StorageStatePath { get; }
 
     protected override bool ShouldLoginThroughUi => false;
+
+    protected override bool ShouldLogoutThroughUi => true;
+
+    protected override string InitialUrl => new Uri(new Uri(Configuration.BaseUrl), "/web/index.php/dashboard/index").ToString();
 
     [OneTimeSetUp]
     public override async Task OneTimeSetUpAsync()

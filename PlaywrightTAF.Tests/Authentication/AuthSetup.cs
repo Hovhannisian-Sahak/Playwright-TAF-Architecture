@@ -36,8 +36,15 @@ public static class AuthSetup
             });
 
         var page = await context.NewPageAsync();
+        page.SetDefaultTimeout(configuration.DefaultTimeoutMilliseconds);
 
-        await page.GotoAsync(ConfigurationReader.Current.BaseUrl);
+        await page.GotoAsync(
+            configuration.BaseUrl,
+            new()
+            {
+                WaitUntil = WaitUntilState.Commit,
+                Timeout = configuration.DefaultTimeoutMilliseconds * 2
+            });
 
         var loginPage = new LoginPage(page);
 
