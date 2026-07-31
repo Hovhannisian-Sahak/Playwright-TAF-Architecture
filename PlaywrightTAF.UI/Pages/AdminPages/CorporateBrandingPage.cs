@@ -9,7 +9,7 @@ public class AdminCorporateBrandingPage : BasePageAdmin
 {
     private const string CorporateBrandingPath = "/web/index.php/admin/addTheme";
 
-    ILocator CorporateBrandingHeader => Page.Locator("text=Corporate Branding");
+    private ILocator CorporateBrandingHeader => Page.GetByRole(AriaRole.Heading, new() { Name = "Corporate Branding" });
 
     private ILocator ColorPickerButton => Page.Locator(".orangehrm-color-input-wrapper")
         .Filter(new() { HasText = "Secondary Font Color" })

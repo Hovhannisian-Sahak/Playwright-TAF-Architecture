@@ -9,14 +9,16 @@ using Allure.NUnit;
 using NUnit.Framework;
 using Performance;
 
-namespace PlaywrightTAF.Tests.PerformanceTests;
+namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 
 [AllureNUnit]
 [TestFixture]
 public sealed class CreateArticlePerformanceTests
 {
     [Test]
+    [Category("API")]
     [Category("Performance")]
+    [Category("APIPerformance")]
     public async Task CreateArticle_ShouldMeetPerformanceThresholds()
     {
         var options = PerformanceOptions.FromArgs(CreateArgsFromEnvironment());
@@ -99,7 +101,7 @@ public sealed class CreateArticlePerformanceTests
             });
 
         AllureApi.AddAttachment(
-            "performance-results",
+            "api-performance-results",
             "application/json",
             Encoding.UTF8.GetBytes(json),
             ".json");
