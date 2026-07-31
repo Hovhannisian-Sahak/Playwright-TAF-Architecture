@@ -1,6 +1,7 @@
 using Microsoft.Playwright;
 using PlaywrightTAF.Core.Logging;
 using Serilog;
+using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightTAF.UI.Pages;
 
@@ -35,6 +36,27 @@ public abstract class BasePage
     public Task<string> GetTitleAsync()
     {
         return Page.TitleAsync();
+    }
+
+    protected async Task UploadFileAsync(ILocator fileButton, ILocator fileInput, string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException($"Upload test file was not found: {filePath}", filePath);
+        }
+
+        var fileChooserTask = Page.WaitForFileChooserAsync();
+
+        await fileButton.WaitForAsync(new()
+        {
+            State = WaitForSelectorState.Visible
+        });
+        await fileButton.ClickAsync();
+
+        var chooser = await fileChooserTask;
+        await chooser.SetFilesAsync(filePath);
+
+        await Expect(fileInput).ToContainTextAsync(Path.GetFileName(filePath));
     }
 
     public string CurrentUrl => Page.Url;

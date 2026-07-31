@@ -61,16 +61,7 @@ public class AdminCorporateBrandingPage : BasePageAdmin
 
     public async Task ChooseClientLogoAsync(string filePath)
     {
-        var fileChooserTask = Page.WaitForFileChooserAsync();
-        await FileButton.WaitForAsync(new()
-        {
-            State = WaitForSelectorState.Visible
-        });
-        await FileButton.ClickAsync();
-        var chooser = await fileChooserTask;
-        await chooser.SetFilesAsync(filePath);
-
-        await Expect(FileInput).ToContainTextAsync(Path.GetFileName(filePath));
+        await UploadFileAsync(FileButton, FileInput, filePath);
     }
 
     public async Task ClickPublishAsync()
