@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Core.Models;
 using PlaywrightTAF.Tests.Base;
+using PlaywrightTAF.Tests.TestData;
 
 namespace PlaywrightTAF.Tests.ApiTests;
 
@@ -13,26 +13,15 @@ public class ArticleApiTests : BaseApiTest
     [Category("API")]
     public async Task CreateArticle_ShouldReturnCreatedArticle()
     {
-        string articleSuffix = Guid.NewGuid().ToString("N");
-        string title = $"TAF Article {articleSuffix}";
-        string description = "Article created by API automation.";
-        string body = "Initial article body.";
-        var tags = new List<string> { "taf", "API" };
+        var article = ArticleTestData.Create();
         string? createdSlug = null;
 
         try
         {
-            var createdArticle = await ArticleService.CreateArticle(title, description, body, tags);
+            var createdArticle = await CreateArticleAsync(article);
             createdSlug = createdArticle.slug;
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(createdArticle.slug, Is.Not.Empty);
-                Assert.That(createdArticle.title, Is.EqualTo(title));
-                Assert.That(createdArticle.description, Is.EqualTo(description));
-                Assert.That(createdArticle.body, Is.EqualTo(body));
-                Assert.That(createdArticle.tagList, Is.EquivalentTo(tags));
-            });
+            AssertArticleMatches(createdArticle, article);
         }
         finally
         {
@@ -117,12 +106,27 @@ public class ArticleApiTests : BaseApiTest
 
     private Task<ArticleData> CreateTestArticle()
     {
-        string articleSuffix = Guid.NewGuid().ToString("N");
+        return CreateArticleAsync(ArticleTestData.Create());
+    }
 
+    private Task<ArticleData> CreateArticleAsync(ArticleTestData article)
+    {
         return ArticleService.CreateArticle(
-            $"TAF Article {articleSuffix}",
-            "Article created by API automation.",
-            "Initial article body.",
-            new List<string> { "taf", "API" });
+            article.Title,
+            article.Description,
+            article.Body,
+            article.Tags);
+    }
+
+    private static void AssertArticleMatches(ArticleData actual, ArticleTestData expected)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(actual.slug, Is.Not.Empty);
+            Assert.That(actual.title, Is.EqualTo(expected.Title));
+            Assert.That(actual.description, Is.EqualTo(expected.Description));
+            Assert.That(actual.body, Is.EqualTo(expected.Body));
+            Assert.That(actual.tagList, Is.EquivalentTo(expected.Tags));
+        });
     }
 }

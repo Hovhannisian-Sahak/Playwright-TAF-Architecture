@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
+using PlaywrightTAF.UI.Pages;
 
 namespace PlaywrightTAF.Tests.UiTests;
 
@@ -10,9 +11,10 @@ public class DashboardTests : AdminTest
     [Category("UI")]
     public async Task AdminCanOpenDashboard()
     {
-        await Page.GotoAsync("/dashboard");
+        var dashboardPage = new DashboardPage(Page);
 
-        Assert.That(Page.Url,
-            Does.Contain("dashboard"));
+        await dashboardPage.OpenAsync();
+
+        Assert.That(await dashboardPage.IsLoadedAsync(), Is.True);
     }
 }

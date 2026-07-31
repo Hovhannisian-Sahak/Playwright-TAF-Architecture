@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
+using PlaywrightTAF.UI.Pages;
 
 namespace PlaywrightTAF.Tests.UiTests;
 
@@ -10,9 +11,10 @@ public class ProfileTests : UserTest
     [Category("UI")]
     public async Task UserCanOpenProfile()
     {
-        await Page.GotoAsync("/profile");
+        var profilePage = new ProfilePage(Page);
 
-        Assert.That(Page.Url,
-            Does.Contain("profile"));
+        await profilePage.OpenAsync();
+
+        Assert.That(await profilePage.IsLoadedAsync(), Is.True);
     }
 }

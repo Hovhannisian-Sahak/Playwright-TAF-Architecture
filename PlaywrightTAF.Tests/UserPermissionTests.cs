@@ -4,7 +4,7 @@ using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.Tests.Base;
 using PlaywrightTAF.UI.Pages;
 
-namespace PlaywrightTAF.Tests.Tests;
+namespace PlaywrightTAF.Tests.UiTests;
 
 public class UserPermissionTests : UserTest
 {

@@ -1,8 +1,7 @@
-using System;
-using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
+using PlaywrightTAF.Tests.TestData;
 using PlaywrightTAF.UI.Pages;
 
 namespace PlaywrightTAF.Tests.UiTests;
@@ -31,11 +30,9 @@ public class UserManagementTests : AdminTest
     [Category("UI")]
     public async Task AdminCanAddUser()
     {
-        var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var newUsername = TestDataFactory.UniqueUsername("Adminn");
 
-        await addUserPage.OpenAddUserFormAsync();
-        await addUserPage.CreateAdminUserAsync(newUsername, EmployeeName, UserPassword);
-        await addUserPage.SearchUserAsync(newUsername);
+        await CreateAdminUserAndSearchAsync(newUsername);
 
         await addUserPage.ExpectUserExistsAsync(newUsername);
 
@@ -46,7 +43,7 @@ public class UserManagementTests : AdminTest
     [Category("UI")]
     public async Task AdminCanDeleteUser()
     {
-        var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var newUsername = TestDataFactory.UniqueUsername("Adminn");
 
         await addUserPage.OpenAddUserFormAsync();
         await addUserPage.CreateAdminUserAsync(newUsername, EmployeeName, UserPassword);
@@ -64,12 +61,10 @@ public class UserManagementTests : AdminTest
     [Category("UI")]
     public async Task AdminCanChangeUserNameAndPassword()
     {
-        var newUsername = $"Adminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-        var changedUsername = $"ChangedAdminn{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var newUsername = TestDataFactory.UniqueUsername("Adminn");
+        var changedUsername = TestDataFactory.UniqueUsername("ChangedAdminn");
 
-        await addUserPage.OpenAddUserFormAsync();
-        await addUserPage.CreateAdminUserAsync(newUsername, EmployeeName, UserPassword);
-        await editUserPage.SearchUserAsync(newUsername);
+        await CreateAdminUserAndSearchAsync(newUsername);
 
         await editUserPage.ExpectUserExistsAsync(newUsername);
 
@@ -84,8 +79,8 @@ public class UserManagementTests : AdminTest
     [Category("UI")]
     public async Task AdminCanEditInfo()
     {
-        var lastName = $"Admin{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-        string filePath = Path.Combine(AppContext.BaseDirectory, "test.png");
+        var lastName = TestDataFactory.UniqueUsername("Admin");
+        string filePath = TestDataFactory.UploadFilePath();
 
         await personalDetailsPage.OpenPersonalDetailsAsync();
         await personalDetailsPage.FillLastNameAsync(lastName);
@@ -94,5 +89,12 @@ public class UserManagementTests : AdminTest
         await personalDetailsPage.SavePersonalDetailsAsync();
         await personalDetailsPage.OpenAttachmentFormAsync();
         await personalDetailsPage.UploadFileAndMakeCommentAsync(filePath, "Test");
+    }
+
+    private async Task CreateAdminUserAndSearchAsync(string username)
+    {
+        await addUserPage.OpenAddUserFormAsync();
+        await addUserPage.CreateAdminUserAsync(username, EmployeeName, UserPassword);
+        await addUserPage.SearchUserAsync(username);
     }
 }

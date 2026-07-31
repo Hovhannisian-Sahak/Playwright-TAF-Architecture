@@ -1,11 +1,10 @@
-using System;
-using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
+using PlaywrightTAF.Tests.TestData;
 using PlaywrightTAF.UI.Pages.AdminPages;
 
-namespace PlaywrightTAF.Tests.Tests;
+namespace PlaywrightTAF.Tests.UiTests;
 
 public class AdminCorporateBrandingTests : AdminTest
 {
@@ -19,7 +18,8 @@ public class AdminCorporateBrandingTests : AdminTest
     [Test]
     public async Task AdminCanOpenCorporateBrandingPage()
     {
-        string filePath = Path.Combine(AppContext.BaseDirectory, "test.png");
+        string filePath = TestDataFactory.UploadFilePath();
+
         await adminCorporateBrandingPage.OpenAdminPageAsync();
         await adminCorporateBrandingPage.ClickToOpenCorporateBrandingAsync();
         await adminCorporateBrandingPage.ResetToDefaultAsync();
