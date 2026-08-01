@@ -45,6 +45,12 @@ pipeline {
             }
         }
 
+        stage('Clean Solution') {
+            steps {
+                bat 'dotnet clean --configuration %CONFIGURATION%'
+            }
+        }
+
         stage('Build Solution') {
             steps {
                 bat 'dotnet build --configuration %CONFIGURATION% --no-restore'
@@ -58,56 +64,78 @@ pipeline {
              }
         }
 
-       stage('Run Tests')
-       {
-           parallel
-           {
-               stage('API Tests')
-               {
-                   steps
-                   {
-                       bat '''
-                       dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
-                       --filter TestCategory=API ^
-                       --configuration Release ^
-                       --no-build ^
-                       --logger:ReportPortal ^
-                       --logger "trx;LogFileName=api-tests.trx" ^
-                       --results-directory TestResults
-                       '''
-                   }
+       stage('API Tests') {
+           steps {
+               withCredentials([
+                   string(
+                       credentialsId: 'reportportal-api-key',
+                       variable: 'REPORTPORTAL_API_KEY'
+                   )
+               ]) {
+                   bat '''
+                   set "REPORTPORTAL_LAUNCH_NAME=API Tests #%BUILD_NUMBER%"
+                   set "REPORTPORTAL_LAUNCH_DESCRIPTION=Functional API tests for build #%BUILD_NUMBER% on %JOB_NAME%"
+                   set "REPORTPORTAL_LAUNCH_TAGS=api,functional,playwright,nunit,dotnet,jenkins,build-%BUILD_NUMBER%"
+                   powershell -NoProfile -ExecutionPolicy Bypass -File ci\\ConfigureReportPortal.ps1
+                   dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
+                   --filter TestCategory=API ^
+                   --configuration Release ^
+                   --no-build ^
+                   --logger:ReportPortal ^
+                   --logger "trx;LogFileName=api-tests.trx" ^
+                   --results-directory TestResults
+                   '''
                }
-       
-       
-               stage('UI Tests')
-               {
-                   steps
-                   {
-                       bat '''
-                       dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
-                       --filter TestCategory=UI ^
-                       --configuration Release ^
-                       --no-build ^
-                       --logger:ReportPortal ^
-                       --logger "trx;LogFileName=ui-tests.trx" ^
-                       --results-directory TestResults
-                       '''
-                   }
+           }
+       }
+
+       stage('UI Tests') {
+           steps {
+               withCredentials([
+                   string(
+                       credentialsId: 'reportportal-api-key',
+                       variable: 'REPORTPORTAL_API_KEY'
+                   )
+               ]) {
+                   bat '''
+                   set "REPORTPORTAL_LAUNCH_NAME=UI Tests #%BUILD_NUMBER%"
+                   set "REPORTPORTAL_LAUNCH_DESCRIPTION=Browser UI tests for build #%BUILD_NUMBER% on %JOB_NAME%"
+                   set "REPORTPORTAL_LAUNCH_TAGS=ui,browser,playwright,nunit,dotnet,jenkins,build-%BUILD_NUMBER%"
+                   powershell -NoProfile -ExecutionPolicy Bypass -File ci\\ConfigureReportPortal.ps1
+                   dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
+                   --filter TestCategory=UI ^
+                   --configuration Release ^
+                   --no-build ^
+                   --logger:ReportPortal ^
+                   --logger "trx;LogFileName=ui-tests.trx" ^
+                   --results-directory TestResults
+                   '''
                }
            }
        }
        
        stage('Run Performance Tests') {
            steps {
-               bat '''
-               dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
-               --filter TestCategory=Performance ^
-               --configuration Release ^
-               --no-build ^
-               --logger:ReportPortal ^
-               --logger "trx;LogFileName=performance-tests.trx" ^
-               --results-directory TestResults
-               '''
+               withCredentials([
+                   string(
+                       credentialsId: 'reportportal-api-key',
+                       variable: 'REPORTPORTAL_API_KEY'
+                   )
+               ]) {
+                   bat '''
+                   set "REPORTPORTAL_LAUNCH_NAME=Performance Tests #%BUILD_NUMBER%"
+                   set "REPORTPORTAL_LAUNCH_DESCRIPTION=API and UI performance thresholds for build #%BUILD_NUMBER% on %JOB_NAME%"
+                   set "REPORTPORTAL_LAUNCH_TAGS=performance,api-performance,ui-performance,playwright,nunit,dotnet,jenkins,build-%BUILD_NUMBER%"
+                   powershell -NoProfile -ExecutionPolicy Bypass -File ci\\ConfigureReportPortal.ps1
+                   dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
+                   --filter TestCategory=Performance ^
+                   --configuration Release ^
+                   --no-build ^
+                   --logger:ReportPortal ^
+                   --logger "trx;LogFileName=performance-tests.trx" ^
+                   --results-directory TestResults
+                   '''
+               }
            }
        }
     }

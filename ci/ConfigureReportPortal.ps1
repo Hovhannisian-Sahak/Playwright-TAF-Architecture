@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
-$configPath = Join-Path $PSScriptRoot '..\PlaywrightTAF.Tests\ReportPortal.config.json'
+$testProjectPath = Resolve-Path (Join-Path $PSScriptRoot '..\PlaywrightTAF.Tests')
+$configPath = Join-Path $testProjectPath 'ReportPortal.config.json'
 
 if (Test-Path $configPath) {
     $config = Get-Content $configPath -Raw | ConvertFrom-Json
@@ -51,4 +52,26 @@ if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_LAUNCH_NAME)) {
     $config.launch.name = "Playwright Automation #$env:BUILD_NUMBER"
 }
 
-$config | ConvertTo-Json -Depth 10 | Set-Content $configPath -Encoding UTF8
+if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_LAUNCH_DESCRIPTION)) {
+    $config.launch.description = $env:REPORTPORTAL_LAUNCH_DESCRIPTION
+}
+
+if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_LAUNCH_TAGS)) {
+    $tags = $env:REPORTPORTAL_LAUNCH_TAGS -split ',' |
+        ForEach-Object { $_.Trim() } |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    $config.launch.tags = @($tags)
+}
+
+$json = $config | ConvertTo-Json -Depth 10
+$configPaths = @($configPath)
+$outputConfigPath = Join-Path $testProjectPath "bin\$env:CONFIGURATION\net8.0\ReportPortal.config.json"
+
+if (Test-Path (Split-Path $outputConfigPath -Parent)) {
+    $configPaths += $outputConfigPath
+}
+
+foreach ($path in $configPaths) {
+    $json | Set-Content $path -Encoding UTF8
+}
