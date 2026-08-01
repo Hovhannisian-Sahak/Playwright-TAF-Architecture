@@ -21,7 +21,7 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     private ILocator PublishButton => Page.GetByRole(AriaRole.Button, new() { Name = "Publish" });
     private ILocator ResetToDefaultButton => Page.GetByRole(AriaRole.Button, new() { Name = "Reset to Default" });
     private ILocator SuccessfullySavedText => Page.GetByText("Successfully Saved", new() { Exact = true });
-    private ILocator FileButton => Page.Locator(".test-oxd-file-button").Nth(0);
+    private ILocator FileButton => Page.Locator(".oxd-file-button").Nth(0);
     private ILocator FileInput => Page.Locator(".oxd-file-input-div").Nth(0);
 
     protected override string PageUrl => new Uri(new Uri(ConfigurationReader.Current.BaseUrl), CorporateBrandingPath).ToString();

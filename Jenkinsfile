@@ -124,6 +124,11 @@ pipeline {
                 jdk: '',
                 results: [[path: 'PlaywrightTAF.Tests/bin/Release/net8.0/allure-results']]
             )
+
+            bat '''
+            if exist PlaywrightTAF.Tests\\Authentication\\AuthStates\\adminState.json del PlaywrightTAF.Tests\\Authentication\\AuthStates\\adminState.json
+            if exist PlaywrightTAF.Tests\\Authentication\\AuthStates\\userState.json del PlaywrightTAF.Tests\\Authentication\\AuthStates\\userState.json
+            '''
         }
 
         success {

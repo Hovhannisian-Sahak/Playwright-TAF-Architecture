@@ -35,9 +35,10 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
 
         try
         {
-            if (CreatedAuthStates.Add(StorageStatePath))
+            if (!CreatedAuthStates.Contains(StorageStatePath) || !File.Exists(StorageStatePath))
             {
                 await AuthSetup.CreateAuthStateAsync(Credentials, StorageStatePath);
+                CreatedAuthStates.Add(StorageStatePath);
             }
         }
         finally
@@ -62,5 +63,21 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
     {
         await base.OneTimeTearDownAsync();
         Logger.Information("Kept shared storage auth state {StorageStatePath}", StorageStatePath);
+    }
+
+    internal static void DeleteCreatedAuthStates()
+    {
+        foreach (var storageStatePath in CreatedAuthStates)
+        {
+            if (!File.Exists(storageStatePath))
+            {
+                continue;
+            }
+
+            File.Delete(storageStatePath);
+            Logger.Information("Deleted storage auth state {StorageStatePath}", storageStatePath);
+        }
+
+        CreatedAuthStates.Clear();
     }
 }
