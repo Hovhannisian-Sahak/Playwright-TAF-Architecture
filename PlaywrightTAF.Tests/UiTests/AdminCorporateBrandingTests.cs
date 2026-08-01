@@ -16,6 +16,7 @@ public class AdminCorporateBrandingTests : AdminTest
     }
 
     [Test]
+    [Category("UI")]
     public async Task AdminCanOpenCorporateBrandingPage()
     {
         string filePath = TestDataFactory.UploadFilePath();

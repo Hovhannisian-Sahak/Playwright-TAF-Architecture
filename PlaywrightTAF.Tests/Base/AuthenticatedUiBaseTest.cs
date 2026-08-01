@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
 {
     private static readonly ILogger Logger = LogProvider.ForContext<AuthenticatedUiBaseTest>();
     private static readonly SemaphoreSlim AuthStateLock = new(1, 1);
+    private static readonly HashSet<string> CreatedAuthStates = [];
 
     protected abstract Credentials Credentials { get; }
 
@@ -33,7 +35,7 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
 
         try
         {
-            if (!File.Exists(StorageStatePath))
+            if (CreatedAuthStates.Add(StorageStatePath))
             {
                 await AuthSetup.CreateAuthStateAsync(Credentials, StorageStatePath);
             }

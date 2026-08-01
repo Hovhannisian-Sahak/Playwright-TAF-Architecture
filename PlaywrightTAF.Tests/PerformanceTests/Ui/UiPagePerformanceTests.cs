@@ -18,7 +18,6 @@ public sealed class UiPagePerformanceTests : AdminTest
     private const double DefaultMaxBrowserLoadMs = 10000;
 
     [Test]
-    [Category("UI")]
     [Category("Performance")]
     [Category("UIPerformance")]
     public async Task Dashboard_ShouldMeetPerformanceThresholds()
@@ -29,7 +28,6 @@ public sealed class UiPagePerformanceTests : AdminTest
     }
 
     [Test]
-    [Category("UI")]
     [Category("Performance")]
     [Category("UIPerformance")]
     public async Task CorporateBranding_ShouldMeetPerformanceThresholds()
