@@ -1,7 +1,7 @@
 {
   "enabled": false,
   "server": {
-    "url": "https://demo.reportportal.io",
+    "url": "https://demo.reportportal.io/api/v1/",
     "project": "hovhannisian-sahak_personal",
     "apiKey": "",
     "authentication": {

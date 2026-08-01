@@ -27,11 +27,18 @@ if ([string]::IsNullOrWhiteSpace($env:REPORTPORTAL_API_KEY)) {
     $config.enabled = $false
 } else {
     $config.enabled = $true
+    $config.server.apiKey = $env:REPORTPORTAL_API_KEY
     $config.server.authentication.uuid = $env:REPORTPORTAL_API_KEY
 }
 
 if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_URL)) {
-    $config.server.url = $env:REPORTPORTAL_URL
+    $reportPortalUrl = $env:REPORTPORTAL_URL.TrimEnd('/')
+
+    if (-not $reportPortalUrl.EndsWith('/api/v1', [System.StringComparison]::OrdinalIgnoreCase)) {
+        $reportPortalUrl = "$reportPortalUrl/api/v1"
+    }
+
+    $config.server.url = "$reportPortalUrl/"
 }
 
 if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_PROJECT)) {

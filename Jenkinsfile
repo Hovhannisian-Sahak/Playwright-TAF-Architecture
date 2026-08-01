@@ -9,7 +9,7 @@ pipeline {
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         CONFIGURATION = 'Release'
-        REPORTPORTAL_URL = 'https://demo.reportportal.io'
+        REPORTPORTAL_URL = 'https://demo.reportportal.io/api/v1/'
         REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
         PERF_VUS = '3'
         PERF_DURATION_SECONDS = '60'
@@ -70,7 +70,10 @@ pipeline {
                        dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
                        --filter TestCategory=API ^
                        --configuration Release ^
-                       --no-build
+                       --no-build ^
+                       --logger:ReportPortal ^
+                       --logger "trx;LogFileName=api-tests.trx" ^
+                       --results-directory TestResults
                        '''
                    }
                }
@@ -84,7 +87,10 @@ pipeline {
                        dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
                        --filter TestCategory=UI ^
                        --configuration Release ^
-                       --no-build
+                       --no-build ^
+                       --logger:ReportPortal ^
+                       --logger "trx;LogFileName=ui-tests.trx" ^
+                       --results-directory TestResults
                        '''
                    }
                }
@@ -97,7 +103,10 @@ pipeline {
                dotnet test PlaywrightTAF.Tests\\PlaywrightTAF.Tests.csproj ^
                --filter TestCategory=Performance ^
                --configuration Release ^
-               --no-build
+               --no-build ^
+               --logger:ReportPortal ^
+               --logger "trx;LogFileName=performance-tests.trx" ^
+               --results-directory TestResults
                '''
            }
        }
