@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,6 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
 {
     private static readonly ILogger Logger = LogProvider.ForContext<AuthenticatedUiBaseTest>();
     private static readonly SemaphoreSlim AuthStateLock = new(1, 1);
-    private static readonly HashSet<string> CreatedAuthStates = [];
 
     protected abstract Credentials Credentials { get; }
 
@@ -35,7 +33,7 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
 
         try
         {
-            if (CreatedAuthStates.Add(StorageStatePath))
+            if (!File.Exists(StorageStatePath))
             {
                 await AuthSetup.CreateAuthStateAsync(Credentials, StorageStatePath);
             }
@@ -60,24 +58,7 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
     [OneTimeTearDown]
     public override async Task OneTimeTearDownAsync()
     {
-        try
-        {
-            await base.OneTimeTearDownAsync();
-        }
-        finally
-        {
-            DeleteStorageState();
-        }
-    }
-
-    private void DeleteStorageState()
-    {
-        if (!File.Exists(StorageStatePath))
-        {
-            return;
-        }
-
-        File.Delete(StorageStatePath);
-        Logger.Information("Deleted storage auth state {StorageStatePath}", StorageStatePath);
+        await base.OneTimeTearDownAsync();
+        Logger.Information("Kept shared storage auth state {StorageStatePath}", StorageStatePath);
     }
 }

@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Performance;
 
 public sealed class PerformanceOptions
@@ -19,11 +21,11 @@ public sealed class PerformanceOptions
         return new PerformanceOptions
         {
             BaseUrl = GetArg(args, "--base-url", "https://conduit-api.bondaracademy.com"),
-            VirtualUsers = int.Parse(GetArg(args, "--vus", "3")),
-            Duration = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--duration-seconds", "30"))),
-            RequestDelay = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--request-delay-seconds", "1"))),
-            MaxP95Ms = double.Parse(GetArg(args, "--max-p95-ms", "1000")),
-            MaxFailureRate = double.Parse(GetArg(args, "--max-failure-rate", "0.01"))
+            VirtualUsers = int.Parse(GetArg(args, "--vus", "3"), CultureInfo.InvariantCulture),
+            Duration = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--duration-seconds", "30"), CultureInfo.InvariantCulture)),
+            RequestDelay = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--request-delay-seconds", "1"), CultureInfo.InvariantCulture)),
+            MaxP95Ms = double.Parse(GetArg(args, "--max-p95-ms", "1000"), CultureInfo.InvariantCulture),
+            MaxFailureRate = double.Parse(GetArg(args, "--max-failure-rate", "0.01"), CultureInfo.InvariantCulture)
         };
     }
 

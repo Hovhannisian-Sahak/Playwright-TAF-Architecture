@@ -16,7 +16,6 @@ namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 public sealed class CreateArticlePerformanceTests
 {
     [Test]
-    [Category("API")]
     [Category("Performance")]
     [Category("APIPerformance")]
     public async Task CreateArticle_ShouldMeetPerformanceThresholds()
