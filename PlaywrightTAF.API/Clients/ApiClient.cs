@@ -20,20 +20,9 @@ public abstract class ApiClient
     protected async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request)
         where T : class
     {
-        var stopwatch = Stopwatch.StartNew();
-        Logger.Information("Sending API request {Method} {Resource}", request.Method, request.Resource);
-
-        RestResponse<T> response = await Client.ExecuteAsync<T>(request);
-        stopwatch.Stop();
-
-        Logger.Information(
-            "Received API response {StatusCode} for {Method} {Resource} in {ElapsedMilliseconds} ms",
-            (int)response.StatusCode,
-            request.Method,
-            request.Resource,
-            stopwatch.ElapsedMilliseconds);
-
-        EnsureSuccessfulResponse(response);
+        RestResponse<T> response = await ExecuteWithLoggingAsync(
+            request,
+            () => Client.ExecuteAsync<T>(request));
 
         if (response.Data is null)
         {
@@ -45,10 +34,20 @@ public abstract class ApiClient
 
     protected async Task<RestResponse> ExecuteAsync(RestRequest request)
     {
+        return await ExecuteWithLoggingAsync(
+            request,
+            () => Client.ExecuteAsync(request));
+    }
+
+    private static async Task<TResponse> ExecuteWithLoggingAsync<TResponse>(
+        RestRequest request,
+        Func<Task<TResponse>> executeAsync)
+        where TResponse : RestResponse
+    {
         var stopwatch = Stopwatch.StartNew();
         Logger.Information("Sending API request {Method} {Resource}", request.Method, request.Resource);
 
-        RestResponse response = await Client.ExecuteAsync(request);
+        TResponse response = await executeAsync();
         stopwatch.Stop();
 
         Logger.Information(

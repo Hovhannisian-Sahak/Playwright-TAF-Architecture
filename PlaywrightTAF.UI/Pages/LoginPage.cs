@@ -35,10 +35,10 @@ public class LoginPage : BasePage
     public async Task LoginAsync(string username, string password)
     {
         Logger.Information("Logging in as {Username}", username);
-        await UsernameInput.FillAsync(username);
-        await PasswordInput.FillAsync(password);
+        await FillAndExpectValueAsync(UsernameInput, username);
+        await FillAndExpectValueAsync(PasswordInput, password);
         await LoginButton.ClickAsync();
-        await UserDropdownName.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await WaitUntilVisibleAsync(UserDropdownName);
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         Logger.Information("Login submitted for {Username}; current URL is {CurrentUrl}", username, CurrentUrl);
     }

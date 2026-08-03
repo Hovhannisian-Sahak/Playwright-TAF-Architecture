@@ -10,11 +10,16 @@ public class BasePageAdmin : BasePage
 
     private ILocator AdminMenuLink => Page.GetByRole(AriaRole.Link, new() { Name = "Admin" });
     private ILocator CorporateBrandingMenuLink => Page.GetByRole(AriaRole.Link, new() { Name = "Corporate Branding" });
-    protected override string PageUrl => new Uri(new Uri(ConfigurationReader.Current.BaseUrl), AdminUsersPath).ToString();
+    private ILocator SystemUsersText => Page.Locator("text=System Users");
+    private ILocator CorporateBrandingHeading => Page.GetByRole(AriaRole.Heading, new() { Name = "Corporate Branding" });
+
+    protected override string PageUrl => BuildUrl(ConfigurationReader.Current.BaseUrl, AdminUsersPath);
+
     public override async Task<bool> IsLoadedAsync()
     {
-        return await Page.Locator("text=System Users").IsVisibleAsync();
+        return await SystemUsersText.IsVisibleAsync();
     }
+
     public BasePageAdmin(IPage page) : base(page)
     {
     }
@@ -23,15 +28,13 @@ public class BasePageAdmin : BasePage
     {
         await AdminMenuLink.ClickAsync();
         await Page.WaitForURLAsync($"**{AdminUsersPath}");
-        await Page.Locator("text=System Users").WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await WaitUntilVisibleAsync(SystemUsersText);
     }
 
     public async Task ClickToOpenCorporateBrandingAsync()
     {
         await CorporateBrandingMenuLink.ClickAsync();
         await Page.WaitForURLAsync($"**{CorporateBrandingPath}");
-        await Page
-            .GetByRole(AriaRole.Heading, new() { Name = "Corporate Branding" })
-            .WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await WaitUntilVisibleAsync(CorporateBrandingHeading);
     }
 }

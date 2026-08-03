@@ -16,7 +16,6 @@ public class AddUserPage : UserManagementPageBase
     private ILocator EmployeeOptions => Page.Locator(".oxd-autocomplete-option");
     private ILocator SaveButton => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
     private ILocator SuccessText => Page.GetByText("Success", new() { Exact = true });
-    private ILocator Listbox => Page.GetByRole(AriaRole.Listbox);
 
     public async Task OpenAddUserFormAsync()
     {
@@ -32,31 +31,22 @@ public class AddUserPage : UserManagementPageBase
 
     public async Task CreateAdminUserAsync(string username, string employeeName, string password)
     {
-        await SelectDropdownOptionAsync(0, "Admin");
+        await SelectDropdownOptionAsync(Dropdowns, 0, "Admin");
         await SelectEmployeeAsync(employeeName);
-        await SelectDropdownOptionAsync(1, "Enabled");
+        await SelectDropdownOptionAsync(Dropdowns, 1, "Enabled");
 
-        await UsernameInput.FillAsync(username);
-        await PasswordInput.FillAsync(password);
-        await ConfirmPasswordInput.FillAsync(password);
+        await FillAndExpectValueAsync(UsernameInput, username);
+        await FillAndExpectValueAsync(PasswordInput, password);
+        await FillAndExpectValueAsync(ConfirmPasswordInput, password);
         await SaveButton.ClickAsync();
 
         await SuccessText.WaitForAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    private async Task SelectDropdownOptionAsync(int dropdownIndex, string option)
-    {
-        await Dropdowns.Nth(dropdownIndex).ClickAsync();
-
-        await Listbox
-            .GetByText(option, new() { Exact = true })
-            .ClickAsync();
-    }
-
     private async Task SelectEmployeeAsync(string employeeName)
     {
-        await EmployeeNameInput.FillAsync(employeeName);
+        await FillAndExpectValueAsync(EmployeeNameInput, employeeName);
 
         await EmployeeOptions
             .Filter(new() { HasText = employeeName })

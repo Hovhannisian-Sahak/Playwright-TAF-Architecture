@@ -45,33 +45,11 @@ public abstract class UiBaseTest
 
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
-        IBrowserType browserType = Configuration.Browser.ToLowerInvariant() switch
-        {
-            "firefox" => Playwright.Firefox,
-            "webkit" => Playwright.Webkit,
-            _ => Playwright.Chromium
-        };
-
-        Browser = await browserType.LaunchAsync(
-            new BrowserTypeLaunchOptions
-            {
-                Headless = Configuration.Headless
-            });
-
+        Browser = await LaunchBrowserAsync();
         Context = await Browser.NewContextAsync(CreateContextOptions());
+        Page = await CreatePageAsync(Context);
 
-        Page = await Context.NewPageAsync();
-
-        Page.SetDefaultTimeout(Configuration.DefaultTimeoutMilliseconds);
-
-        await Page.GotoAsync(
-            InitialUrl,
-            new()
-            {
-                WaitUntil = WaitUntilState.Commit,
-                Timeout = Configuration.DefaultTimeoutMilliseconds * 2
-            });
-        Logger.Information("UI test page initialized at {CurrentUrl}", Page.Url);
+        await NavigateToInitialUrlAsync();
 
         if (ShouldLoginThroughUi)
         {
@@ -161,6 +139,45 @@ public abstract class UiBaseTest
         {
             BaseURL = Configuration.BaseUrl
         };
+    }
+
+    protected virtual IBrowserType GetBrowserType()
+    {
+        return Configuration.Browser.ToLowerInvariant() switch
+        {
+            "firefox" => Playwright.Firefox,
+            "webkit" => Playwright.Webkit,
+            _ => Playwright.Chromium
+        };
+    }
+
+    protected virtual Task<IBrowser> LaunchBrowserAsync()
+    {
+        return GetBrowserType().LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = Configuration.Headless
+        });
+    }
+
+    protected virtual async Task<IPage> CreatePageAsync(IBrowserContext context)
+    {
+        var page = await context.NewPageAsync();
+        page.SetDefaultTimeout(Configuration.DefaultTimeoutMilliseconds);
+
+        return page;
+    }
+
+    protected virtual async Task NavigateToInitialUrlAsync()
+    {
+        await Page.GotoAsync(
+            InitialUrl,
+            new()
+            {
+                WaitUntil = WaitUntilState.Commit,
+                Timeout = Configuration.DefaultTimeoutMilliseconds * 2
+            });
+
+        Logger.Information("UI test page initialized at {CurrentUrl}", Page.Url);
     }
 
     protected virtual async Task LoginThroughUiAsync()

@@ -26,17 +26,17 @@ public sealed class MainPage : BasePage
 
     public override Task<bool> IsLoadedAsync()
     {
-        return UsernameInput.IsVisibleAsync();
+        return Body.IsVisibleAsync();
     }
 
     public async Task LogoutAsync()
     {
         await UserDropdown.ClickAsync();
-        await UserDropdownMenu.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await WaitUntilVisibleAsync(UserDropdownMenu);
         await LogoutLink.ClickAsync();
         await Page.WaitForURLAsync("**/web/index.php/auth/login");
-        await UsernameInput.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await PasswordInput.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+        await WaitUntilVisibleAsync(UsernameInput);
+        await WaitUntilVisibleAsync(PasswordInput);
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

@@ -24,21 +24,21 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     private ILocator FileButton => Page.Locator(".oxd-file-button").Nth(0);
     private ILocator FileInput => Page.Locator(".oxd-file-input-div").Nth(0);
 
-    protected override string PageUrl => new Uri(new Uri(ConfigurationReader.Current.BaseUrl), CorporateBrandingPath).ToString();
+    protected override string PageUrl => BuildUrl(ConfigurationReader.Current.BaseUrl, CorporateBrandingPath);
+
     public override async Task<bool> IsLoadedAsync()
     {
         return await CorporateBrandingHeader.IsVisibleAsync();
     }
+
     public AdminCorporateBrandingPage(IPage page) : base(page)
     {
     }
+
     public async Task ChooseColorAsync()
     {
         await ColorPickerButton.ClickAsync();
-        await ColorPicker.WaitForAsync(new()
-        {
-            State = WaitForSelectorState.Visible
-        });
+        await WaitUntilVisibleAsync(ColorPicker);
 
         var currentColor = await ColorPickerInput.InputValueAsync();
         var nextColor = currentColor.Equals("#ff0000", StringComparison.OrdinalIgnoreCase)
@@ -67,7 +67,10 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     public async Task ClickPublishAsync()
     {
         await PublishButton.ClickAsync();
-        await Expect(SuccessfullySavedText).ToBeVisibleAsync(new() { Timeout = ConfigurationReader.Current.DefaultTimeoutMilliseconds });
+        await Expect(SuccessfullySavedText).ToBeVisibleAsync(new()
+        {
+            Timeout = ConfigurationReader.Current.DefaultTimeoutMilliseconds
+        });
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

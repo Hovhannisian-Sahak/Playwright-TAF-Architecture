@@ -30,7 +30,6 @@ public class PersonalDetailsPage : BasePage
     private ILocator FileInput => Page.Locator(".oxd-file-input-div");
     private ILocator CommentInput => Page.GetByPlaceholder("Type comment here");
     private ILocator SuccessfullySavedText => Page.GetByText("Successfully Saved", new() { Exact = true });
-    private ILocator Listbox => Page.GetByRole(AriaRole.Listbox);
 
     public async Task OpenPersonalDetailsAsync()
     {
@@ -45,14 +44,12 @@ public class PersonalDetailsPage : BasePage
 
     public async Task FillLastNameAsync(string lastName)
     {
-        await LastNameInput.ClearAsync();
-        await LastNameInput.FillAsync(lastName);
-        await Expect(LastNameInput).ToHaveValueAsync(lastName);
+        await ClearFillAndExpectValueAsync(LastNameInput, lastName);
     }
 
     public async Task SelectNationalityAsync(string nationality)
     {
-        await SelectDropdownOptionAsync(0, nationality);
+        await SelectDropdownOptionAsync(Dropdowns, 0, nationality);
         await Expect(Dropdowns.Nth(0)).ToContainTextAsync(nationality);
     }
 
@@ -82,29 +79,16 @@ public class PersonalDetailsPage : BasePage
     public async Task OpenAttachmentFormAsync()
     {
         await AddAttachmentButton.ClickAsync();
-        await AttachmentCard.WaitForAsync(new()
-        {
-            State = WaitForSelectorState.Visible
-        });
+        await WaitUntilVisibleAsync(AttachmentCard);
     }
 
     public async Task UploadFileAndMakeCommentAsync(string filePath, string comment)
     {
         await UploadFileAsync(FileButton, FileInput, filePath);
 
-        await CommentInput.FillAsync(comment);
-        await Expect(CommentInput).ToHaveValueAsync(comment);
+        await FillAndExpectValueAsync(CommentInput, comment);
 
         await SaveButtons.Nth(2).ClickAsync();
         await SuccessfullySavedText.WaitForAsync();
-    }
-
-    private async Task SelectDropdownOptionAsync(int dropdownIndex, string option)
-    {
-        await Dropdowns.Nth(dropdownIndex).ClickAsync();
-
-        await Listbox
-            .GetByText(option, new() { Exact = true })
-            .ClickAsync();
     }
 }

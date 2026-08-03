@@ -45,8 +45,7 @@ public abstract class UserManagementPageBase : BasePage
 
     public async Task SearchUserAsync(string username)
     {
-        await SearchUsernameInput.FillAsync(username);
-        await Expect(SearchUsernameInput).ToHaveValueAsync(username);
+        await FillAndExpectValueAsync(SearchUsernameInput, username);
 
         await SearchButton.ClickAsync();
     }

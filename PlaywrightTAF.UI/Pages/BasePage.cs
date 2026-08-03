@@ -38,6 +38,40 @@ public abstract class BasePage
         return Page.TitleAsync();
     }
 
+    protected static string BuildUrl(string baseUrl, string path)
+    {
+        return new Uri(new Uri(baseUrl), path).ToString();
+    }
+
+    protected async Task FillAndExpectValueAsync(ILocator input, string value)
+    {
+        await input.FillAsync(value);
+        await Expect(input).ToHaveValueAsync(value);
+    }
+
+    protected async Task ClearFillAndExpectValueAsync(ILocator input, string value)
+    {
+        await input.ClearAsync();
+        await FillAndExpectValueAsync(input, value);
+    }
+
+    protected Task WaitUntilVisibleAsync(ILocator locator)
+    {
+        return locator.WaitForAsync(new()
+        {
+            State = WaitForSelectorState.Visible
+        });
+    }
+
+    protected async Task SelectDropdownOptionAsync(ILocator dropdowns, int dropdownIndex, string option)
+    {
+        await dropdowns.Nth(dropdownIndex).ClickAsync();
+
+        await Page.GetByRole(AriaRole.Listbox)
+            .GetByText(option, new() { Exact = true })
+            .ClickAsync();
+    }
+
     protected async Task UploadFileAsync(ILocator fileButton, ILocator fileInput, string filePath)
     {
         if (!File.Exists(filePath))
@@ -47,10 +81,7 @@ public abstract class BasePage
 
         var fileChooserTask = Page.WaitForFileChooserAsync();
 
-        await fileButton.WaitForAsync(new()
-        {
-            State = WaitForSelectorState.Visible
-        });
+        await WaitUntilVisibleAsync(fileButton);
         await fileButton.ClickAsync();
 
         var chooser = await fileChooserTask;
