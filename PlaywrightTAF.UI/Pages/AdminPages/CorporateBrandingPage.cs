@@ -67,10 +67,15 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     public async Task ClickPublishAsync()
     {
         await PublishButton.ClickAsync();
+    }
+
+    public async Task ExpectSuccessfullySavedAsync()
+    {
         await Expect(SuccessfullySavedText).ToBeVisibleAsync(new()
         {
             Timeout = ConfigurationReader.Current.DefaultTimeoutMilliseconds
         });
+
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

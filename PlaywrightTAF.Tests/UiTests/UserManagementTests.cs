@@ -85,10 +85,14 @@ public class UserManagementTests : AdminTest
         await personalDetailsPage.OpenPersonalDetailsAsync();
         await personalDetailsPage.FillLastNameAsync(lastName);
         await personalDetailsPage.SelectNationalityAsync("Armenian");
+        await personalDetailsPage.ExpectNationalityAsync("Armenian");
         await personalDetailsPage.SetBirthDateAsync();
+        await personalDetailsPage.ExpectBirthDateAsync();
         await personalDetailsPage.SavePersonalDetailsAsync();
+        await personalDetailsPage.ExpectPersonalDetailsUpdatedAsync();
         await personalDetailsPage.OpenAttachmentFormAsync();
         await personalDetailsPage.UploadFileAndMakeCommentAsync(filePath, "Test");
+        await personalDetailsPage.ExpectAttachmentSavedAsync();
     }
 
     private async Task CreateAdminUserAndSearchAsync(string username)

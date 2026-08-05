@@ -34,7 +34,7 @@ public class PersonalDetailsPage : BasePage
     public async Task OpenPersonalDetailsAsync()
     {
         await MyInfoLink.ClickAsync();
-        await Expect(PersonalDetailsHeading).ToBeVisibleAsync();
+        await WaitUntilVisibleAsync(PersonalDetailsHeading);
     }
 
     public override Task<bool> IsLoadedAsync()
@@ -50,14 +50,15 @@ public class PersonalDetailsPage : BasePage
     public async Task SelectNationalityAsync(string nationality)
     {
         await SelectDropdownOptionAsync(Dropdowns, 0, nationality);
+    }
+
+    public async Task ExpectNationalityAsync(string nationality)
+    {
         await Expect(Dropdowns.Nth(0)).ToContainTextAsync(nationality);
     }
 
     public async Task SetBirthDateAsync()
     {
-        const string expectedBirthDate = "2025-19-11";
-        var birthDateInput = DateInputs.Nth(1);
-
         await DatePickerIcons.Nth(1).ClickAsync();
         await CalendarYearSelector.ClickAsync();
         await CalendarMenu.GetByText("2025", new() { Exact = true }).ClickAsync();
@@ -66,13 +67,22 @@ public class PersonalDetailsPage : BasePage
         await CalendarMenu.GetByText("November", new() { Exact = true }).ClickAsync();
 
         await CalendarDates.GetByText("19", new() { Exact = true }).ClickAsync();
+    }
 
+    public async Task ExpectBirthDateAsync()
+    {
+        const string expectedBirthDate = "2025-19-11";
+        var birthDateInput = DateInputs.Nth(1);
         await Expect(birthDateInput).ToHaveValueAsync(expectedBirthDate);
     }
 
     public async Task SavePersonalDetailsAsync()
     {
         await SaveButtons.First.ClickAsync();
+    }
+
+    public async Task ExpectPersonalDetailsUpdatedAsync()
+    {
         await SuccessfullyUpdatedText.WaitForAsync();
     }
 
@@ -89,6 +99,10 @@ public class PersonalDetailsPage : BasePage
         await FillAndExpectValueAsync(CommentInput, comment);
 
         await SaveButtons.Nth(2).ClickAsync();
+    }
+
+    public async Task ExpectAttachmentSavedAsync()
+    {
         await SuccessfullySavedText.WaitForAsync();
     }
 }

@@ -29,11 +29,13 @@ public sealed class MainPageTests : UiBaseTest
     {
         var mainPage = new MainPage(Page);
         await mainPage.LogoutAsync();
-        bool isLoaded = await mainPage.IsLoadedAsync();
+
+        var loginPage = new LoginPage(Page);
+        bool isLoaded = await loginPage.IsLoadedAsync();
 
         Assert.Multiple(() =>
         {
-            Assert.That(mainPage.CurrentUrl, Does.StartWith(ConfigurationReader.Current.BaseUrl));
+            Assert.That(Page.Url, Does.Contain("/web/index.php/auth/login"));
             Assert.That(isLoaded, Is.True);
         });
     }

@@ -27,5 +27,6 @@ public class AdminCorporateBrandingTests : AdminTest
         await adminCorporateBrandingPage.ChooseColorAsync();
         await adminCorporateBrandingPage.ChooseClientLogoAsync(filePath);
         await adminCorporateBrandingPage.ClickPublishAsync();
+        await adminCorporateBrandingPage.ExpectSuccessfullySavedAsync();
     }
 }

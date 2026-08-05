@@ -17,7 +17,7 @@ public class UserPermissionTests : UserTest
         await loginPage.LoginAsync(ConfigurationReader.Current.User.Username, ConfigurationReader.Current.User.Password);
 
         var mainPage = new MainPage(Page);
-        await mainPage.IsLoadedAsync();
+        Assert.That(await mainPage.IsLoadedAsync(), Is.True);
 
         var currentUrl = Page.Url;
 

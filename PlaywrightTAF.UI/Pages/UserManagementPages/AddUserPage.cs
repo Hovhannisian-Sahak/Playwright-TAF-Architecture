@@ -1,5 +1,4 @@
 using Microsoft.Playwright;
-using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightTAF.UI.Pages;
 
@@ -21,7 +20,7 @@ public class AddUserPage : UserManagementPageBase
     {
         await OpenUserManagementAsync();
         await AddButton.ClickAsync();
-        await Expect(AddUserHeading).ToBeVisibleAsync();
+        await WaitUntilVisibleAsync(AddUserHeading);
     }
 
     public override Task<bool> IsLoadedAsync()

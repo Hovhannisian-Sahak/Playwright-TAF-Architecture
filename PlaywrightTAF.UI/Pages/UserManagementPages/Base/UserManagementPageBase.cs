@@ -35,7 +35,7 @@ public abstract class UserManagementPageBase : BasePage
     protected async Task OpenUserManagementAsync()
     {
         await AdminMenuLink.ClickAsync();
-        await Expect(SearchFilter).ToBeVisibleAsync();
+        await WaitUntilVisibleAsync(SearchFilter);
     }
 
     public override Task<bool> IsLoadedAsync()
