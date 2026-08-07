@@ -137,7 +137,8 @@ public abstract class UiBaseTest
     {
         return new BrowserNewContextOptions
         {
-            BaseURL = Configuration.BaseUrl
+            BaseURL = Configuration.BaseUrl,
+            AcceptDownloads = true
         };
     }
 
