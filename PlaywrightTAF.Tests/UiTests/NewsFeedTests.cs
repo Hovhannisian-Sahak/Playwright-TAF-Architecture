@@ -7,19 +7,14 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class NewsFeedTests : AdminTest
 {
-    private readonly MostLikedPostsPage mostLikedPostsPage;
-
-    public NewsFeedTests()
-    {
-        mostLikedPostsPage = PageObject<MostLikedPostsPage>();
-    }
+    private MostLikedPostsPage MostLikedPostsPage => PageObject<MostLikedPostsPage>();
 
     [Test]
     [Category("UI")]
     public async Task AdminCanViewMostLikedPosts()
     {
-        await mostLikedPostsPage.OpenAsync();
-        var isCorrectlySorted = await mostLikedPostsPage.GetMostLikedPostsAsync();
+        await MostLikedPostsPage.OpenAsync();
+        var isCorrectlySorted = await MostLikedPostsPage.GetMostLikedPostsAsync();
         Assert.That(isCorrectlySorted, Is.True, "The posts are not sorted by most liked.");
     }
 }

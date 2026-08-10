@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
-using static Microsoft.Playwright.Assertions;
 using PlaywrightTAF.Core.Configuration;
+using PlaywrightTAF.UI.Components;
 using PlaywrightTAF.UI.Pages;
 using PlaywrightTAF.UI.Pages.AdminPages.Base;
 
@@ -9,6 +9,7 @@ namespace PlaywrightTAF.UI.Pages.AdminPages;
 public class AdminCorporateBrandingPage : BasePageAdmin
 {
     private const string CorporateBrandingPath = "/web/index.php/admin/addTheme";
+    private readonly ToastMessage _toastMessage;
 
     private ILocator CorporateBrandingHeader => Page.GetByRole(AriaRole.Heading, new() { Name = "Corporate Branding" });
 
@@ -21,7 +22,6 @@ public class AdminCorporateBrandingPage : BasePageAdmin
 
     private ILocator PublishButton => Page.GetByRole(AriaRole.Button, new() { Name = "Publish" });
     private ILocator ResetToDefaultButton => Page.GetByRole(AriaRole.Button, new() { Name = "Reset to Default" });
-    private ILocator SuccessfullySavedText => Page.GetByText("Successfully Saved", new() { Exact = true });
     private ILocator FileButton => Page.Locator(".oxd-file-button").Nth(0);
     private ILocator FileInput => Page.Locator(".oxd-file-input-div").Nth(0);
 
@@ -32,8 +32,9 @@ public class AdminCorporateBrandingPage : BasePageAdmin
         return await CorporateBrandingHeader.IsVisibleAsync();
     }
 
-    public AdminCorporateBrandingPage(IPage page) : base(page)
+    public AdminCorporateBrandingPage(IPage page, ToastMessage toastMessage) : base(page)
     {
+        _toastMessage = toastMessage;
     }
 
     public async Task ChooseColorAsync()
@@ -72,11 +73,7 @@ public class AdminCorporateBrandingPage : BasePageAdmin
 
     public async Task ExpectSuccessfullySavedAsync()
     {
-        await Expect(SuccessfullySavedText).ToBeVisibleAsync(new()
-        {
-            Timeout = ConfigurationReader.Current.DefaultTimeoutMilliseconds
-        });
-
+        await _toastMessage.WaitForSavedAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

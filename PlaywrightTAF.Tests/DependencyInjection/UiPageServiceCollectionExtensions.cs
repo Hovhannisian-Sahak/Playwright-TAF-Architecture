@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PlaywrightTAF.UI.Components;
 using PlaywrightTAF.UI.Pages;
 using PlaywrightTAF.UI.Pages.AdminPages;
 using PlaywrightTAF.UI.Pages.AdminPages.Base;
@@ -16,6 +17,7 @@ internal static class UiPageServiceCollectionExtensions
         services.AddTransient<MainPage>();
         services.AddTransient<DashboardPage>();
         services.AddTransient<Dropdown>();
+        services.AddTransient<ToastMessage>();
 
         services.AddTransient<BasePageAdmin>();
         services.AddTransient<AdminCorporateBrandingPage>();

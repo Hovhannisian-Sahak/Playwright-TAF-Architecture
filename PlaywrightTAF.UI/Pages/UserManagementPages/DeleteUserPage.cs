@@ -1,11 +1,15 @@
 using Microsoft.Playwright;
+using PlaywrightTAF.UI.Components;
 
 namespace PlaywrightTAF.UI.Pages;
 
 public class DeleteUserPage : UserManagementPageBase
 {
-    public DeleteUserPage(IPage page) : base(page)
+    private readonly ToastMessage _toastMessage;
+
+    public DeleteUserPage(IPage page, ToastMessage toastMessage) : base(page)
     {
+        _toastMessage = toastMessage;
     }
 
     private ILocator FirstDeleteButton => Page.Locator(".oxd-table-cell-actions")
@@ -16,15 +20,13 @@ public class DeleteUserPage : UserManagementPageBase
         .Locator("button")
         .Nth(1);
 
-    private ILocator SuccessfullyDeletedText => Page.GetByText("Successfully Deleted", new() { Exact = true });
-
     public async Task DeleteFirstSearchResultAsync()
     {
         await FirstDeleteButton.ClickAsync();
 
         await ConfirmDeleteButton.ClickAsync();
 
-        await SuccessfullyDeletedText.WaitForAsync();
+        await _toastMessage.WaitForDeletedAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

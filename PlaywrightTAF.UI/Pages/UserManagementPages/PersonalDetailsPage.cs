@@ -1,13 +1,17 @@
 using Microsoft.Playwright;
 using PlaywrightTAF.Core.Configuration;
+using PlaywrightTAF.UI.Components;
 using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightTAF.UI.Pages;
 
 public class PersonalDetailsPage : BasePage
 {
-    public PersonalDetailsPage(IPage page) : base(page)
+    private readonly ToastMessage _toastMessage;
+
+    public PersonalDetailsPage(IPage page, ToastMessage toastMessage) : base(page)
     {
+        _toastMessage = toastMessage;
     }
 
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
@@ -23,13 +27,11 @@ public class PersonalDetailsPage : BasePage
     private ILocator CalendarDates => Page.Locator(".oxd-calendar-date");
     private ILocator CalendarMenu => Page.GetByRole(AriaRole.Menu);
     private ILocator SaveButtons => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
-    private ILocator SuccessfullyUpdatedText => Page.GetByText("Successfully Updated", new() { Exact = true });
     private ILocator AddAttachmentButton => Page.GetByRole(AriaRole.Button, new() { Name = "Add" });
     private ILocator AttachmentCard => Page.Locator(".orangehrm-card-container").Nth(2);
     private ILocator FileButton => Page.Locator(".oxd-file-button");
     private ILocator FileInput => Page.Locator(".oxd-file-input-div");
     private ILocator CommentInput => Page.GetByPlaceholder("Type comment here");
-    private ILocator SuccessfullySavedText => Page.GetByText("Successfully Saved", new() { Exact = true });
 
     public async Task OpenPersonalDetailsAsync()
     {
@@ -83,7 +85,7 @@ public class PersonalDetailsPage : BasePage
 
     public async Task ExpectPersonalDetailsUpdatedAsync()
     {
-        await SuccessfullyUpdatedText.WaitForAsync();
+        await _toastMessage.WaitForUpdatedAsync();
     }
 
     public async Task OpenAttachmentFormAsync()
@@ -103,6 +105,6 @@ public class PersonalDetailsPage : BasePage
 
     public async Task ExpectAttachmentSavedAsync()
     {
-        await SuccessfullySavedText.WaitForAsync();
+        await _toastMessage.WaitForSavedAsync();
     }
 }

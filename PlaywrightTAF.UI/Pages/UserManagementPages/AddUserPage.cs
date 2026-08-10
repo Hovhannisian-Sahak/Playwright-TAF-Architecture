@@ -1,11 +1,15 @@
 using Microsoft.Playwright;
+using PlaywrightTAF.UI.Components;
 
 namespace PlaywrightTAF.UI.Pages;
 
 public class AddUserPage : UserManagementPageBase
 {
-    public AddUserPage(IPage page) : base(page)
+    private readonly ToastMessage _toastMessage;
+
+    public AddUserPage(IPage page, ToastMessage toastMessage) : base(page)
     {
+        _toastMessage = toastMessage;
     }
 
     private ILocator AddButton => Page.GetByRole(AriaRole.Button, new() { Name = " Add " });
@@ -14,7 +18,6 @@ public class AddUserPage : UserManagementPageBase
     private ILocator EmployeeNameInput => Page.Locator("input[placeholder='Type for hints...']");
     private ILocator EmployeeOptions => Page.Locator(".oxd-autocomplete-option");
     private ILocator SaveButton => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
-    private ILocator SuccessText => Page.GetByText("Success", new() { Exact = true });
 
     public async Task OpenAddUserFormAsync()
     {
@@ -39,7 +42,7 @@ public class AddUserPage : UserManagementPageBase
         await FillAndExpectValueAsync(ConfirmPasswordInput, password);
         await SaveButton.ClickAsync();
 
-        await SuccessText.WaitForAsync();
+        await _toastMessage.WaitForSuccessAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 

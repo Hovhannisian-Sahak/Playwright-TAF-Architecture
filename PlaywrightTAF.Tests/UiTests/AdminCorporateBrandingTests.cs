@@ -8,12 +8,7 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class AdminCorporateBrandingTests : AdminTest
 {
-    private readonly AdminCorporateBrandingPage adminCorporateBrandingPage;
-
-    public AdminCorporateBrandingTests()
-    {
-        adminCorporateBrandingPage = PageObject<AdminCorporateBrandingPage>();
-    }
+    private AdminCorporateBrandingPage AdminCorporateBrandingPage => PageObject<AdminCorporateBrandingPage>();
 
     [Test]
     [Category("UI")]
@@ -21,12 +16,12 @@ public class AdminCorporateBrandingTests : AdminTest
     {
         string filePath = TestDataFactory.UploadFilePath();
 
-        await adminCorporateBrandingPage.OpenAdminPageAsync();
-        await adminCorporateBrandingPage.ClickToOpenCorporateBrandingAsync();
-        await adminCorporateBrandingPage.ResetToDefaultAsync();
-        await adminCorporateBrandingPage.ChooseColorAsync();
-        await adminCorporateBrandingPage.ChooseClientLogoAsync(filePath);
-        await adminCorporateBrandingPage.ClickPublishAsync();
-        await adminCorporateBrandingPage.ExpectSuccessfullySavedAsync();
+        await AdminCorporateBrandingPage.OpenAdminPageAsync();
+        await AdminCorporateBrandingPage.ClickToOpenCorporateBrandingAsync();
+        await AdminCorporateBrandingPage.ResetToDefaultAsync();
+        await AdminCorporateBrandingPage.ChooseColorAsync();
+        await AdminCorporateBrandingPage.ChooseClientLogoAsync(filePath);
+        await AdminCorporateBrandingPage.ClickPublishAsync();
+        await AdminCorporateBrandingPage.ExpectSuccessfullySavedAsync();
     }
 }

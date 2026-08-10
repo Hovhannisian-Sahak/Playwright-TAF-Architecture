@@ -12,18 +12,10 @@ public class UserManagementTests : AdminTest
     private const string UserPassword = "TestUser123!@#Aa";
     private const string ChangePassword = "TestUser123!@#Aab";
 
-    private readonly AddUserPage addUserPage;
-    private readonly DeleteUserPage deleteUserPage;
-    private readonly EditUserPage editUserPage;
-    private readonly PersonalDetailsPage personalDetailsPage;
-
-    public UserManagementTests()
-    {
-        addUserPage = PageObject<AddUserPage>();
-        deleteUserPage = PageObject<DeleteUserPage>();
-        editUserPage = PageObject<EditUserPage>();
-        personalDetailsPage = PageObject<PersonalDetailsPage>();
-    }
+    private AddUserPage AddUserPage => PageObject<AddUserPage>();
+    private DeleteUserPage DeleteUserPage => PageObject<DeleteUserPage>();
+    private EditUserPage EditUserPage => PageObject<EditUserPage>();
+    private PersonalDetailsPage PersonalDetailsPage => PageObject<PersonalDetailsPage>();
 
     [Test]
     [Category("UI")]
@@ -33,9 +25,9 @@ public class UserManagementTests : AdminTest
 
         await CreateAdminUserAndSearchAsync(newUsername);
 
-        await addUserPage.ExpectUserExistsAsync(newUsername);
+        await AddUserPage.ExpectUserExistsAsync(newUsername);
 
-        await deleteUserPage.DeleteFirstSearchResultAsync();
+        await DeleteUserPage.DeleteFirstSearchResultAsync();
     }
 
     [Test]
@@ -44,16 +36,16 @@ public class UserManagementTests : AdminTest
     {
         var newUsername = TestDataFactory.UniqueUsername("Adminn");
 
-        await addUserPage.OpenAddUserFormAsync();
-        await addUserPage.CreateAdminUserAsync(newUsername, EmployeeName, UserPassword);
-        await deleteUserPage.SearchUserAsync(newUsername);
+        await AddUserPage.OpenAddUserFormAsync();
+        await AddUserPage.CreateAdminUserAsync(newUsername, EmployeeName, UserPassword);
+        await DeleteUserPage.SearchUserAsync(newUsername);
 
-        await deleteUserPage.ExpectUserExistsAsync(newUsername);
+        await DeleteUserPage.ExpectUserExistsAsync(newUsername);
 
-        await deleteUserPage.DeleteFirstSearchResultAsync();
-        await deleteUserPage.SearchUserAsync(newUsername);
+        await DeleteUserPage.DeleteFirstSearchResultAsync();
+        await DeleteUserPage.SearchUserAsync(newUsername);
 
-        await deleteUserPage.ExpectUserDoesNotExistAsync(newUsername);
+        await DeleteUserPage.ExpectUserDoesNotExistAsync(newUsername);
     }
 
     [Test]
@@ -65,13 +57,13 @@ public class UserManagementTests : AdminTest
 
         await CreateAdminUserAndSearchAsync(newUsername);
 
-        await editUserPage.ExpectUserExistsAsync(newUsername);
+        await EditUserPage.ExpectUserExistsAsync(newUsername);
 
-        await editUserPage.EditFirstSearchResultAsync(changedUsername, ChangePassword);
-        await editUserPage.SearchUserAsync(changedUsername);
+        await EditUserPage.EditFirstSearchResultAsync(changedUsername, ChangePassword);
+        await EditUserPage.SearchUserAsync(changedUsername);
 
-        await editUserPage.ExpectUserExistsAsync(changedUsername);
-        await deleteUserPage.DeleteFirstSearchResultAsync();
+        await EditUserPage.ExpectUserExistsAsync(changedUsername);
+        await DeleteUserPage.DeleteFirstSearchResultAsync();
     }
 
     [Test]
@@ -81,23 +73,23 @@ public class UserManagementTests : AdminTest
         var lastName = TestDataFactory.UniqueUsername("Admin");
         string filePath = TestDataFactory.UploadFilePath();
 
-        await personalDetailsPage.OpenPersonalDetailsAsync();
-        await personalDetailsPage.FillLastNameAsync(lastName);
-        await personalDetailsPage.SelectNationalityAsync("Armenian");
-        await personalDetailsPage.ExpectNationalityAsync("Armenian");
-        await personalDetailsPage.SetBirthDateAsync();
-        await personalDetailsPage.ExpectBirthDateAsync();
-        await personalDetailsPage.SavePersonalDetailsAsync();
-        await personalDetailsPage.ExpectPersonalDetailsUpdatedAsync();
-        await personalDetailsPage.OpenAttachmentFormAsync();
-        await personalDetailsPage.UploadFileAndMakeCommentAsync(filePath, "Test");
-        await personalDetailsPage.ExpectAttachmentSavedAsync();
+        await PersonalDetailsPage.OpenPersonalDetailsAsync();
+        await PersonalDetailsPage.FillLastNameAsync(lastName);
+        await PersonalDetailsPage.SelectNationalityAsync("Armenian");
+        await PersonalDetailsPage.ExpectNationalityAsync("Armenian");
+        await PersonalDetailsPage.SetBirthDateAsync();
+        await PersonalDetailsPage.ExpectBirthDateAsync();
+        await PersonalDetailsPage.SavePersonalDetailsAsync();
+        await PersonalDetailsPage.ExpectPersonalDetailsUpdatedAsync();
+        await PersonalDetailsPage.OpenAttachmentFormAsync();
+        await PersonalDetailsPage.UploadFileAndMakeCommentAsync(filePath, "Test");
+        await PersonalDetailsPage.ExpectAttachmentSavedAsync();
     }
 
     private async Task CreateAdminUserAndSearchAsync(string username)
     {
-        await addUserPage.OpenAddUserFormAsync();
-        await addUserPage.CreateAdminUserAsync(username, EmployeeName, UserPassword);
-        await addUserPage.SearchUserAsync(username);
+        await AddUserPage.OpenAddUserFormAsync();
+        await AddUserPage.CreateAdminUserAsync(username, EmployeeName, UserPassword);
+        await AddUserPage.SearchUserAsync(username);
     }
 }

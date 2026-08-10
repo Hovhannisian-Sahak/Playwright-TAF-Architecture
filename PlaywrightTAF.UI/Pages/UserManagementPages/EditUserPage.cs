@@ -1,11 +1,15 @@
 using Microsoft.Playwright;
+using PlaywrightTAF.UI.Components;
 
 namespace PlaywrightTAF.UI.Pages;
 
 public class EditUserPage : UserManagementPageBase
 {
-    public EditUserPage(IPage page) : base(page)
+    private readonly ToastMessage _toastMessage;
+
+    public EditUserPage(IPage page, ToastMessage toastMessage) : base(page)
     {
+        _toastMessage = toastMessage;
     }
 
     private ILocator FirstEditButton => Page.Locator(".oxd-table-cell-actions")
@@ -15,7 +19,6 @@ public class EditUserPage : UserManagementPageBase
     private ILocator ChangePasswordCheckbox => Page.Locator(".oxd-checkbox-input");
     private ILocator PasswordRow => Page.Locator(".user-password-row");
     private ILocator SaveButton => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
-    private ILocator SuccessfullyUpdatedText => Page.GetByText("Successfully Updated", new() { Exact = true });
 
     public async Task EditFirstSearchResultAsync(string changedUsername, string changedPassword)
     {
@@ -32,7 +35,7 @@ public class EditUserPage : UserManagementPageBase
 
         await SaveButton.ClickAsync();
 
-        await SuccessfullyUpdatedText.WaitForAsync();
+        await _toastMessage.WaitForUpdatedAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

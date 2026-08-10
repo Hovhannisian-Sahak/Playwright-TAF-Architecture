@@ -8,25 +8,19 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public sealed class MainPageTests : UiBaseTest
 {
-    private readonly LoginPage loginPage;
-    private readonly MainPage mainPage;
-
-    public MainPageTests()
-    {
-        loginPage = PageObject<LoginPage>();
-        mainPage = PageObject<MainPage>();
-    }
+    private LoginPage LoginPage => PageObject<LoginPage>();
+    private MainPage MainPage => PageObject<MainPage>();
 
     [Test]
     [Category("UI")]
     public async Task MainPageShouldOpen()
     {
-        await mainPage.OpenAsync();
-        bool isLoaded = await mainPage.IsLoadedAsync();
+        await MainPage.OpenAsync();
+        bool isLoaded = await MainPage.IsLoadedAsync();
 
         Assert.Multiple(() =>
         {
-            Assert.That(mainPage.CurrentUrl, Does.StartWith(ConfigurationReader.Current.BaseUrl));
+            Assert.That(MainPage.CurrentUrl, Does.StartWith(ConfigurationReader.Current.BaseUrl));
             Assert.That(isLoaded, Is.True);
         });
     }
@@ -35,13 +29,13 @@ public sealed class MainPageTests : UiBaseTest
     [Category("UI")]
     public async Task MainPageShouldLogout()
     {
-        await mainPage.LogoutAsync();
+        await MainPage.LogoutAsync();
 
-        bool isLoaded = await loginPage.IsLoadedAsync();
+        bool isLoaded = await LoginPage.IsLoadedAsync();
 
         Assert.Multiple(() =>
         {
-            Assert.That(loginPage.CurrentUrl, Does.Contain("/web/index.php/auth/login"));
+            Assert.That(LoginPage.CurrentUrl, Does.Contain("/web/index.php/auth/login"));
             Assert.That(isLoaded, Is.True);
         });
     }

@@ -16,14 +16,8 @@ public sealed class UiPagePerformanceTests : AdminTest
 {
     private const double DefaultMaxPageReadyMs = 30000;
     private const double DefaultMaxBrowserLoadMs = 10000;
-    private readonly AdminCorporateBrandingPage adminCorporateBrandingPage;
-    private readonly DashboardPage dashboardPage;
-
-    public UiPagePerformanceTests()
-    {
-        adminCorporateBrandingPage = PageObject<AdminCorporateBrandingPage>();
-        dashboardPage = PageObject<DashboardPage>();
-    }
+    private AdminCorporateBrandingPage AdminCorporateBrandingPage => PageObject<AdminCorporateBrandingPage>();
+    private DashboardPage DashboardPage => PageObject<DashboardPage>();
 
     [Test]
     [Category("Performance")]
@@ -32,7 +26,7 @@ public sealed class UiPagePerformanceTests : AdminTest
     {
         await AssertPageMeetsPerformanceThresholdsAsync(
             "Dashboard",
-            dashboardPage);
+            DashboardPage);
     }
 
     [Test]
@@ -42,7 +36,7 @@ public sealed class UiPagePerformanceTests : AdminTest
     {
         await AssertPageMeetsPerformanceThresholdsAsync(
             "Corporate Branding",
-            adminCorporateBrandingPage);
+            AdminCorporateBrandingPage);
     }
 
     private async Task AssertPageMeetsPerformanceThresholdsAsync(string pageName, BasePage page)
