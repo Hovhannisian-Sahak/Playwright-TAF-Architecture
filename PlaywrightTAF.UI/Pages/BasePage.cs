@@ -91,4 +91,14 @@ public abstract class BasePage
     }
 
     public string CurrentUrl => Page.Url;
+
+    public Task<T> EvaluateAsync<T>(string expression)
+    {
+        return Page.EvaluateAsync<T>(expression);
+    }
+
+    public Task EvaluateAsync(string expression)
+    {
+        return Page.EvaluateAsync(expression);
+    }
 }

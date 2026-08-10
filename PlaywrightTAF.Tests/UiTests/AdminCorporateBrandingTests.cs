@@ -8,11 +8,11 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class AdminCorporateBrandingTests : AdminTest
 {
-    private AdminCorporateBrandingPage adminCorporateBrandingPage = null!;
-    [SetUp]
-    public void Setup()
+    private readonly AdminCorporateBrandingPage adminCorporateBrandingPage;
+
+    public AdminCorporateBrandingTests()
     {
-        adminCorporateBrandingPage = new AdminCorporateBrandingPage(Page);
+        adminCorporateBrandingPage = PageObject<AdminCorporateBrandingPage>();
     }
 
     [Test]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Playwright;
 using PlaywrightTAF.Core.Configuration;
+using PlaywrightTAF.UI.Pages;
 
 namespace PlaywrightTAF.UI.Pages.AdminPages.Base;
 

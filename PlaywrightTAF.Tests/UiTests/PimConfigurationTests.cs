@@ -8,15 +8,22 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class PimConfigurationTests : AdminTest
 {
+    private readonly DataImportPage dataImportPage;
+    private readonly PimConfigurationBasePage pimConfigurationPage;
+
+    public PimConfigurationTests()
+    {
+        dataImportPage = PageObject<DataImportPage>();
+        pimConfigurationPage = PageObject<PimConfigurationBasePage>();
+    }
+
     [Test]
     [Category("UI")]
     public async Task AdminCanOpenDataImportPage()
     {
-        var pimConfigurationPage = new PimConfigurationBasePage(Page);
         await pimConfigurationPage.WaitAndClickPimButton();
         await pimConfigurationPage.WaitAndClickConfigurationButton();
         await pimConfigurationPage.WaitAndClickDataImportButton();
-        var dataImportPage = new DataImportPage(Page);
         Assert.That(await dataImportPage.IsLoadedAsync(), Is.True);
     }
     
@@ -24,7 +31,6 @@ public class PimConfigurationTests : AdminTest
     [Category("UI")]
     public async Task AdminCanOpenDataImportPageDirectly()
     {
-        var dataImportPage = new DataImportPage(Page);
         await dataImportPage.OpenAsync();
         Assert.That(await dataImportPage.IsLoadedAsync(), Is.True);
     }
@@ -33,7 +39,6 @@ public class PimConfigurationTests : AdminTest
     [Category("UI")]
     public async Task AdminCanDownloadFile()
     {
-        var dataImportPage = new DataImportPage(Page);
         await dataImportPage.OpenAsync();
         await dataImportPage.DownloadDataImportFile();
         Assert.That(await dataImportPage.IsLoadedAsync(), Is.True);

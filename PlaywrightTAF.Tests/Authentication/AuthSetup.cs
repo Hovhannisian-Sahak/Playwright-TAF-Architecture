@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 using PlaywrightTAF.Core.Authentication;
 using PlaywrightTAF.Core.Configuration;
+using PlaywrightTAF.Tests.DependencyInjection;
 using PlaywrightTAF.UI.Pages;
 
 namespace PlaywrightTAF.Tests.Authentication;
@@ -46,7 +48,12 @@ public static class AuthSetup
                 Timeout = configuration.DefaultTimeoutMilliseconds * 2
             });
 
-        var loginPage = new LoginPage(page);
+        using var services = new ServiceCollection()
+            .AddSingleton(page)
+            .AddUiPageObjects()
+            .BuildServiceProvider();
+
+        var loginPage = services.GetRequiredService<LoginPage>();
 
         await loginPage.LoginAsync(credentials.Username, credentials.Password);
 

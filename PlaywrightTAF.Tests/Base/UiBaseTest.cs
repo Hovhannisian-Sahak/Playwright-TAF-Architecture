@@ -3,11 +3,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Allure.Net.Commons;
 using Allure.NUnit;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 using NUnit.Framework;
 using PlaywrightTAF.Core.Authentication;
 using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.Core.Logging;
+using PlaywrightTAF.Tests.DependencyInjection;
 using PlaywrightTAF.UI.Pages;
 using Serilog;
 
@@ -23,6 +25,7 @@ public abstract class UiBaseTest
     protected IBrowserContext Context = null!;
     protected IPage Page = null!;
     protected AppConfiguration Configuration = null!;
+    protected IServiceProvider Services = null!;
 
     protected virtual bool ShouldLoginThroughUi { get; } = true;
 
@@ -48,6 +51,7 @@ public abstract class UiBaseTest
         Browser = await LaunchBrowserAsync();
         Context = await Browser.NewContextAsync(CreateContextOptions());
         Page = await CreatePageAsync(Context);
+        Services = CreateServices(Page);
 
         await NavigateToInitialUrlAsync();
 
@@ -120,6 +124,11 @@ public abstract class UiBaseTest
     [OneTimeTearDown]
     public virtual async Task OneTimeTearDownAsync()
     {
+        if (Services is IDisposable disposableServices)
+        {
+            disposableServices.Dispose();
+        }
+
         if (Context is not null)
         {
             await Context.CloseAsync();
@@ -168,6 +177,20 @@ public abstract class UiBaseTest
         return page;
     }
 
+    protected virtual IServiceProvider CreateServices(IPage page)
+    {
+        return new ServiceCollection()
+            .AddSingleton(page)
+            .AddUiPageObjects()
+            .BuildServiceProvider();
+    }
+
+    protected TPage PageObject<TPage>()
+        where TPage : notnull
+    {
+        return Services.GetRequiredService<TPage>();
+    }
+
     protected virtual async Task NavigateToInitialUrlAsync()
     {
         await Page.GotoAsync(
@@ -183,7 +206,7 @@ public abstract class UiBaseTest
 
     protected virtual async Task LoginThroughUiAsync()
     {
-        var loginPage = new LoginPage(Page);
+        var loginPage = PageObject<LoginPage>();
         await loginPage.OpenLoginPageAsync();
         await loginPage.LoginAsync(UiCredentials.Username, UiCredentials.Password);
 
@@ -191,7 +214,7 @@ public abstract class UiBaseTest
 
     protected virtual async Task LogoutThroughUiAsync()
     {
-        var mainPage = new MainPage(Page);
+        var mainPage = PageObject<MainPage>();
 
         if (!await mainPage.IsLoadedAsync())
         {

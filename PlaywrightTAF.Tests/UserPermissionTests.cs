@@ -8,18 +8,25 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class UserPermissionTests : UserTest
 {
+    private readonly LoginPage loginPage;
+    private readonly MainPage mainPage;
+
+    public UserPermissionTests()
+    {
+        loginPage = PageObject<LoginPage>();
+        mainPage = PageObject<MainPage>();
+    }
+
     [Test]
     public async Task User_Should_Not_Access_Admin_Page()
     {
-        var loginPage = new LoginPage(Page);
         await loginPage.OpenLoginPageAsync();
 
         await loginPage.LoginAsync(ConfigurationReader.Current.User.Username, ConfigurationReader.Current.User.Password);
 
-        var mainPage = new MainPage(Page);
         Assert.That(await mainPage.IsLoadedAsync(), Is.True);
 
-        var currentUrl = Page.Url;
+        var currentUrl = mainPage.CurrentUrl;
 
         Assert.That(currentUrl, Does.Not.Contain("/admin"));
     }

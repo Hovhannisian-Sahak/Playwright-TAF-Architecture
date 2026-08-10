@@ -16,6 +16,14 @@ public sealed class UiPagePerformanceTests : AdminTest
 {
     private const double DefaultMaxPageReadyMs = 30000;
     private const double DefaultMaxBrowserLoadMs = 10000;
+    private readonly AdminCorporateBrandingPage adminCorporateBrandingPage;
+    private readonly DashboardPage dashboardPage;
+
+    public UiPagePerformanceTests()
+    {
+        adminCorporateBrandingPage = PageObject<AdminCorporateBrandingPage>();
+        dashboardPage = PageObject<DashboardPage>();
+    }
 
     [Test]
     [Category("Performance")]
@@ -24,7 +32,7 @@ public sealed class UiPagePerformanceTests : AdminTest
     {
         await AssertPageMeetsPerformanceThresholdsAsync(
             "Dashboard",
-            new DashboardPage(Page));
+            dashboardPage);
     }
 
     [Test]
@@ -34,7 +42,7 @@ public sealed class UiPagePerformanceTests : AdminTest
     {
         await AssertPageMeetsPerformanceThresholdsAsync(
             "Corporate Branding",
-            new AdminCorporateBrandingPage(Page));
+            adminCorporateBrandingPage);
     }
 
     private async Task AssertPageMeetsPerformanceThresholdsAsync(string pageName, BasePage page)
@@ -60,7 +68,7 @@ public sealed class UiPagePerformanceTests : AdminTest
 
     private async Task<UiPagePerformanceResult> MeasurePageAsync(string pageName, BasePage page)
     {
-        await Page.EvaluateAsync("() => performance.clearResourceTimings()");
+        await page.EvaluateAsync("() => performance.clearResourceTimings()");
 
         var stopwatch = Stopwatch.StartNew();
         await page.OpenAsync();
@@ -69,7 +77,7 @@ public sealed class UiPagePerformanceTests : AdminTest
 
         Assert.That(isLoaded, Is.True, $"{pageName} did not reach its loaded state.");
 
-        var navigationTiming = await Page.EvaluateAsync<NavigationTiming>(
+        var navigationTiming = await page.EvaluateAsync<NavigationTiming>(
             """
             () => {
                 const navigation = performance.getEntriesByType('navigation').at(-1);

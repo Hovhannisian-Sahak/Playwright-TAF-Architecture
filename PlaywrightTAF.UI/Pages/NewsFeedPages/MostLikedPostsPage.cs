@@ -1,21 +1,23 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using NUnit.Framework;
+using PlaywrightTAF.UI.Pages;
 using PlaywrightTAF.UI.Pages.NewsFeedPages.Base;
 
 namespace PlaywrightTAF.UI.Pages.NewsFeedPages;
 
 public class MostLikedPostsPage : NewsFeedBasePage
 {
-    private NewsFeedBasePage NewsFeedBasePage => new(Page);
+    private readonly NewsFeedBasePage newsFeedBasePage;
     private ILocator LikeCounts => Page.GetByText("Likes");
-    public MostLikedPostsPage(IPage page) : base(page)
+    public MostLikedPostsPage(IPage page, NewsFeedBasePage newsFeedBasePage) : base(page)
     {
+        this.newsFeedBasePage = newsFeedBasePage;
     }
 
     public async Task<bool> GetMostLikedPostsAsync()
     {
-        await NewsFeedBasePage.ClickMostLikedPostsButtonAsync();
+        await newsFeedBasePage.ClickMostLikedPostsButtonAsync();
 
         var likeTexts = await LikeCounts.AllTextContentsAsync();
 

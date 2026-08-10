@@ -12,18 +12,17 @@ public class UserManagementTests : AdminTest
     private const string UserPassword = "TestUser123!@#Aa";
     private const string ChangePassword = "TestUser123!@#Aab";
 
-    private AddUserPage addUserPage = null!;
-    private DeleteUserPage deleteUserPage = null!;
-    private EditUserPage editUserPage = null!;
-    private PersonalDetailsPage personalDetailsPage = null!;
+    private readonly AddUserPage addUserPage;
+    private readonly DeleteUserPage deleteUserPage;
+    private readonly EditUserPage editUserPage;
+    private readonly PersonalDetailsPage personalDetailsPage;
 
-    [SetUp]
-    public void SetUpPages()
+    public UserManagementTests()
     {
-        addUserPage = new AddUserPage(Page);
-        deleteUserPage = new DeleteUserPage(Page);
-        editUserPage = new EditUserPage(Page);
-        personalDetailsPage = new PersonalDetailsPage(Page);
+        addUserPage = PageObject<AddUserPage>();
+        deleteUserPage = PageObject<DeleteUserPage>();
+        editUserPage = PageObject<EditUserPage>();
+        personalDetailsPage = PageObject<PersonalDetailsPage>();
     }
 
     [Test]

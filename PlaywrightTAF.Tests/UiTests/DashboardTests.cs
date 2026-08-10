@@ -10,12 +10,17 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class DashboardTests : AdminTest
 {
+    private readonly DashboardPage dashboardPage;
+
+    public DashboardTests()
+    {
+        dashboardPage = PageObject<DashboardPage>();
+    }
+
     [Test]
     [Category("UI")]
     public async Task AdminCanOpenDashboard()
     {
-        var dashboardPage = new DashboardPage(Page);
-
         Assert.That(await dashboardPage.IsLoadedAsync(), Is.True);
     }
     
@@ -23,8 +28,6 @@ public class DashboardTests : AdminTest
     [Category("UI")]
     public async Task AdminCanClickToOpenOrangeCom()
     {
-        var dashboardPage = new DashboardPage(Page);
-
         var orangeComPage = await dashboardPage.OpenOrangeComAsync();
 
         await orangeComPage.CloseAsync();
