@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Core.Models;
@@ -13,7 +12,11 @@ public class ArticleApiTests : BaseApiTest
     [Category("API")]
     public async Task CreateArticle_ShouldReturnCreatedArticle()
     {
-        var article = ArticleTestData.Create();
+        var article = ArticleTestDataBuilder
+            .New()
+            .WithTitlePrefix("Created API Article")
+            .WithTags("taf", "API", "create")
+            .Build();
         string? createdSlug = null;
 
         try
@@ -66,27 +69,30 @@ public class ArticleApiTests : BaseApiTest
 
         try
         {
-            string updatedTitle = $"Updated {createdArticle.title}";
-            string updatedDescription = "Article updated by API automation.";
-            string updatedBody = "Updated article body.";
-            var updatedTags = new List<string> { "taf", "API", "Updated" };
+            var updatedArticleData = ArticleTestDataBuilder
+                .New()
+                .WithTitle($"Updated {createdArticle.title}")
+                .WithDescription("Article updated by API automation.")
+                .WithBody("Updated article body.")
+                .WithTags("taf", "API", "Updated")
+                .Build();
 
             var updatedArticle = await ArticleService.UpdateArticle(
                 currentSlug,
-                updatedTitle,
-                updatedDescription,
-                updatedBody,
-                updatedTags);
+                updatedArticleData.Title,
+                updatedArticleData.Description,
+                updatedArticleData.Body,
+                updatedArticleData.Tags);
             currentSlug = updatedArticle.slug;
 
             Assert.Multiple(() =>
             {
                 Assert.That(updatedArticle.slug, Is.Not.Empty);
                 Assert.That(updatedArticle.slug, Is.Not.EqualTo(createdArticle.slug));
-                Assert.That(updatedArticle.title, Is.EqualTo(updatedTitle));
-                Assert.That(updatedArticle.description, Is.EqualTo(updatedDescription));
-                Assert.That(updatedArticle.body, Is.EqualTo(updatedBody));
-                Assert.That(updatedArticle.tagList, Is.EquivalentTo(updatedTags));
+                Assert.That(updatedArticle.title, Is.EqualTo(updatedArticleData.Title));
+                Assert.That(updatedArticle.description, Is.EqualTo(updatedArticleData.Description));
+                Assert.That(updatedArticle.body, Is.EqualTo(updatedArticleData.Body));
+                Assert.That(updatedArticle.tagList, Is.EquivalentTo(updatedArticleData.Tags));
             });
         }
         finally
@@ -156,7 +162,7 @@ public class ArticleApiTests : BaseApiTest
 
     private Task<ArticleData> CreateTestArticle()
     {
-        return CreateArticleAsync(ArticleTestData.Create());
+        return CreateArticleAsync(ArticleTestDataBuilder.New().Build());
     }
 
     private Task<ArticleData> CreateArticleAsync(ArticleTestData article)
