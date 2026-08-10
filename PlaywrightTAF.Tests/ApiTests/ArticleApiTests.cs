@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Core.Models;
+using PlaywrightTAF.Tests.Assertions;
 using PlaywrightTAF.Tests.Base;
 using PlaywrightTAF.Tests.TestData;
 
@@ -20,7 +21,7 @@ public class ArticleApiTests : BaseApiTest
 
         var createdArticle = await CreateArticleAsync(article);
 
-        AssertArticleMatches(createdArticle, article);
+        ArticleAssertions.ShouldMatch(createdArticle, article);
     }
 
     [Test]
@@ -31,13 +32,7 @@ public class ArticleApiTests : BaseApiTest
 
         var fetchedArticle = await ArticleService.GetArticle(createdArticle.slug);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(fetchedArticle.slug, Is.EqualTo(createdArticle.slug));
-            Assert.That(fetchedArticle.title, Is.EqualTo(createdArticle.title));
-            Assert.That(fetchedArticle.description, Is.EqualTo(createdArticle.description));
-            Assert.That(fetchedArticle.body, Is.EqualTo(createdArticle.body));
-        });
+        ArticleAssertions.ShouldMatchCreatedArticle(fetchedArticle, createdArticle);
     }
 
     [Test]
@@ -63,15 +58,7 @@ public class ArticleApiTests : BaseApiTest
         UntrackArticleFromCleanup(createdArticle.slug);
         TrackArticleForCleanup(updatedArticle.slug);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(updatedArticle.slug, Is.Not.Empty);
-            Assert.That(updatedArticle.slug, Is.Not.EqualTo(createdArticle.slug));
-            Assert.That(updatedArticle.title, Is.EqualTo(updatedArticleData.Title));
-            Assert.That(updatedArticle.description, Is.EqualTo(updatedArticleData.Description));
-            Assert.That(updatedArticle.body, Is.EqualTo(updatedArticleData.Body));
-            Assert.That(updatedArticle.tagList, Is.EquivalentTo(updatedArticleData.Tags));
-        });
+        ArticleAssertions.ShouldBeUpdatedFrom(updatedArticle, createdArticle, updatedArticleData);
     }
 
     [Test]
@@ -82,12 +69,7 @@ public class ArticleApiTests : BaseApiTest
 
         var favoritedArticle = await ArticleService.FavoriteArticle(createdArticle.slug);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(favoritedArticle.slug, Is.EqualTo(createdArticle.slug));
-            Assert.That(favoritedArticle.favorited, Is.True);
-            Assert.That(favoritedArticle.favoritesCount, Is.EqualTo(createdArticle.favoritesCount + 1));
-        });
+        ArticleAssertions.ShouldBeFavoritedFrom(favoritedArticle, createdArticle);
     }
 
     [Test]
@@ -99,13 +81,8 @@ public class ArticleApiTests : BaseApiTest
         var favoritedArticle = await ArticleService.FavoriteArticle(createdArticle.slug);
         var unfavoritedArticle = await ArticleService.UnfavoriteArticle(createdArticle.slug);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(favoritedArticle.favorited, Is.True);
-            Assert.That(unfavoritedArticle.slug, Is.EqualTo(createdArticle.slug));
-            Assert.That(unfavoritedArticle.favorited, Is.False);
-            Assert.That(unfavoritedArticle.favoritesCount, Is.EqualTo(favoritedArticle.favoritesCount - 1));
-        });
+        Assert.That(favoritedArticle.favorited, Is.True);
+        ArticleAssertions.ShouldBeUnfavoritedFrom(unfavoritedArticle, favoritedArticle);
     }
 
     [Test]
@@ -135,15 +112,4 @@ public class ArticleApiTests : BaseApiTest
         return createdArticle;
     }
 
-    private static void AssertArticleMatches(ArticleData actual, ArticleTestData expected)
-    {
-        Assert.Multiple(() =>
-        {
-            Assert.That(actual.slug, Is.Not.Empty);
-            Assert.That(actual.title, Is.EqualTo(expected.Title));
-            Assert.That(actual.description, Is.EqualTo(expected.Description));
-            Assert.That(actual.body, Is.EqualTo(expected.Body));
-            Assert.That(actual.tagList, Is.EquivalentTo(expected.Tags));
-        });
-    }
 }
