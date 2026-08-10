@@ -17,22 +17,10 @@ public class ArticleApiTests : BaseApiTest
             .WithTitlePrefix("Created API Article")
             .WithTags("taf", "API", "create")
             .Build();
-        string? createdSlug = null;
 
-        try
-        {
-            var createdArticle = await CreateArticleAsync(article);
-            createdSlug = createdArticle.slug;
+        var createdArticle = await CreateArticleAsync(article);
 
-            AssertArticleMatches(createdArticle, article);
-        }
-        finally
-        {
-            if (!string.IsNullOrWhiteSpace(createdSlug))
-            {
-                await ArticleService.DeleteArticle(createdSlug);
-            }
-        }
+        AssertArticleMatches(createdArticle, article);
     }
 
     [Test]
@@ -40,24 +28,16 @@ public class ArticleApiTests : BaseApiTest
     public async Task GetArticle_ShouldReturnCreatedArticle()
     {
         var createdArticle = await CreateTestArticle();
-        string createdSlug = createdArticle.slug;
 
-        try
-        {
-            var fetchedArticle = await ArticleService.GetArticle(createdSlug);
+        var fetchedArticle = await ArticleService.GetArticle(createdArticle.slug);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(fetchedArticle.slug, Is.EqualTo(createdSlug));
-                Assert.That(fetchedArticle.title, Is.EqualTo(createdArticle.title));
-                Assert.That(fetchedArticle.description, Is.EqualTo(createdArticle.description));
-                Assert.That(fetchedArticle.body, Is.EqualTo(createdArticle.body));
-            });
-        }
-        finally
+        Assert.Multiple(() =>
         {
-            await ArticleService.DeleteArticle(createdSlug);
-        }
+            Assert.That(fetchedArticle.slug, Is.EqualTo(createdArticle.slug));
+            Assert.That(fetchedArticle.title, Is.EqualTo(createdArticle.title));
+            Assert.That(fetchedArticle.description, Is.EqualTo(createdArticle.description));
+            Assert.That(fetchedArticle.body, Is.EqualTo(createdArticle.body));
+        });
     }
 
     [Test]
@@ -65,40 +45,33 @@ public class ArticleApiTests : BaseApiTest
     public async Task UpdateArticle_ShouldReturnUpdatedArticle()
     {
         var createdArticle = await CreateTestArticle();
-        string currentSlug = createdArticle.slug;
 
-        try
+        var updatedArticleData = ArticleTestDataBuilder
+            .New()
+            .WithTitle($"Updated {createdArticle.title}")
+            .WithDescription("Article updated by API automation.")
+            .WithBody("Updated article body.")
+            .WithTags("taf", "API", "Updated")
+            .Build();
+
+        var updatedArticle = await ArticleService.UpdateArticle(
+            createdArticle.slug,
+            updatedArticleData.Title,
+            updatedArticleData.Description,
+            updatedArticleData.Body,
+            updatedArticleData.Tags);
+        UntrackArticleFromCleanup(createdArticle.slug);
+        TrackArticleForCleanup(updatedArticle.slug);
+
+        Assert.Multiple(() =>
         {
-            var updatedArticleData = ArticleTestDataBuilder
-                .New()
-                .WithTitle($"Updated {createdArticle.title}")
-                .WithDescription("Article updated by API automation.")
-                .WithBody("Updated article body.")
-                .WithTags("taf", "API", "Updated")
-                .Build();
-
-            var updatedArticle = await ArticleService.UpdateArticle(
-                currentSlug,
-                updatedArticleData.Title,
-                updatedArticleData.Description,
-                updatedArticleData.Body,
-                updatedArticleData.Tags);
-            currentSlug = updatedArticle.slug;
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(updatedArticle.slug, Is.Not.Empty);
-                Assert.That(updatedArticle.slug, Is.Not.EqualTo(createdArticle.slug));
-                Assert.That(updatedArticle.title, Is.EqualTo(updatedArticleData.Title));
-                Assert.That(updatedArticle.description, Is.EqualTo(updatedArticleData.Description));
-                Assert.That(updatedArticle.body, Is.EqualTo(updatedArticleData.Body));
-                Assert.That(updatedArticle.tagList, Is.EquivalentTo(updatedArticleData.Tags));
-            });
-        }
-        finally
-        {
-            await ArticleService.DeleteArticle(currentSlug);
-        }
+            Assert.That(updatedArticle.slug, Is.Not.Empty);
+            Assert.That(updatedArticle.slug, Is.Not.EqualTo(createdArticle.slug));
+            Assert.That(updatedArticle.title, Is.EqualTo(updatedArticleData.Title));
+            Assert.That(updatedArticle.description, Is.EqualTo(updatedArticleData.Description));
+            Assert.That(updatedArticle.body, Is.EqualTo(updatedArticleData.Body));
+            Assert.That(updatedArticle.tagList, Is.EquivalentTo(updatedArticleData.Tags));
+        });
     }
 
     [Test]
@@ -106,23 +79,15 @@ public class ArticleApiTests : BaseApiTest
     public async Task FavoriteArticle_ShouldMarkArticleAsFavorited()
     {
         var createdArticle = await CreateTestArticle();
-        string createdSlug = createdArticle.slug;
 
-        try
-        {
-            var favoritedArticle = await ArticleService.FavoriteArticle(createdSlug);
+        var favoritedArticle = await ArticleService.FavoriteArticle(createdArticle.slug);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(favoritedArticle.slug, Is.EqualTo(createdSlug));
-                Assert.That(favoritedArticle.favorited, Is.True);
-                Assert.That(favoritedArticle.favoritesCount, Is.EqualTo(createdArticle.favoritesCount + 1));
-            });
-        }
-        finally
+        Assert.Multiple(() =>
         {
-            await ArticleService.DeleteArticle(createdSlug);
-        }
+            Assert.That(favoritedArticle.slug, Is.EqualTo(createdArticle.slug));
+            Assert.That(favoritedArticle.favorited, Is.True);
+            Assert.That(favoritedArticle.favoritesCount, Is.EqualTo(createdArticle.favoritesCount + 1));
+        });
     }
 
     [Test]
@@ -130,25 +95,17 @@ public class ArticleApiTests : BaseApiTest
     public async Task UnfavoriteArticle_ShouldMarkArticleAsNotFavorited()
     {
         var createdArticle = await CreateTestArticle();
-        string createdSlug = createdArticle.slug;
 
-        try
-        {
-            var favoritedArticle = await ArticleService.FavoriteArticle(createdSlug);
-            var unfavoritedArticle = await ArticleService.UnfavoriteArticle(createdSlug);
+        var favoritedArticle = await ArticleService.FavoriteArticle(createdArticle.slug);
+        var unfavoritedArticle = await ArticleService.UnfavoriteArticle(createdArticle.slug);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(favoritedArticle.favorited, Is.True);
-                Assert.That(unfavoritedArticle.slug, Is.EqualTo(createdSlug));
-                Assert.That(unfavoritedArticle.favorited, Is.False);
-                Assert.That(unfavoritedArticle.favoritesCount, Is.EqualTo(favoritedArticle.favoritesCount - 1));
-            });
-        }
-        finally
+        Assert.Multiple(() =>
         {
-            await ArticleService.DeleteArticle(createdSlug);
-        }
+            Assert.That(favoritedArticle.favorited, Is.True);
+            Assert.That(unfavoritedArticle.slug, Is.EqualTo(createdArticle.slug));
+            Assert.That(unfavoritedArticle.favorited, Is.False);
+            Assert.That(unfavoritedArticle.favoritesCount, Is.EqualTo(favoritedArticle.favoritesCount - 1));
+        });
     }
 
     [Test]
@@ -157,7 +114,7 @@ public class ArticleApiTests : BaseApiTest
     {
         var createdArticle = await CreateTestArticle();
 
-        Assert.DoesNotThrowAsync(async () => await ArticleService.DeleteArticle(createdArticle.slug));
+        Assert.DoesNotThrowAsync(async () => await DeleteTrackedArticleAsync(createdArticle.slug));
     }
 
     private Task<ArticleData> CreateTestArticle()
@@ -165,13 +122,17 @@ public class ArticleApiTests : BaseApiTest
         return CreateArticleAsync(ArticleTestDataBuilder.New().Build());
     }
 
-    private Task<ArticleData> CreateArticleAsync(ArticleTestData article)
+    private async Task<ArticleData> CreateArticleAsync(ArticleTestData article)
     {
-        return ArticleService.CreateArticle(
+        var createdArticle = await ArticleService.CreateArticle(
             article.Title,
             article.Description,
             article.Body,
             article.Tags);
+
+        TrackArticleForCleanup(createdArticle.slug);
+
+        return createdArticle;
     }
 
     private static void AssertArticleMatches(ArticleData actual, ArticleTestData expected)

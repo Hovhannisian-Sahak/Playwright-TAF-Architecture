@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Allure.NUnit;
 using NUnit.Framework;
@@ -14,6 +15,7 @@ namespace PlaywrightTAF.Tests.Base;
 public abstract class BaseApiTest
 {
     private static readonly ILogger Logger = LogProvider.ForContext<BaseApiTest>();
+    private readonly List<string> _articleSlugsToDelete = [];
 
     protected const string TestPassword = "Password123";
 
@@ -42,5 +44,52 @@ public abstract class BaseApiTest
 
         TokenProvider.SetToken(token);
         Logger.Information("API test user prepared: {Username} / {Email}", TestUsername, TestEmail);
+    }
+
+    [TearDown]
+    public async Task BaseTearDown()
+    {
+        await DeleteTrackedArticlesAsync();
+    }
+
+    protected void TrackArticleForCleanup(string slug)
+    {
+        if (string.IsNullOrWhiteSpace(slug) || _articleSlugsToDelete.Contains(slug))
+        {
+            return;
+        }
+
+        _articleSlugsToDelete.Add(slug);
+    }
+
+    protected void UntrackArticleFromCleanup(string slug)
+    {
+        _articleSlugsToDelete.Remove(slug);
+    }
+
+    protected async Task DeleteTrackedArticleAsync(string slug)
+    {
+        await ArticleService.DeleteArticle(slug);
+        UntrackArticleFromCleanup(slug);
+    }
+
+    private async Task DeleteTrackedArticlesAsync()
+    {
+        for (int index = _articleSlugsToDelete.Count - 1; index >= 0; index--)
+        {
+            string slug = _articleSlugsToDelete[index];
+
+            try
+            {
+                await ArticleService.DeleteArticle(slug);
+                Logger.Information("Deleted tracked API article {Slug}", slug);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Could not delete tracked API article {Slug}", slug);
+            }
+        }
+
+        _articleSlugsToDelete.Clear();
     }
 }
