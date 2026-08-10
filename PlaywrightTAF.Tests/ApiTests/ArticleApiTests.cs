@@ -97,6 +97,56 @@ public class ArticleApiTests : BaseApiTest
 
     [Test]
     [Category("API")]
+    public async Task FavoriteArticle_ShouldMarkArticleAsFavorited()
+    {
+        var createdArticle = await CreateTestArticle();
+        string createdSlug = createdArticle.slug;
+
+        try
+        {
+            var favoritedArticle = await ArticleService.FavoriteArticle(createdSlug);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(favoritedArticle.slug, Is.EqualTo(createdSlug));
+                Assert.That(favoritedArticle.favorited, Is.True);
+                Assert.That(favoritedArticle.favoritesCount, Is.EqualTo(createdArticle.favoritesCount + 1));
+            });
+        }
+        finally
+        {
+            await ArticleService.DeleteArticle(createdSlug);
+        }
+    }
+
+    [Test]
+    [Category("API")]
+    public async Task UnfavoriteArticle_ShouldMarkArticleAsNotFavorited()
+    {
+        var createdArticle = await CreateTestArticle();
+        string createdSlug = createdArticle.slug;
+
+        try
+        {
+            var favoritedArticle = await ArticleService.FavoriteArticle(createdSlug);
+            var unfavoritedArticle = await ArticleService.UnfavoriteArticle(createdSlug);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(favoritedArticle.favorited, Is.True);
+                Assert.That(unfavoritedArticle.slug, Is.EqualTo(createdSlug));
+                Assert.That(unfavoritedArticle.favorited, Is.False);
+                Assert.That(unfavoritedArticle.favoritesCount, Is.EqualTo(favoritedArticle.favoritesCount - 1));
+            });
+        }
+        finally
+        {
+            await ArticleService.DeleteArticle(createdSlug);
+        }
+    }
+
+    [Test]
+    [Category("API")]
     public async Task DeleteArticle_ShouldDeleteCreatedArticle()
     {
         var createdArticle = await CreateTestArticle();

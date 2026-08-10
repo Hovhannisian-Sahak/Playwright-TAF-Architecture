@@ -42,6 +42,20 @@ public class ArticleService
         return response!.article;
     }
 
+    public async Task<ArticleData> FavoriteArticle(string slug)
+    {
+        var response = await _articleClient.FavoriteArticleAsync(slug, _tokenProvider.GetToken());
+
+        return response!.article;
+    }
+
+    public async Task<ArticleData> UnfavoriteArticle(string slug)
+    {
+        var response = await _articleClient.UnfavoriteArticleAsync(slug, _tokenProvider.GetToken());
+
+        return response!.article;
+    }
+
     public Task DeleteArticle(string slug)
     {
         return _articleClient.DeleteArticleAsync(slug, _tokenProvider.GetToken());

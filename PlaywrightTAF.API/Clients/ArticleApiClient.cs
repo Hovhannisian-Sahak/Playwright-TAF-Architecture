@@ -38,6 +38,24 @@ public class ArticleApiClient : ApiClient
         return response.Data;
     }
 
+    public async Task<ArticleResponse?> FavoriteArticleAsync(string slug, string token)
+    {
+        var request = CreateAuthorizedRequest($"{ApiEndpoints.Articles}/{slug}/favorite", Method.Post, token);
+
+        var response = await ExecuteAsync<ArticleResponse>(request);
+
+        return response.Data;
+    }
+
+    public async Task<ArticleResponse?> UnfavoriteArticleAsync(string slug, string token)
+    {
+        var request = CreateAuthorizedRequest($"{ApiEndpoints.Articles}/{slug}/favorite", Method.Delete, token);
+
+        var response = await ExecuteAsync<ArticleResponse>(request);
+
+        return response.Data;
+    }
+
     public Task DeleteArticleAsync(string slug, string token)
     {
         var request = CreateAuthorizedRequest($"{ApiEndpoints.Articles}/{slug}", Method.Delete, token);
