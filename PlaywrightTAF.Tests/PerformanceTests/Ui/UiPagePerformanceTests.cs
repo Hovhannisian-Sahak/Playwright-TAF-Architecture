@@ -68,8 +68,29 @@ public sealed class UiPagePerformanceTests : AdminTest
 
     private async Task<UiPagePerformanceResult> MeasurePageAsync(string pageName, BasePage page)
     {
-        await page.EvaluateAsync("() => performance.clearResourceTimings()");
+        await ClearBrowserResourceTimingsAsync(page);
 
+        var pageReadyMs = await MeasurePageReadyAsync(pageName, page);
+        var navigationTiming = await ReadNavigationTimingAsync(page);
+
+        return new UiPagePerformanceResult(
+            pageName,
+            page.CurrentUrl,
+            pageReadyMs,
+            navigationTiming.DurationMs,
+            navigationTiming.DomContentLoadedMs,
+            navigationTiming.LoadEventMs,
+            navigationTiming.TransferSizeBytes,
+            navigationTiming.EncodedBodySizeBytes);
+    }
+
+    private static Task ClearBrowserResourceTimingsAsync(BasePage page)
+    {
+        return page.EvaluateAsync("() => performance.clearResourceTimings()");
+    }
+
+    private static async Task<double> MeasurePageReadyAsync(string pageName, BasePage page)
+    {
         var stopwatch = Stopwatch.StartNew();
         await page.OpenAsync();
         bool isLoaded = await page.IsLoadedAsync();
@@ -77,7 +98,12 @@ public sealed class UiPagePerformanceTests : AdminTest
 
         Assert.That(isLoaded, Is.True, $"{pageName} did not reach its loaded state.");
 
-        var navigationTiming = await page.EvaluateAsync<NavigationTiming>(
+        return stopwatch.Elapsed.TotalMilliseconds;
+    }
+
+    private static Task<NavigationTiming> ReadNavigationTimingAsync(BasePage page)
+    {
+        return page.EvaluateAsync<NavigationTiming>(
             """
             () => {
                 const navigation = performance.getEntriesByType('navigation').at(-1);
@@ -95,16 +121,6 @@ public sealed class UiPagePerformanceTests : AdminTest
                 };
             }
             """);
-
-        return new UiPagePerformanceResult(
-            pageName,
-            page.CurrentUrl,
-            stopwatch.Elapsed.TotalMilliseconds,
-            navigationTiming.DurationMs,
-            navigationTiming.DomContentLoadedMs,
-            navigationTiming.LoadEventMs,
-            navigationTiming.TransferSizeBytes,
-            navigationTiming.EncodedBodySizeBytes);
     }
 
     private static void AddAllureResultsAttachment(
