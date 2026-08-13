@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 
 namespace Performance.Metrics;
 
-public sealed class PerformanceMetrics
+public sealed class ApiPerformanceMetrics
 {
     private readonly ConcurrentBag<double> _durationsMs = [];
     private int _failures;
@@ -23,13 +23,13 @@ public sealed class PerformanceMetrics
         Interlocked.Increment(ref _failures);
     }
 
-    public PerformanceResults GetResults()
+    public ApiPerformanceResults GetResults()
     {
         var orderedDurations = _durationsMs.OrderBy(value => value).ToArray();
         var requests = _requests;
         var failures = _failures;
 
-        return new PerformanceResults(
+        return new ApiPerformanceResults(
             requests,
             failures,
             requests == 0 ? 1 : (double)failures / requests,

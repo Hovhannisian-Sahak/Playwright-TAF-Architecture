@@ -1,7 +1,7 @@
 using Performance;
 
 var options = ApiPerformanceOptions.FromArgs(args);
-var runner = new PerformanceTestRunner();
+var runner = new ApiPerformanceTestRunner();
 
 var runResult = await runner.RunAsync(options);
 

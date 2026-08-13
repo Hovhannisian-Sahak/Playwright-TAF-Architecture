@@ -14,7 +14,7 @@ public sealed class ConduitApiClient
         _httpClient = httpClient;
     }
 
-    public async Task<TestUser> RegisterUserAsync(int virtualUser, CancellationToken cancellationToken)
+    public async Task<RegisteredApiUser> RegisterUserAsync(int virtualUser, CancellationToken cancellationToken)
     {
         var suffix = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}{virtualUser}";
         var username = $"perf{suffix}";
@@ -30,7 +30,7 @@ public sealed class ConduitApiClient
         });
 
         using var response = await _httpClient.PostAsync(
-            ConduitEndpoints.RegisterUser,
+            ConduitApiEndpoints.RegisterUser,
             CreateJsonContent(payload),
             cancellationToken);
 
@@ -40,7 +40,7 @@ public sealed class ConduitApiClient
         using var document = JsonDocument.Parse(content);
         var user = document.RootElement.GetProperty("user");
 
-        return new TestUser(
+        return new RegisteredApiUser(
             user.GetProperty("username").GetString() ?? username,
             user.GetProperty("token").GetString()
             ?? throw new InvalidOperationException("Register response did not include token."));
@@ -60,7 +60,7 @@ public sealed class ConduitApiClient
             }
         });
 
-        using var request = CreateAuthorizedRequest(HttpMethod.Post, ConduitEndpoints.Articles, token);
+        using var request = CreateAuthorizedRequest(HttpMethod.Post, ConduitApiEndpoints.Articles, token);
         request.Content = CreateJsonContent(payload);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -74,7 +74,7 @@ public sealed class ConduitApiClient
 
     public async Task DeleteArticleAsync(string token, string slug, CancellationToken cancellationToken)
     {
-        using var request = CreateAuthorizedRequest(HttpMethod.Delete, $"{ConduitEndpoints.Articles}/{slug}", token);
+        using var request = CreateAuthorizedRequest(HttpMethod.Delete, $"{ConduitApiEndpoints.Articles}/{slug}", token);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStringAsync(cancellationToken);

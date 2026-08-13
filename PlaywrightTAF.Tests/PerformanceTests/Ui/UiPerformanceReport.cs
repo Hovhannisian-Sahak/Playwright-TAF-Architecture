@@ -6,7 +6,7 @@ internal static class UiPerformanceReport
         UiPagePerformanceResult result,
         UiPerformanceThresholds thresholds)
     {
-        PerformanceAttachment.AddJson(
+        PerformanceReportAttachment.AddJson(
             $"{UiPerformanceThresholds.ToEnvironmentName(result.PageName).ToLowerInvariant()}-ui-performance-results",
             new
             {

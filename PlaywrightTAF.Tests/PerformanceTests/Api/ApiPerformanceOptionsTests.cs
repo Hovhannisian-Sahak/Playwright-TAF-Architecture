@@ -2,7 +2,7 @@ using System.Globalization;
 using NUnit.Framework;
 using Performance;
 
-namespace PlaywrightTAF.Tests.PerformanceTests;
+namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 
 [TestFixture]
 public sealed class ApiPerformanceOptionsTests

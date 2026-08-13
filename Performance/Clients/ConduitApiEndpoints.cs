@@ -1,6 +1,6 @@
 namespace Performance.Clients;
 
-public static class ConduitEndpoints
+public static class ConduitApiEndpoints
 {
     public const string RegisterUser = "/api/users";
 

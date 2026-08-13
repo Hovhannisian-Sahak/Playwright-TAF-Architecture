@@ -1,6 +1,6 @@
 namespace PlaywrightTAF.Tests.PerformanceTests.Ui;
 
-internal sealed class NavigationTiming
+internal sealed class BrowserNavigationTiming
 {
     public double DurationMs { get; init; }
 

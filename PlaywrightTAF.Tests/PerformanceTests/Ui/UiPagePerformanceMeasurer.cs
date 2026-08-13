@@ -42,9 +42,9 @@ internal static class UiPagePerformanceMeasurer
         return stopwatch.Elapsed.TotalMilliseconds;
     }
 
-    private static Task<NavigationTiming> ReadNavigationTimingAsync(BasePage page)
+    private static Task<BrowserNavigationTiming> ReadNavigationTimingAsync(BasePage page)
     {
-        return page.EvaluateAsync<NavigationTiming>(
+        return page.EvaluateAsync<BrowserNavigationTiming>(
             """
             () => {
                 const navigation = performance.getEntriesByType('navigation').at(-1);

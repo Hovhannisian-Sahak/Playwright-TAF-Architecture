@@ -4,9 +4,9 @@ using Performance.Scenarios;
 
 namespace Performance;
 
-public sealed class PerformanceTestRunner
+public sealed class ApiPerformanceTestRunner
 {
-    public async Task<PerformanceRunResult> RunAsync(
+    public async Task<ApiPerformanceRunResult> RunAsync(
         ApiPerformanceOptions options,
         TextWriter? output = null,
         TextWriter? error = null)
@@ -20,8 +20,8 @@ public sealed class PerformanceTestRunner
         };
 
         var apiClient = new ConduitApiClient(httpClient);
-        var metrics = new PerformanceMetrics();
-        var scenario = new CreateArticleScenario(apiClient, metrics, options.RequestDelay);
+        var metrics = new ApiPerformanceMetrics();
+        var scenario = new CreateArticleLoadScenario(apiClient, metrics, options.RequestDelay);
 
         using var cancellation = new CancellationTokenSource(options.Duration);
 
@@ -35,7 +35,7 @@ public sealed class PerformanceTestRunner
 
         await Task.WhenAll(tasks);
 
-        var runResult = new PerformanceRunResult(options, metrics.GetResults());
+        var runResult = new ApiPerformanceRunResult(options, metrics.GetResults());
 
         await WriteResultsAsync(output, runResult.Results);
 
@@ -47,7 +47,7 @@ public sealed class PerformanceTestRunner
         return runResult;
     }
 
-    private static async Task WriteResultsAsync(TextWriter output, PerformanceResults results)
+    private static async Task WriteResultsAsync(TextWriter output, ApiPerformanceResults results)
     {
         await output.WriteLineAsync();
         await output.WriteLineAsync("Results");

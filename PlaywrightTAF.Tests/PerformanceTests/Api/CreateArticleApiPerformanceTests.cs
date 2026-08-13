@@ -8,7 +8,7 @@ namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 
 [AllureNUnit]
 [TestFixture]
-public sealed class CreateArticlePerformanceTests
+public sealed class CreateArticleApiPerformanceTests
 {
     [Test]
     [Category("Performance")]
@@ -19,7 +19,7 @@ public sealed class CreateArticlePerformanceTests
         var output = new StringWriter();
         var error = new StringWriter();
 
-        var runResult = await new PerformanceTestRunner().RunAsync(options, output, error);
+        var runResult = await new ApiPerformanceTestRunner().RunAsync(options, output, error);
 
         ApiPerformanceReport.WriteOutput(output, error);
         ApiPerformanceReport.AttachResults(runResult);

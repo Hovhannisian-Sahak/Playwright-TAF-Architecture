@@ -17,9 +17,9 @@ internal static class ApiPerformanceReport
         }
     }
 
-    public static void AttachResults(PerformanceRunResult runResult)
+    public static void AttachResults(ApiPerformanceRunResult runResult)
     {
-        PerformanceAttachment.AddJson(
+        PerformanceReportAttachment.AddJson(
             "api-performance-results",
             new
             {

@@ -1,6 +1,6 @@
 namespace Performance.Metrics;
 
-public sealed record PerformanceResults(
+public sealed record ApiPerformanceResults(
     int TotalRequests,
     int FailedRequests,
     double FailureRate,

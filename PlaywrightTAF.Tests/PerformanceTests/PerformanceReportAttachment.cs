@@ -4,7 +4,7 @@ using Allure.Net.Commons;
 
 namespace PlaywrightTAF.Tests.PerformanceTests;
 
-internal static class PerformanceAttachment
+internal static class PerformanceReportAttachment
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {

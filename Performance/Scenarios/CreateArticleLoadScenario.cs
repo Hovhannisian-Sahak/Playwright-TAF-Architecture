@@ -4,15 +4,15 @@ using Performance.Metrics;
 
 namespace Performance.Scenarios;
 
-public sealed class CreateArticleScenario
+public sealed class CreateArticleLoadScenario
 {
     private readonly ConduitApiClient _apiClient;
-    private readonly PerformanceMetrics _metrics;
+    private readonly ApiPerformanceMetrics _metrics;
     private readonly TimeSpan _requestDelay;
 
-    public CreateArticleScenario(
+    public CreateArticleLoadScenario(
         ConduitApiClient apiClient,
-        PerformanceMetrics metrics,
+        ApiPerformanceMetrics metrics,
         TimeSpan requestDelay)
     {
         _apiClient = apiClient;

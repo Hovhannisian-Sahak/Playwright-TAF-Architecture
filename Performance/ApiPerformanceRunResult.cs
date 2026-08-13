@@ -2,9 +2,9 @@ using Performance.Metrics;
 
 namespace Performance;
 
-public sealed record PerformanceRunResult(
+public sealed record ApiPerformanceRunResult(
     ApiPerformanceOptions Options,
-    PerformanceResults Results)
+    ApiPerformanceResults Results)
 {
     public bool Passed =>
         Results.FailureRate <= Options.MaxFailureRate

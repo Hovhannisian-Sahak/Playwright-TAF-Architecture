@@ -5,7 +5,7 @@ namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 
 internal static class ApiPerformanceAssertions
 {
-    public static void ShouldMeetThresholds(PerformanceRunResult runResult)
+    public static void ShouldMeetThresholds(ApiPerformanceRunResult runResult)
     {
         Assert.Multiple(() =>
         {
