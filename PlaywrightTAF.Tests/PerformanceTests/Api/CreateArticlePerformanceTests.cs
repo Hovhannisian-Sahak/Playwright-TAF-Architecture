@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -20,7 +19,7 @@ public sealed class CreateArticlePerformanceTests
     [Category("APIPerformance")]
     public async Task CreateArticle_ShouldMeetPerformanceThresholds()
     {
-        var options = PerformanceOptions.FromArgs(CreateArgsFromEnvironment());
+        var options = PerformanceOptions.FromEnvironment();
         var output = new StringWriter();
         var error = new StringWriter();
 
@@ -48,33 +47,6 @@ public sealed class CreateArticlePerformanceTests
                 Is.LessThanOrEqualTo(options.MaxP95Ms),
                 $"P95 duration should be <= {options.MaxP95Ms:N0} ms.");
         });
-    }
-
-    private static string[] CreateArgsFromEnvironment()
-    {
-        var args = new List<string>();
-
-        AddArg(args, "--base-url", "PERF_BASE_URL");
-        AddArg(args, "--vus", "PERF_VUS");
-        AddArg(args, "--duration-seconds", "PERF_DURATION_SECONDS");
-        AddArg(args, "--request-delay-seconds", "PERF_REQUEST_DELAY_SECONDS");
-        AddArg(args, "--max-p95-ms", "PERF_MAX_P95_MS");
-        AddArg(args, "--max-failure-rate", "PERF_MAX_FAILURE_RATE");
-
-        return args.ToArray();
-    }
-
-    private static void AddArg(List<string> args, string optionName, string environmentVariableName)
-    {
-        var value = Environment.GetEnvironmentVariable(environmentVariableName);
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return;
-        }
-
-        args.Add(optionName);
-        args.Add(value);
     }
 
     private static void AddAllureResultsAttachment(PerformanceRunResult runResult)

@@ -4,7 +4,14 @@ namespace Performance;
 
 public sealed class PerformanceOptions
 {
-    public string BaseUrl { get; private init; } = "https://conduit-api.bondaracademy.com";
+    private const string DefaultBaseUrl = "https://conduit-api.bondaracademy.com";
+    private const string DefaultVirtualUsers = "3";
+    private const string DefaultDurationSeconds = "30";
+    private const string DefaultRequestDelaySeconds = "1";
+    private const string DefaultMaxP95Ms = "1000";
+    private const string DefaultMaxFailureRate = "0.01";
+
+    public string BaseUrl { get; private init; } = DefaultBaseUrl;
 
     public int VirtualUsers { get; private init; } = 3;
 
@@ -20,12 +27,25 @@ public sealed class PerformanceOptions
     {
         return new PerformanceOptions
         {
-            BaseUrl = GetArg(args, "--base-url", "https://conduit-api.bondaracademy.com"),
-            VirtualUsers = int.Parse(GetArg(args, "--vus", "3"), CultureInfo.InvariantCulture),
-            Duration = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--duration-seconds", "30"), CultureInfo.InvariantCulture)),
-            RequestDelay = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--request-delay-seconds", "1"), CultureInfo.InvariantCulture)),
-            MaxP95Ms = double.Parse(GetArg(args, "--max-p95-ms", "1000"), CultureInfo.InvariantCulture),
-            MaxFailureRate = double.Parse(GetArg(args, "--max-failure-rate", "0.01"), CultureInfo.InvariantCulture)
+            BaseUrl = GetArg(args, "--base-url", DefaultBaseUrl),
+            VirtualUsers = int.Parse(GetArg(args, "--vus", DefaultVirtualUsers), CultureInfo.InvariantCulture),
+            Duration = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--duration-seconds", DefaultDurationSeconds), CultureInfo.InvariantCulture)),
+            RequestDelay = TimeSpan.FromSeconds(int.Parse(GetArg(args, "--request-delay-seconds", DefaultRequestDelaySeconds), CultureInfo.InvariantCulture)),
+            MaxP95Ms = double.Parse(GetArg(args, "--max-p95-ms", DefaultMaxP95Ms), CultureInfo.InvariantCulture),
+            MaxFailureRate = double.Parse(GetArg(args, "--max-failure-rate", DefaultMaxFailureRate), CultureInfo.InvariantCulture)
+        };
+    }
+
+    public static PerformanceOptions FromEnvironment()
+    {
+        return new PerformanceOptions
+        {
+            BaseUrl = GetEnvironmentValue("PERF_BASE_URL", DefaultBaseUrl),
+            VirtualUsers = int.Parse(GetEnvironmentValue("PERF_VUS", DefaultVirtualUsers), CultureInfo.InvariantCulture),
+            Duration = TimeSpan.FromSeconds(int.Parse(GetEnvironmentValue("PERF_DURATION_SECONDS", DefaultDurationSeconds), CultureInfo.InvariantCulture)),
+            RequestDelay = TimeSpan.FromSeconds(int.Parse(GetEnvironmentValue("PERF_REQUEST_DELAY_SECONDS", DefaultRequestDelaySeconds), CultureInfo.InvariantCulture)),
+            MaxP95Ms = double.Parse(GetEnvironmentValue("PERF_MAX_P95_MS", DefaultMaxP95Ms), CultureInfo.InvariantCulture),
+            MaxFailureRate = double.Parse(GetEnvironmentValue("PERF_MAX_FAILURE_RATE", DefaultMaxFailureRate), CultureInfo.InvariantCulture)
         };
     }
 
@@ -33,5 +53,11 @@ public sealed class PerformanceOptions
     {
         var index = Array.IndexOf(args, name);
         return index >= 0 && index + 1 < args.Length ? args[index + 1] : defaultValue;
+    }
+
+    private static string GetEnvironmentValue(string name, string defaultValue)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
     }
 }
