@@ -130,16 +130,6 @@ public sealed class UiPagePerformanceTests : AdminTest
             });
     }
 
-    private sealed record UiPagePerformanceResult(
-        string PageName,
-        string Url,
-        double PageReadyMs,
-        double NavigationDurationMs,
-        double DomContentLoadedMs,
-        double BrowserLoadEventMs,
-        double TransferSizeBytes,
-        double EncodedBodySizeBytes);
-
     private sealed class NavigationTiming
     {
         public double DurationMs { get; init; }
