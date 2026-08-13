@@ -60,7 +60,7 @@ public sealed class UiPagePerformanceTests : AdminTest
                 $"{result.PageName} should become ready within {thresholds.MaxPageReadyMs:N0} ms.");
 
             Assert.That(
-                result.BrowserLoadMs,
+                result.BrowserLoadEventMs,
                 Is.LessThanOrEqualTo(thresholds.MaxBrowserLoadMs),
                 $"{result.PageName} browser load event should complete within {thresholds.MaxBrowserLoadMs:N0} ms.");
         });
@@ -185,7 +185,7 @@ public sealed class UiPagePerformanceTests : AdminTest
         double PageReadyMs,
         double NavigationDurationMs,
         double DomContentLoadedMs,
-        double BrowserLoadMs,
+        double BrowserLoadEventMs,
         double TransferSizeBytes,
         double EncodedBodySizeBytes);
 
