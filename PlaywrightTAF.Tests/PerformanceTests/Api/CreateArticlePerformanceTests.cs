@@ -22,7 +22,7 @@ public sealed class CreateArticlePerformanceTests
         var runResult = await new PerformanceTestRunner().RunAsync(options, output, error);
 
         WriteRunOutput(output, error);
-        AddAllureResultsAttachment(runResult);
+        ApiPerformanceReport.AttachResults(runResult);
 
         ApiPerformanceAssertions.ShouldMeetThresholds(runResult);
     }
@@ -38,23 +38,4 @@ public sealed class CreateArticlePerformanceTests
         }
     }
 
-    private static void AddAllureResultsAttachment(PerformanceRunResult runResult)
-    {
-        PerformanceAttachment.AddJson(
-            "api-performance-results",
-            new
-            {
-                options = new
-                {
-                    runResult.Options.BaseUrl,
-                    runResult.Options.VirtualUsers,
-                    durationSeconds = runResult.Options.Duration.TotalSeconds,
-                    requestDelaySeconds = runResult.Options.RequestDelay.TotalSeconds,
-                    runResult.Options.MaxP95Ms,
-                    runResult.Options.MaxFailureRate
-                },
-                results = runResult.Results,
-                passed = runResult.Passed
-            });
-    }
 }
