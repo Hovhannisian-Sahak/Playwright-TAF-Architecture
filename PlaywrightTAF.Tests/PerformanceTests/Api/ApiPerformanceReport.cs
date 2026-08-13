@@ -1,9 +1,22 @@
+using System.IO;
+using NUnit.Framework;
 using Performance;
 
 namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 
 internal static class ApiPerformanceReport
 {
+    public static void WriteOutput(StringWriter output, StringWriter error)
+    {
+        TestContext.Progress.WriteLine(output.ToString());
+
+        var errorText = error.ToString();
+        if (!string.IsNullOrWhiteSpace(errorText))
+        {
+            TestContext.Error.WriteLine(errorText);
+        }
+    }
+
     public static void AttachResults(PerformanceRunResult runResult)
     {
         PerformanceAttachment.AddJson(

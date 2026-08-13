@@ -21,21 +21,9 @@ public sealed class CreateArticlePerformanceTests
 
         var runResult = await new PerformanceTestRunner().RunAsync(options, output, error);
 
-        WriteRunOutput(output, error);
+        ApiPerformanceReport.WriteOutput(output, error);
         ApiPerformanceReport.AttachResults(runResult);
 
         ApiPerformanceAssertions.ShouldMeetThresholds(runResult);
     }
-
-    private static void WriteRunOutput(StringWriter output, StringWriter error)
-    {
-        TestContext.Progress.WriteLine(output.ToString());
-
-        var errorText = error.ToString();
-        if (!string.IsNullOrWhiteSpace(errorText))
-        {
-            TestContext.Error.WriteLine(errorText);
-        }
-    }
-
 }
