@@ -24,7 +24,7 @@ public sealed class CreateArticlePerformanceTests
         WriteRunOutput(output, error);
         AddAllureResultsAttachment(runResult);
 
-        AssertPerformanceThresholds(runResult);
+        ApiPerformanceAssertions.ShouldMeetThresholds(runResult);
     }
 
     private static void WriteRunOutput(StringWriter output, StringWriter error)
@@ -36,22 +36,6 @@ public sealed class CreateArticlePerformanceTests
         {
             TestContext.Error.WriteLine(errorText);
         }
-    }
-
-    private static void AssertPerformanceThresholds(PerformanceRunResult runResult)
-    {
-        Assert.Multiple(() =>
-        {
-            Assert.That(
-                runResult.Results.FailureRate,
-                Is.LessThanOrEqualTo(runResult.Options.MaxFailureRate),
-                $"Failure rate should be <= {runResult.Options.MaxFailureRate:P2}.");
-
-            Assert.That(
-                runResult.Results.P95DurationMs,
-                Is.LessThanOrEqualTo(runResult.Options.MaxP95Ms),
-                $"P95 duration should be <= {runResult.Options.MaxP95Ms:N0} ms.");
-        });
     }
 
     private static void AddAllureResultsAttachment(PerformanceRunResult runResult)
