@@ -51,10 +51,10 @@ public sealed class PerformanceTestRunner
     {
         await output.WriteLineAsync();
         await output.WriteLineAsync("Results");
-        await output.WriteLineAsync($"Requests: {results.Requests}");
-        await output.WriteLineAsync($"Failures: {results.Failures}");
+        await output.WriteLineAsync($"Requests: {results.TotalRequests}");
+        await output.WriteLineAsync($"Failures: {results.FailedRequests}");
         await output.WriteLineAsync($"Failure rate: {results.FailureRate:P2}");
-        await output.WriteLineAsync($"Average POST duration: {results.AverageMs:N0} ms");
-        await output.WriteLineAsync($"P95 POST duration: {results.P95Ms:N0} ms");
+        await output.WriteLineAsync($"Average POST duration: {results.AverageDurationMs:N0} ms");
+        await output.WriteLineAsync($"P95 POST duration: {results.P95DurationMs:N0} ms");
     }
 }

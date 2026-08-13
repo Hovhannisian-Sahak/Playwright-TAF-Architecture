@@ -1,8 +1,8 @@
 namespace Performance.Metrics;
 
 public sealed record PerformanceResults(
-    int Requests,
-    int Failures,
+    int TotalRequests,
+    int FailedRequests,
     double FailureRate,
-    double AverageMs,
-    double P95Ms);
+    double AverageDurationMs,
+    double P95DurationMs);
