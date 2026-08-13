@@ -15,7 +15,7 @@ public sealed class CreateArticlePerformanceTests
     [Category("APIPerformance")]
     public async Task CreateArticle_ShouldMeetPerformanceThresholds()
     {
-        var options = PerformanceOptions.FromEnvironment();
+        var options = ApiPerformanceOptions.FromEnvironment();
         var output = new StringWriter();
         var error = new StringWriter();
 

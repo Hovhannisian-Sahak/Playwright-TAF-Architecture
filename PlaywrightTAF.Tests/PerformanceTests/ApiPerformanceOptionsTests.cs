@@ -5,7 +5,7 @@ using Performance;
 namespace PlaywrightTAF.Tests.PerformanceTests;
 
 [TestFixture]
-public sealed class PerformanceOptionsTests
+public sealed class ApiPerformanceOptionsTests
 {
     [Test]
     public void FromArgs_ParsesDecimalOptionsUsingInvariantCulture()
@@ -19,7 +19,7 @@ public sealed class PerformanceOptionsTests
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
-            var options = PerformanceOptions.FromArgs(
+            var options = ApiPerformanceOptions.FromArgs(
             [
                 "--max-failure-rate",
                 "0.01",

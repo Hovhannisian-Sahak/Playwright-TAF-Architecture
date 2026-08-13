@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Performance;
 
-public sealed class PerformanceOptions
+public sealed class ApiPerformanceOptions
 {
     private const string DefaultBaseUrl = "https://conduit-api.bondaracademy.com";
     private const string DefaultVirtualUsers = "3";
@@ -23,9 +23,9 @@ public sealed class PerformanceOptions
 
     public double MaxFailureRate { get; private init; } = 0.01;
 
-    public static PerformanceOptions FromArgs(string[] args)
+    public static ApiPerformanceOptions FromArgs(string[] args)
     {
-        return new PerformanceOptions
+        return new ApiPerformanceOptions
         {
             BaseUrl = GetArg(args, "--base-url", DefaultBaseUrl),
             VirtualUsers = int.Parse(GetArg(args, "--vus", DefaultVirtualUsers), CultureInfo.InvariantCulture),
@@ -36,9 +36,9 @@ public sealed class PerformanceOptions
         };
     }
 
-    public static PerformanceOptions FromEnvironment()
+    public static ApiPerformanceOptions FromEnvironment()
     {
-        return new PerformanceOptions
+        return new ApiPerformanceOptions
         {
             BaseUrl = GetEnvironmentValue("PERF_BASE_URL", DefaultBaseUrl),
             VirtualUsers = int.Parse(GetEnvironmentValue("PERF_VUS", DefaultVirtualUsers), CultureInfo.InvariantCulture),

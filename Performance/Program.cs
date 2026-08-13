@@ -1,6 +1,6 @@
 using Performance;
 
-var options = PerformanceOptions.FromArgs(args);
+var options = ApiPerformanceOptions.FromArgs(args);
 var runner = new PerformanceTestRunner();
 
 var runResult = await runner.RunAsync(options);

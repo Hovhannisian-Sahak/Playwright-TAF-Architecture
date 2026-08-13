@@ -7,7 +7,7 @@ namespace Performance;
 public sealed class PerformanceTestRunner
 {
     public async Task<PerformanceRunResult> RunAsync(
-        PerformanceOptions options,
+        ApiPerformanceOptions options,
         TextWriter? output = null,
         TextWriter? error = null)
     {

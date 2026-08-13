@@ -3,7 +3,7 @@ using Performance.Metrics;
 namespace Performance;
 
 public sealed record PerformanceRunResult(
-    PerformanceOptions Options,
+    ApiPerformanceOptions Options,
     PerformanceResults Results)
 {
     public bool Passed =>
