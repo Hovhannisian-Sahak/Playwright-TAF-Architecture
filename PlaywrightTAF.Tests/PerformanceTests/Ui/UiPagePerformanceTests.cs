@@ -1,9 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Allure.Net.Commons;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
 using PlaywrightTAF.UI.Pages;
@@ -127,22 +124,13 @@ public sealed class UiPagePerformanceTests : AdminTest
         UiPagePerformanceResult result,
         UiPerformanceThresholds thresholds)
     {
-        var json = JsonSerializer.Serialize(
+        PerformanceAttachment.AddJson(
+            $"{ToEnvironmentName(result.PageName).ToLowerInvariant()}-ui-performance-results",
             new
             {
                 thresholds,
                 result
-            },
-            new JsonSerializerOptions
-            {
-                WriteIndented = true
             });
-
-        AllureApi.AddAttachment(
-            $"{ToEnvironmentName(result.PageName).ToLowerInvariant()}-ui-performance-results",
-            "application/json",
-            Encoding.UTF8.GetBytes(json),
-            ".json");
     }
 
     private sealed record UiPerformanceThresholds(

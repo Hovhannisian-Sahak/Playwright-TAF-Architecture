@@ -1,8 +1,5 @@
 using System.IO;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Allure.Net.Commons;
 using Allure.NUnit;
 using NUnit.Framework;
 using Performance;
@@ -59,7 +56,8 @@ public sealed class CreateArticlePerformanceTests
 
     private static void AddAllureResultsAttachment(PerformanceRunResult runResult)
     {
-        var json = JsonSerializer.Serialize(
+        PerformanceAttachment.AddJson(
+            "api-performance-results",
             new
             {
                 options = new
@@ -73,16 +71,6 @@ public sealed class CreateArticlePerformanceTests
                 },
                 results = runResult.Results,
                 passed = runResult.Passed
-            },
-            new JsonSerializerOptions
-            {
-                WriteIndented = true
             });
-
-        AllureApi.AddAttachment(
-            "api-performance-results",
-            "application/json",
-            Encoding.UTF8.GetBytes(json),
-            ".json");
     }
 }
