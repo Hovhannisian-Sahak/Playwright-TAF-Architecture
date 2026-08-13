@@ -45,7 +45,13 @@ public sealed class UiPagePerformanceTests : AdminTest
         var result = await MeasurePageAsync(pageName, page);
 
         AddAllureResultsAttachment(result, thresholds);
+        AssertPerformanceThresholds(result, thresholds);
+    }
 
+    private static void AssertPerformanceThresholds(
+        UiPagePerformanceResult result,
+        UiPerformanceThresholds thresholds)
+    {
         Assert.Multiple(() =>
         {
             Assert.That(
