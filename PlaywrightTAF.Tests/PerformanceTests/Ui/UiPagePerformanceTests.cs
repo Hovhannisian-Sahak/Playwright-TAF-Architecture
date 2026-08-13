@@ -37,20 +37,7 @@ public sealed class UiPagePerformanceTests : AdminTest
         var thresholds = UiPerformanceThresholds.FromEnvironment(pageName);
         var result = await UiPagePerformanceMeasurer.MeasureAsync(pageName, page);
 
-        AddAllureResultsAttachment(result, thresholds);
+        UiPerformanceReport.AttachResults(result, thresholds);
         UiPerformanceAssertions.ShouldMeetThresholds(result, thresholds);
-    }
-
-    private static void AddAllureResultsAttachment(
-        UiPagePerformanceResult result,
-        UiPerformanceThresholds thresholds)
-    {
-        PerformanceAttachment.AddJson(
-            $"{UiPerformanceThresholds.ToEnvironmentName(result.PageName).ToLowerInvariant()}-ui-performance-results",
-            new
-            {
-                thresholds,
-                result
-            });
     }
 }
