@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -11,8 +10,6 @@ namespace PlaywrightTAF.Tests.PerformanceTests.Ui;
 [TestFixture]
 public sealed class UiPagePerformanceTests : AdminTest
 {
-    private const double DefaultMaxPageReadyMs = 30000;
-    private const double DefaultMaxBrowserLoadMs = 10000;
     private AdminCorporateBrandingPage AdminCorporateBrandingPage => PageObject<AdminCorporateBrandingPage>();
     private DashboardPage DashboardPage => PageObject<DashboardPage>();
 
@@ -125,46 +122,12 @@ public sealed class UiPagePerformanceTests : AdminTest
         UiPerformanceThresholds thresholds)
     {
         PerformanceAttachment.AddJson(
-            $"{ToEnvironmentName(result.PageName).ToLowerInvariant()}-ui-performance-results",
+            $"{UiPerformanceThresholds.ToEnvironmentName(result.PageName).ToLowerInvariant()}-ui-performance-results",
             new
             {
                 thresholds,
                 result
             });
-    }
-
-    private sealed record UiPerformanceThresholds(
-        double MaxPageReadyMs,
-        double MaxBrowserLoadMs)
-    {
-        public static UiPerformanceThresholds FromEnvironment(string pageName)
-        {
-            string pagePrefix = ToEnvironmentName(pageName);
-
-            return new UiPerformanceThresholds(
-                GetDouble(
-                    $"UI_PERF_{pagePrefix}_MAX_PAGE_READY_MS",
-                    GetDouble("UI_PERF_MAX_PAGE_READY_MS", DefaultMaxPageReadyMs)),
-                GetDouble(
-                    $"UI_PERF_{pagePrefix}_MAX_BROWSER_LOAD_MS",
-                    GetDouble("UI_PERF_MAX_BROWSER_LOAD_MS", DefaultMaxBrowserLoadMs)));
-        }
-
-        private static double GetDouble(string name, double defaultValue)
-        {
-            string? value = Environment.GetEnvironmentVariable(name);
-
-            return double.TryParse(value, out double parsedValue)
-                ? parsedValue
-                : defaultValue;
-        }
-    }
-
-    private static string ToEnvironmentName(string value)
-    {
-        return value
-            .Replace(" ", "_", StringComparison.OrdinalIgnoreCase)
-            .ToUpperInvariant();
     }
 
     private sealed record UiPagePerformanceResult(
