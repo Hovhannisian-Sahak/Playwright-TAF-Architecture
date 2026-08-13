@@ -35,17 +35,22 @@ public sealed class CreateArticlePerformanceTests
 
         AddAllureResultsAttachment(runResult);
 
+        AssertPerformanceThresholds(runResult);
+    }
+
+    private static void AssertPerformanceThresholds(PerformanceRunResult runResult)
+    {
         Assert.Multiple(() =>
         {
             Assert.That(
                 runResult.Results.FailureRate,
-                Is.LessThanOrEqualTo(options.MaxFailureRate),
-                $"Failure rate should be <= {options.MaxFailureRate:P2}.");
+                Is.LessThanOrEqualTo(runResult.Options.MaxFailureRate),
+                $"Failure rate should be <= {runResult.Options.MaxFailureRate:P2}.");
 
             Assert.That(
                 runResult.Results.P95Ms,
-                Is.LessThanOrEqualTo(options.MaxP95Ms),
-                $"P95 duration should be <= {options.MaxP95Ms:N0} ms.");
+                Is.LessThanOrEqualTo(runResult.Options.MaxP95Ms),
+                $"P95 duration should be <= {runResult.Options.MaxP95Ms:N0} ms.");
         });
     }
 
