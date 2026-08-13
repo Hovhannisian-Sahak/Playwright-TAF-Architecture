@@ -29,7 +29,7 @@ public sealed class CreateArticleScenario
             while (!cancellationToken.IsCancellationRequested)
             {
                 await RunCreateArticleIterationAsync(user.Token, virtualUser, cancellationToken);
-                await Task.Delay(_requestDelay, cancellationToken);
+                await WaitBeforeNextIterationAsync(cancellationToken);
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -46,12 +46,8 @@ public sealed class CreateArticleScenario
 
         try
         {
-            var stopwatch = Stopwatch.StartNew();
-            var slug = await _apiClient.CreateArticleAsync(token, virtualUser, cancellationToken);
-            stopwatch.Stop();
-
-            _metrics.RecordDuration(stopwatch.Elapsed);
-            await _apiClient.DeleteArticleAsync(token, slug, cancellationToken);
+            var slug = await MeasureCreateArticleAsync(token, virtualUser, cancellationToken);
+            await CleanupArticleAsync(token, slug, cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -61,5 +57,31 @@ public sealed class CreateArticleScenario
             _metrics.RecordFailure();
             Console.Error.WriteLine($"VU {virtualUser} failed: {ex.Message}");
         }
+    }
+
+    private async Task<string> MeasureCreateArticleAsync(
+        string token,
+        int virtualUser,
+        CancellationToken cancellationToken)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        var slug = await _apiClient.CreateArticleAsync(token, virtualUser, cancellationToken);
+        stopwatch.Stop();
+
+        _metrics.RecordDuration(stopwatch.Elapsed);
+        return slug;
+    }
+
+    private Task CleanupArticleAsync(
+        string token,
+        string slug,
+        CancellationToken cancellationToken)
+    {
+        return _apiClient.DeleteArticleAsync(token, slug, cancellationToken);
+    }
+
+    private Task WaitBeforeNextIterationAsync(CancellationToken cancellationToken)
+    {
+        return Task.Delay(_requestDelay, cancellationToken);
     }
 }
