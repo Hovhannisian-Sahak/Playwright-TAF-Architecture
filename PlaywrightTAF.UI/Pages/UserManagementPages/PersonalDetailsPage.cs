@@ -3,7 +3,7 @@ using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.UI.Components;
 using static Microsoft.Playwright.Assertions;
 
-namespace PlaywrightTAF.UI.Pages;
+namespace PlaywrightTAF.UI.Pages.UserManagementPages;
 
 public class PersonalDetailsPage : BasePage
 {

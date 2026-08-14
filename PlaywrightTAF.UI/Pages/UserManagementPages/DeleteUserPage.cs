@@ -1,7 +1,8 @@
 using Microsoft.Playwright;
 using PlaywrightTAF.UI.Components;
+using PlaywrightTAF.UI.Pages.UserManagementPages.Base;
 
-namespace PlaywrightTAF.UI.Pages;
+namespace PlaywrightTAF.UI.Pages.UserManagementPages;
 
 public class DeleteUserPage : UserManagementPageBase
 {
@@ -12,9 +13,7 @@ public class DeleteUserPage : UserManagementPageBase
         _toastMessage = toastMessage;
     }
 
-    private ILocator FirstDeleteButton => Page.Locator(".oxd-table-cell-actions")
-        .Locator("button")
-        .Nth(0);
+    private ILocator FirstDeleteButton => FirstTableRowActionButton(0);
 
     private ILocator ConfirmDeleteButton => Page.Locator(".orangehrm-modal-footer")
         .Locator("button")

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
 using PlaywrightTAF.Tests.TestData;
-using PlaywrightTAF.UI.Pages;
+using PlaywrightTAF.UI.Pages.UserManagementPages;
 
 namespace PlaywrightTAF.Tests.UiTests;
 

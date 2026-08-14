@@ -1,7 +1,8 @@
 using Microsoft.Playwright;
 using PlaywrightTAF.UI.Components;
+using PlaywrightTAF.UI.Pages.UserManagementPages.Base;
 
-namespace PlaywrightTAF.UI.Pages;
+namespace PlaywrightTAF.UI.Pages.UserManagementPages;
 
 public class AddUserPage : UserManagementPageBase
 {

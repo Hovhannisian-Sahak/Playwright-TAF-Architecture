@@ -1,7 +1,8 @@
 using Microsoft.Playwright;
 using PlaywrightTAF.UI.Components;
+using PlaywrightTAF.UI.Pages.UserManagementPages.Base;
 
-namespace PlaywrightTAF.UI.Pages;
+namespace PlaywrightTAF.UI.Pages.UserManagementPages;
 
 public class EditUserPage : UserManagementPageBase
 {
@@ -12,9 +13,7 @@ public class EditUserPage : UserManagementPageBase
         _toastMessage = toastMessage;
     }
 
-    private ILocator FirstEditButton => Page.Locator(".oxd-table-cell-actions")
-        .Locator("button")
-        .Nth(1);
+    private ILocator FirstEditButton => FirstTableRowActionButton(1);
 
     private ILocator ChangePasswordCheckbox => Page.Locator(".oxd-checkbox-input");
     private ILocator PasswordRow => Page.Locator(".user-password-row");
