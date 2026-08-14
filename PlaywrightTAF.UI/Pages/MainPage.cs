@@ -14,7 +14,7 @@ public sealed class MainPage : BasePage
     private ILocator Body => Page.Locator(".oxd-userdropdown-name");
     private ILocator UserDropdown => Page.Locator(".oxd-userdropdown-tab");
     private ILocator LogoutLink => Page.GetByRole(AriaRole.Menuitem, new() { Name = "Logout" });
-    
+
     private ILocator UserDropdownMenu => Page.Locator(".oxd-dropdown-menu");
     private ILocator UsernameInput => Page.GetByPlaceholder("username");
     private ILocator PasswordInput => Page.GetByPlaceholder("password");

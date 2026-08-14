@@ -1,8 +1,8 @@
-﻿using Microsoft.Playwright;
+using Microsoft.Playwright;
 using PlaywrightTAF.Core.Configuration;
-using PlaywrightTAF.UI.Pages.Base;
+using PlaywrightTAF.UI.PimConfigurationPages.Base;
 
-namespace PlaywrightTAF.UI.Pages;
+namespace PlaywrightTAF.UI.PimConfigurationPages;
 
 public class DataImportPage : PimConfigurationBasePage
 {
@@ -11,7 +11,7 @@ public class DataImportPage : PimConfigurationBasePage
     }
     private ILocator DownloadButton => Page.GetByText("Download");
     protected override string PageUrl => BuildUrl(ConfigurationReader.Current.BaseUrl, "/web/index.php/pim/pimCsvImport");
-    
+
     public override Task<bool> IsLoadedAsync()
     {
         return Task.FromResult(CurrentUrl.Contains("pimCsvImport", StringComparison.OrdinalIgnoreCase));

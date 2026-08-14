@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
-using PlaywrightTAF.UI.Pages;
-using PlaywrightTAF.UI.Pages.Base;
+using PlaywrightTAF.UI.PimConfigurationPages;
+using PlaywrightTAF.UI.PimConfigurationPages.Base;
 
 namespace PlaywrightTAF.Tests.UiTests;
 

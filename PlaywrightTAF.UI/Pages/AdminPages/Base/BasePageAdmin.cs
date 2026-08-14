@@ -24,7 +24,7 @@ public class BasePageAdmin : BasePage
     public BasePageAdmin(IPage page) : base(page)
     {
     }
-    
+
     public async Task OpenAdminPageAsync()
     {
         await AdminMenuLink.ClickAsync();

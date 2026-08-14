@@ -16,22 +16,22 @@ public class NewsFeedBasePage : BasePage
     private ILocator MostLikedPostsButton => Page.GetByRole(AriaRole.Button, new() { Name = "Most Liked Posts" });
 
     protected override string PageUrl => BuildUrl(ConfigurationReader.Current.BaseUrl, "/web/index.php/buzz/viewBuzz");
-    
+
     public override Task<bool> IsLoadedAsync()
     {
         return Task.FromResult(CurrentUrl.Contains("viewBuzz", StringComparison.OrdinalIgnoreCase));
     }
-    
+
     public async Task ClickMostRecentPostsButtonAsync()
     {
         await MostRecentPostsButton.ClickAsync();
     }
-    
+
     public async Task ClickMostCommentedPostsButtonAsync()
     {
         await MostCommentedPostsButton.ClickAsync();
     }
-    
+
     public async Task ClickMostLikedPostsButtonAsync()
     {
         await MostLikedPostsButton.ClickAsync();

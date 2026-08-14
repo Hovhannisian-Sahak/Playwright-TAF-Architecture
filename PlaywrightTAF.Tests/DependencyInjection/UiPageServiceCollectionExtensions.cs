@@ -3,9 +3,10 @@ using PlaywrightTAF.UI.Components;
 using PlaywrightTAF.UI.Pages;
 using PlaywrightTAF.UI.Pages.AdminPages;
 using PlaywrightTAF.UI.Pages.AdminPages.Base;
-using PlaywrightTAF.UI.Pages.Base;
 using PlaywrightTAF.UI.Pages.NewsFeedPages;
 using PlaywrightTAF.UI.Pages.NewsFeedPages.Base;
+using PlaywrightTAF.UI.PimConfigurationPages;
+using PlaywrightTAF.UI.PimConfigurationPages.Base;
 
 namespace PlaywrightTAF.Tests.DependencyInjection;
 

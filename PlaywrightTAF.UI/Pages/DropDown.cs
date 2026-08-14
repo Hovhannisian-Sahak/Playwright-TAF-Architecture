@@ -24,7 +24,7 @@ public class Dropdown
         await page
             .GetByText(option, new()
             {
-                Exact=true
+                Exact = true
             })
             .ClickAsync();
     }

@@ -2,22 +2,25 @@
 using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.UI.Pages;
 
-namespace PlaywrightTAF.UI.Pages.Base;
+namespace PlaywrightTAF.UI.PimConfigurationPages.Base;
 
 public class PimConfigurationBasePage : BasePage
 {
     public PimConfigurationBasePage(IPage page) : base(page)
     {
     }
+
     private ILocator DataImportButton => Page.GetByRole(AriaRole.Menuitem, new() { Name = "Data Import" });
     private ILocator ConfigurationButton => Page.GetByText("Configuration");
     private ILocator PimButton => Page.GetByRole(AriaRole.Link, new() { Name = "PIM" });
-    public override Task<bool> IsLoadedAsync()
+
+    protected override string PageUrl => BuildUrl(ConfigurationReader.Current.BaseUrl, "/web/index.php/pim/viewEmployeeList");
+
+    public override async Task<bool> IsLoadedAsync()
     {
-        return Task.FromResult(true);
+        return CurrentUrl.Contains("/pim/", StringComparison.OrdinalIgnoreCase)
+               && await ConfigurationButton.IsVisibleAsync();
     }
-    
-    protected override string PageUrl => "url";
 
     public async Task WaitAndClickPimButton()
     {
@@ -25,14 +28,14 @@ public class PimConfigurationBasePage : BasePage
         await PimButton.ClickAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
-    
+
     public async Task WaitAndClickConfigurationButton()
     {
         await ConfigurationButton.WaitForAsync(new() { State = WaitForSelectorState.Visible });
         await ConfigurationButton.ClickAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
-    
+
     public async Task WaitAndClickDataImportButton()
     {
         await DataImportButton.WaitForAsync(new() { State = WaitForSelectorState.Visible });
