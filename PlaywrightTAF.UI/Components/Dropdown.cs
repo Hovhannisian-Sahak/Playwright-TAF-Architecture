@@ -1,27 +1,23 @@
 ﻿using Microsoft.Playwright;
 
-namespace PlaywrightTAF.UI.Pages;
+namespace PlaywrightTAF.UI.Components;
 
 public class Dropdown
 {
-    private readonly IPage page;
+    private readonly IPage _page;
 
     public Dropdown(IPage page)
     {
-        this.page = page;
+        _page = page;
     }
 
-
-    public async Task Select(
-        string dropdown,
-        string option)
+    public async Task Select(string dropdown, string option)
     {
-        await page
+        await _page
             .Locator(dropdown)
             .ClickAsync();
 
-
-        await page
+        await _page
             .GetByText(option, new()
             {
                 Exact = true
