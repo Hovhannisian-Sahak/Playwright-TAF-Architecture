@@ -63,6 +63,18 @@ public abstract class BasePage
         });
     }
 
+    protected async Task ClickWhenVisibleAsync(ILocator locator)
+    {
+        await WaitUntilVisibleAsync(locator);
+        await locator.ClickAsync();
+    }
+
+    protected async Task ClickWhenVisibleAndWaitForPageLoadAsync(ILocator locator)
+    {
+        await ClickWhenVisibleAsync(locator);
+        await WaitForPageLoadAsync();
+    }
+
     protected async Task SelectDropdownOptionAsync(ILocator dropdowns, int dropdownIndex, string option)
     {
         await dropdowns.Nth(dropdownIndex).ClickAsync();

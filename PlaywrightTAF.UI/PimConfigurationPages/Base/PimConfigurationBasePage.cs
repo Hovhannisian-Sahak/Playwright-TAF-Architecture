@@ -24,22 +24,16 @@ public class PimConfigurationBasePage : BasePage
 
     public async Task WaitAndClickPimButton()
     {
-        await PimButton.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await PimButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await ClickWhenVisibleAndWaitForPageLoadAsync(PimButton);
     }
 
     public async Task WaitAndClickConfigurationButton()
     {
-        await ConfigurationButton.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await ConfigurationButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await ClickWhenVisibleAndWaitForPageLoadAsync(ConfigurationButton);
     }
 
     public async Task WaitAndClickDataImportButton()
     {
-        await DataImportButton.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await DataImportButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await ClickWhenVisibleAndWaitForPageLoadAsync(DataImportButton);
     }
 }
