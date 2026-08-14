@@ -1,6 +1,6 @@
-﻿using PlaywrightTAF.API.Endpoints;
-using PlaywrightTAF.Core.Models;
-using PlaywrightTAF.Core.RequestModels;
+using PlaywrightTAF.API.Endpoints;
+using PlaywrightTAF.API.ResponseModels;
+using PlaywrightTAF.API.RequestModels;
 using RestSharp;
 
 namespace PlaywrightTAF.API.Clients;

@@ -1,4 +1,4 @@
-namespace PlaywrightTAF.Core.Authentication;
+namespace PlaywrightTAF.API.Authentication;
 
 public class TokenProvider
 {

@@ -1,4 +1,4 @@
-namespace PlaywrightTAF.Core.Models;
+namespace PlaywrightTAF.API.ResponseModels;
 
 public class ArticleResponse
 {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PlaywrightTAF.Core.Models;
+using PlaywrightTAF.API.ResponseModels;
 using PlaywrightTAF.Tests.Assertions;
 using PlaywrightTAF.Tests.Base;
 using PlaywrightTAF.Tests.TestData;

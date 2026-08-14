@@ -1,5 +1,5 @@
-﻿using PlaywrightTAF.API.Clients;
-using PlaywrightTAF.Core.RequestModels;
+using PlaywrightTAF.API.Clients;
+using PlaywrightTAF.API.RequestModels;
 
 namespace PlaywrightTAF.API.Services;
 

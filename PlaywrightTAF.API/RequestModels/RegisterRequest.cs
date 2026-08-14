@@ -1,4 +1,4 @@
-﻿namespace PlaywrightTAF.Core.RequestModels;
+namespace PlaywrightTAF.API.RequestModels;
 
 public class RegisterRequest
 {

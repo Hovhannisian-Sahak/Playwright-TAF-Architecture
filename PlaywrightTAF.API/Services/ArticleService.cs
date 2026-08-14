@@ -1,7 +1,7 @@
 using PlaywrightTAF.API.Clients;
-using PlaywrightTAF.Core.Authentication;
-using PlaywrightTAF.Core.Models;
-using PlaywrightTAF.Core.RequestModels;
+using PlaywrightTAF.API.Authentication;
+using PlaywrightTAF.API.ResponseModels;
+using PlaywrightTAF.API.RequestModels;
 
 namespace PlaywrightTAF.API.Services;
 

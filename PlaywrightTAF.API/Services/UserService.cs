@@ -1,6 +1,6 @@
 using PlaywrightTAF.API.Clients;
-using PlaywrightTAF.Core.Authentication;
-using PlaywrightTAF.Core.Models;
+using PlaywrightTAF.API.Authentication;
+using PlaywrightTAF.API.ResponseModels;
 
 namespace PlaywrightTAF.API.Services;
 

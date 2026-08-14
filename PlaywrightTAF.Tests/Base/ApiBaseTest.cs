@@ -5,7 +5,7 @@ using Allure.NUnit;
 using NUnit.Framework;
 using PlaywrightTAF.API.Clients;
 using PlaywrightTAF.API.Services;
-using PlaywrightTAF.Core.Authentication;
+using PlaywrightTAF.API.Authentication;
 using PlaywrightTAF.Core.Logging;
 using Serilog;
 

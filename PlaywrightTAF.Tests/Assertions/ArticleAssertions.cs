@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using PlaywrightTAF.Core.Models;
+using PlaywrightTAF.API.ResponseModels;
 using PlaywrightTAF.Tests.TestData;
 
 namespace PlaywrightTAF.Tests.Assertions;
