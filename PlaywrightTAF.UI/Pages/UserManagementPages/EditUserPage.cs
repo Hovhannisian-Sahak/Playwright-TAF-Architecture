@@ -13,7 +13,9 @@ public class EditUserPage : UserManagementPageBase
         _toastMessage = toastMessage;
     }
 
-    private ILocator FirstEditButton => FirstTableRowActionButton(1);
+    private ILocator FirstEditButton => Page.Locator(".oxd-table-cell-actions")
+        .Locator("button")
+        .Nth(1);
 
     private ILocator ChangePasswordCheckbox => Page.Locator(".oxd-checkbox-input");
     private ILocator PasswordRow => Page.Locator(".user-password-row");
@@ -23,7 +25,7 @@ public class EditUserPage : UserManagementPageBase
     {
         await FirstEditButton.ClickAsync();
 
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
 
         await ChangePasswordCheckbox.ClickAsync();
         await PasswordRow.WaitForAsync();
@@ -35,6 +37,6 @@ public class EditUserPage : UserManagementPageBase
         await SaveButton.ClickAsync();
 
         await _toastMessage.WaitForUpdatedAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
     }
 }

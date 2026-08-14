@@ -20,7 +20,7 @@ public class PimConfigurationTests : AdminTest
         await PimConfigurationPage.OpenDataImportAsync();
         Assert.That(await DataImportPage.IsLoadedAsync(), Is.True);
     }
-    
+
     [Test]
     [Category("UI")]
     public async Task AdminCanOpenDataImportPageDirectly()

@@ -18,7 +18,7 @@ public class DashboardTests : AdminTest
     {
         Assert.That(await DashboardPage.IsLoadedAsync(), Is.True);
     }
-    
+
     [Test]
     [Category("UI")]
     public async Task AdminCanClickToOpenOrangeCom()

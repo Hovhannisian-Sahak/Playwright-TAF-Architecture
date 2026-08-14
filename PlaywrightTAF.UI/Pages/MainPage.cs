@@ -37,6 +37,6 @@ public sealed class MainPage : BasePage
         await Page.WaitForURLAsync("**/web/index.php/auth/login");
         await WaitUntilVisibleAsync(UsernameInput);
         await WaitUntilVisibleAsync(PasswordInput);
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
     }
 }

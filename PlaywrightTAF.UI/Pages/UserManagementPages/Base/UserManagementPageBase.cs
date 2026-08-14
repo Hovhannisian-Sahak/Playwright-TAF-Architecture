@@ -14,7 +14,6 @@ public abstract class UserManagementPageBase : BasePage
 
     protected ILocator SearchFilter => Page.Locator(".oxd-table-filter");
     protected ILocator TableBody => Page.Locator(".oxd-table-body");
-    protected ILocator FirstTableRow => TableBody.Locator(".oxd-table-card").First;
     protected ILocator UsernameInput => Page
         .Locator(".oxd-input-group")
         .Filter(new() { HasText = "Username" })
@@ -32,14 +31,6 @@ public abstract class UserManagementPageBase : BasePage
     private ILocator OneRecordFoundText => Page.Locator("text=(1) Record Found");
     private ILocator NoRecordsFoundText => Page.Locator(".orangehrm-horizontal-padding")
         .GetByText("No Records Found", new() { Exact = true });
-
-    protected ILocator FirstTableRowActionButton(int actionIndex)
-    {
-        return FirstTableRow
-            .Locator(".oxd-table-cell-actions")
-            .Locator("button")
-            .Nth(actionIndex);
-    }
 
     protected async Task OpenUserManagementAsync()
     {

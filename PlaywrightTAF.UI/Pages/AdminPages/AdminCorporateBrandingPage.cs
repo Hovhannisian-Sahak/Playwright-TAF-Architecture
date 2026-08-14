@@ -37,7 +37,7 @@ public class AdminCorporateBrandingPage : BasePageAdmin
         _toastMessage = toastMessage;
     }
 
-    public async Task ChooseColorAsync()
+    public async Task ChangeSecondaryFontColorAsync()
     {
         await ColorPickerButton.ClickAsync();
         await WaitUntilVisibleAsync(ColorPicker);
@@ -58,15 +58,15 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     public async Task ResetToDefaultAsync()
     {
         await ResetToDefaultButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
     }
 
-    public async Task ChooseClientLogoAsync(string filePath)
+    public async Task UploadClientLogoAsync(string filePath)
     {
         await UploadFileAsync(FileButton, FileInput, filePath);
     }
 
-    public async Task ClickPublishAsync()
+    public async Task PublishAsync()
     {
         await PublishButton.ClickAsync();
     }
@@ -74,6 +74,6 @@ public class AdminCorporateBrandingPage : BasePageAdmin
     public async Task ExpectSuccessfullySavedAsync()
     {
         await _toastMessage.WaitForSavedAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
     }
 }

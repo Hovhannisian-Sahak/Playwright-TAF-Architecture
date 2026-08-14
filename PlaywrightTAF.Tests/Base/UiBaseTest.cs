@@ -138,7 +138,7 @@ public abstract class UiBaseTest
         {
             await Browser.CloseAsync();
         }
-        
+
         Playwright?.Dispose();
     }
 

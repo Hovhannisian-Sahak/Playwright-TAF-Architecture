@@ -13,7 +13,9 @@ public class DeleteUserPage : UserManagementPageBase
         _toastMessage = toastMessage;
     }
 
-    private ILocator FirstDeleteButton => FirstTableRowActionButton(0);
+    private ILocator FirstDeleteButton => Page.Locator(".oxd-table-cell-actions")
+        .Locator("button")
+        .Nth(0);
 
     private ILocator ConfirmDeleteButton => Page.Locator(".orangehrm-modal-footer")
         .Locator("button")
@@ -26,6 +28,6 @@ public class DeleteUserPage : UserManagementPageBase
         await ConfirmDeleteButton.ClickAsync();
 
         await _toastMessage.WaitForDeletedAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
     }
 }

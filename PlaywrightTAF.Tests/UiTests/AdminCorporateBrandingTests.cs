@@ -19,9 +19,9 @@ public class AdminCorporateBrandingTests : AdminTest
         await AdminCorporateBrandingPage.OpenAdminPageAsync();
         await AdminCorporateBrandingPage.ClickToOpenCorporateBrandingAsync();
         await AdminCorporateBrandingPage.ResetToDefaultAsync();
-        await AdminCorporateBrandingPage.ChooseColorAsync();
-        await AdminCorporateBrandingPage.ChooseClientLogoAsync(filePath);
-        await AdminCorporateBrandingPage.ClickPublishAsync();
+        await AdminCorporateBrandingPage.ChangeSecondaryFontColorAsync();
+        await AdminCorporateBrandingPage.UploadClientLogoAsync(filePath);
+        await AdminCorporateBrandingPage.PublishAsync();
         await AdminCorporateBrandingPage.ExpectSuccessfullySavedAsync();
     }
 }

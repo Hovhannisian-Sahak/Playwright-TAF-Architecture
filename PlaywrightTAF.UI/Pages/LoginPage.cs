@@ -39,7 +39,7 @@ public class LoginPage : BasePage
         await FillAndExpectValueAsync(PasswordInput, password);
         await LoginButton.ClickAsync();
         await WaitUntilVisibleAsync(UserDropdownName);
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
         Logger.Information("Login submitted for {Username}; current URL is {CurrentUrl}", username, CurrentUrl);
     }
 }

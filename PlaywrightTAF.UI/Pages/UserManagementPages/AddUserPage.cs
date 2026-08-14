@@ -44,7 +44,7 @@ public class AddUserPage : UserManagementPageBase
         await SaveButton.ClickAsync();
 
         await _toastMessage.WaitForSuccessAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await WaitForPageLoadAsync();
     }
 
     private async Task SelectEmployeeAsync(string employeeName)
