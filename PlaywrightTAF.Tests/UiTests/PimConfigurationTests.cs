@@ -34,8 +34,9 @@ public class PimConfigurationTests : AdminTest
     public async Task AdminCanDownloadFile()
     {
         await DataImportPage.OpenAsync();
-        await DataImportPage.DownloadDataImportFile();
+        var downloadedFilePath = await DataImportPage.DownloadDataImportFileAsync(TestContext.CurrentContext.WorkDirectory);
+
         Assert.That(await DataImportPage.IsLoadedAsync(), Is.True);
-        Assert.That(System.IO.File.Exists(@"C:\Temp\importData.csv"), Is.True, "Downloaded file does not exist.");
+        Assert.That(System.IO.File.Exists(downloadedFilePath), Is.True, "Downloaded file does not exist.");
     }
 }
