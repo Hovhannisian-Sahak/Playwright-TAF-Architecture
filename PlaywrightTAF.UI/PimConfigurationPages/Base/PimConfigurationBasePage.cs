@@ -22,17 +22,17 @@ public class PimConfigurationBasePage : BasePage
                && await ConfigurationButton.IsVisibleAsync();
     }
 
-    public async Task WaitAndClickPimButton()
+    public async Task OpenPimAsync()
     {
         await ClickWhenVisibleAndWaitForPageLoadAsync(PimButton);
     }
 
-    public async Task WaitAndClickConfigurationButton()
+    public async Task OpenConfigurationMenuAsync()
     {
         await ClickWhenVisibleAndWaitForPageLoadAsync(ConfigurationButton);
     }
 
-    public async Task WaitAndClickDataImportButton()
+    public async Task OpenDataImportAsync()
     {
         await ClickWhenVisibleAndWaitForPageLoadAsync(DataImportButton);
     }

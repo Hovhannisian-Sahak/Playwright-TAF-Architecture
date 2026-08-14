@@ -15,9 +15,9 @@ public class PimConfigurationTests : AdminTest
     [Category("UI")]
     public async Task AdminCanOpenDataImportPage()
     {
-        await PimConfigurationPage.WaitAndClickPimButton();
-        await PimConfigurationPage.WaitAndClickConfigurationButton();
-        await PimConfigurationPage.WaitAndClickDataImportButton();
+        await PimConfigurationPage.OpenPimAsync();
+        await PimConfigurationPage.OpenConfigurationMenuAsync();
+        await PimConfigurationPage.OpenDataImportAsync();
         Assert.That(await DataImportPage.IsLoadedAsync(), Is.True);
     }
     
