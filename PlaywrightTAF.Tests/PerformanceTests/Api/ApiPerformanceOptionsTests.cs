@@ -8,6 +8,8 @@ namespace PlaywrightTAF.Tests.PerformanceTests.Api;
 public sealed class ApiPerformanceOptionsTests
 {
     [Test]
+    [Category("Performance")]
+    [Category("APIPerformance")]
     public void FromArgs_ParsesDecimalOptionsUsingInvariantCulture()
     {
         var originalCulture = CultureInfo.CurrentCulture;

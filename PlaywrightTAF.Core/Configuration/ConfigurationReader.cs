@@ -10,6 +10,8 @@ public static class ConfigurationReader
 
     public static AppConfiguration Load(string? basePath = null)
     {
+        var defaults = new AppConfiguration();
+
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(basePath ?? AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
@@ -18,21 +20,13 @@ public static class ConfigurationReader
 
         var config = new AppConfiguration
         {
-            BaseUrl = GetString(configuration, "BaseUrl", "https://opensource-demo.orangehrmlive.com/"),
-            ApiBaseUrl = GetString(configuration, "ApiBaseUrl", "https://conduit-api.bondaracademy.com"),
-            Browser = GetString(configuration, "Browser", "chromium"),
-            Headless = GetBool(configuration, "Headless", false),
-            DefaultTimeoutMilliseconds = GetInt(configuration, "DefaultTimeoutMilliseconds", 30000),
-            Admin = GetCredentials(configuration, "Admin", new Authentication.Credentials
-            {
-                Username = "Admin",
-                Password = "admin123"
-            }),
-            User = GetCredentials(configuration, "User", new Authentication.Credentials
-            {
-                Username = "Users",
-                Password = "users123"
-            })
+            BaseUrl = GetString(configuration, "BaseUrl", defaults.BaseUrl),
+            ApiBaseUrl = GetString(configuration, "ApiBaseUrl", defaults.ApiBaseUrl),
+            Browser = GetString(configuration, "Browser", defaults.Browser),
+            Headless = GetBool(configuration, "Headless", defaults.Headless),
+            DefaultTimeoutMilliseconds = GetInt(configuration, "DefaultTimeoutMilliseconds", defaults.DefaultTimeoutMilliseconds),
+            Admin = GetCredentials(configuration, "Admin", defaults.Admin),
+            User = GetCredentials(configuration, "User", defaults.User)
         };
 
         Validate(config);

@@ -18,7 +18,6 @@ internal static class UiPageServiceCollectionExtensions
         services.AddTransient<LoginPage>();
         services.AddTransient<MainPage>();
         services.AddTransient<DashboardPage>();
-        services.AddTransient<Dropdown>();
         services.AddTransient<ToastMessage>();
 
         services.AddTransient<BasePageAdmin>();

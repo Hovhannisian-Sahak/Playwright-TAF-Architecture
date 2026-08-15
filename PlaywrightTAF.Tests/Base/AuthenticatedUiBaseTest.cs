@@ -52,6 +52,7 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
         return new BrowserNewContextOptions
         {
             BaseURL = Configuration.BaseUrl,
+            AcceptDownloads = true,
             StorageStatePath = StorageStatePath
         };
     }

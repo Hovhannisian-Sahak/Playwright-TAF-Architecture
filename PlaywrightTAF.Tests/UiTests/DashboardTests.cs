@@ -1,10 +1,7 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.Playwright;
 using NUnit.Framework;
 using PlaywrightTAF.Tests.Base;
 using PlaywrightTAF.UI.Pages;
-using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightTAF.Tests.UiTests;
 

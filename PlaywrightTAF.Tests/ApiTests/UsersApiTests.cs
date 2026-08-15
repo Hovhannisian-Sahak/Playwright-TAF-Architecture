@@ -7,6 +7,7 @@ namespace PlaywrightTAF.Tests.ApiTests;
 public class UserTests : BaseApiTest
 {
     [Test]
+    [Category("API")]
     public async Task GetCurrentUser_ShouldReturnUser()
     {
         var user = await UserService.GetCurrentUser();

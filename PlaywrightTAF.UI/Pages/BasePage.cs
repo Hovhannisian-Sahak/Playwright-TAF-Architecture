@@ -28,7 +28,7 @@ public abstract class BasePage
 
     public virtual Task WaitForPageLoadAsync()
     {
-        return Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        return Page.WaitForLoadStateAsync(LoadState.Load);
     }
 
     public abstract Task<bool> IsLoadedAsync();
@@ -77,11 +77,11 @@ public abstract class BasePage
 
     protected async Task SelectDropdownOptionAsync(ILocator dropdowns, int dropdownIndex, string option)
     {
-        await dropdowns.Nth(dropdownIndex).ClickAsync();
+        await ClickWhenVisibleAsync(dropdowns.Nth(dropdownIndex));
 
-        await Page.GetByRole(AriaRole.Listbox)
-            .GetByText(option, new() { Exact = true })
-            .ClickAsync();
+        await ClickWhenVisibleAsync(
+            Page.GetByRole(AriaRole.Listbox)
+                .GetByText(option, new() { Exact = true }));
     }
 
     protected async Task UploadFileAsync(ILocator fileButton, ILocator fileInput, string filePath)

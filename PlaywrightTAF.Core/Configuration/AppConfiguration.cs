@@ -10,7 +10,7 @@ public sealed class AppConfiguration
 
     public string Browser { get; init; } = "chromium";
 
-    public bool Headless { get; init; } = true;
+    public bool Headless { get; init; } = false;
 
     public int DefaultTimeoutMilliseconds { get; init; } = 30000;
 

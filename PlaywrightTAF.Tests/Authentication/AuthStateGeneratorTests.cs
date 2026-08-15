@@ -9,6 +9,8 @@ namespace PlaywrightTAF.Tests.Authentication;
 public class AuthStateGeneratorTests
 {
     [Test]
+    [Category("Authentication")]
+    [Explicit("Generates reusable UI authentication state files on demand.")]
     public async Task GenerateAuthStates()
     {
         await AuthSetup.CreateAuthStateAsync(ConfigurationReader.Current.Admin, AuthStatePaths.Admin);
