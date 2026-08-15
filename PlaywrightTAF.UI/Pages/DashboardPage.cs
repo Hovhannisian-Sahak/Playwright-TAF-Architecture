@@ -8,16 +8,29 @@ public sealed class DashboardPage : BasePage
 {
     private const string DashboardPath = "/web/index.php/dashboard/index";
     private ILocator OrangeComLink => Page.GetByRole(AriaRole.Link, new() { Name = "OrangeHRM, Inc" });
-
+    private ILocator Body => Page.GetByRole(AriaRole.Heading, new() { Name = "Dashboard" });
     public DashboardPage(IPage page) : base(page)
     {
     }
 
     protected override string PageUrl => new Uri(new Uri(ConfigurationReader.Current.BaseUrl), DashboardPath).ToString();
 
-    public override Task<bool> IsLoadedAsync()
+    public override async Task<bool> IsLoadedAsync()
     {
-        return Task.FromResult(CurrentUrl.Contains("dashboard", StringComparison.OrdinalIgnoreCase));
+        if (!CurrentUrl.Contains("dashboard", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        try
+        {
+            await WaitUntilVisibleAsync(Body);
+            return true;
+        }
+        catch (TimeoutException)
+        {
+            return false;
+        }
     }
 
     public async Task<IPage> OpenOrangeComAsync()

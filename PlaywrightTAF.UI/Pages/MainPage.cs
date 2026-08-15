@@ -10,8 +10,7 @@ public sealed class MainPage : BasePage
     }
 
     protected override string PageUrl => ConfigurationReader.Current.BaseUrl;
-
-    private ILocator Body => Page.Locator(".oxd-userdropdown-name");
+    
     private ILocator UserDropdown => Page.Locator(".oxd-userdropdown-tab");
     private ILocator LogoutLink => Page.GetByRole(AriaRole.Menuitem, new() { Name = "Logout" });
 
@@ -26,7 +25,7 @@ public sealed class MainPage : BasePage
 
     public override Task<bool> IsLoadedAsync()
     {
-        return Body.IsVisibleAsync();
+        return UserDropdown.IsVisibleAsync();
     }
 
     public async Task LogoutAsync()

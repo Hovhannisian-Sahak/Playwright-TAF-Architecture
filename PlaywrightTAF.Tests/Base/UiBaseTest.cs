@@ -29,8 +29,6 @@ public abstract class UiBaseTest
 
     protected virtual bool ShouldLoginThroughUi { get; } = true;
 
-    protected virtual bool ShouldLogoutThroughUi => ShouldLoginThroughUi;
-
     protected virtual Credentials UiCredentials => Configuration.Admin;
 
     protected virtual string InitialUrl => Configuration.BaseUrl;
@@ -212,15 +210,4 @@ public abstract class UiBaseTest
 
     }
 
-    protected virtual async Task LogoutThroughUiAsync()
-    {
-        var mainPage = PageObject<MainPage>();
-
-        if (!await mainPage.IsLoadedAsync())
-        {
-            await mainPage.OpenMainPageAsync();
-        }
-
-        await mainPage.LogoutAsync();
-    }
 }
