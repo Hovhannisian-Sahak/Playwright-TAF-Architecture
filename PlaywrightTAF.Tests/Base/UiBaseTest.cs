@@ -47,6 +47,12 @@ public abstract class UiBaseTest
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
         Browser = await LaunchBrowserAsync();
+    }
+
+    [SetUp]
+    public async Task SetUpAsync()
+    {
+        Logger.Information("Starting UI test {TestName}", TestContext.CurrentContext.Test.FullName);
         Context = await Browser.NewContextAsync(CreateContextOptions());
         Page = await CreatePageAsync(Context);
         Services = CreateServices(Page);
@@ -57,13 +63,6 @@ public abstract class UiBaseTest
         {
             await LoginThroughUiAsync();
         }
-    }
-
-    [SetUp]
-    public Task SetUpAsync()
-    {
-        Logger.Information("Starting UI test {TestName}", TestContext.CurrentContext.Test.FullName);
-        return Task.CompletedTask;
     }
 
     [TearDown]
@@ -82,6 +81,7 @@ public abstract class UiBaseTest
                 TestContext.CurrentContext.Test.FullName);
         }
 
+        await DisposeTestResourcesAsync();
     }
 
     private async Task CaptureFailureScreenshotAsync()
@@ -122,22 +122,30 @@ public abstract class UiBaseTest
     [OneTimeTearDown]
     public virtual async Task OneTimeTearDownAsync()
     {
-        if (Services is IDisposable disposableServices)
-        {
-            disposableServices.Dispose();
-        }
-
-        if (Context is not null)
-        {
-            await Context.CloseAsync();
-        }
-
         if (Browser is not null)
         {
             await Browser.CloseAsync();
         }
 
         Playwright?.Dispose();
+    }
+
+    private async Task DisposeTestResourcesAsync()
+    {
+        if (Services is IDisposable disposableServices)
+        {
+            disposableServices.Dispose();
+        }
+
+        Services = null!;
+
+        if (Context is not null)
+        {
+            await Context.CloseAsync();
+        }
+
+        Context = null!;
+        Page = null!;
     }
 
     protected virtual BrowserNewContextOptions CreateContextOptions()
