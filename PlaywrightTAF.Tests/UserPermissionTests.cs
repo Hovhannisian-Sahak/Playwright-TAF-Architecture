@@ -11,7 +11,7 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class UserPermissionTests : UserTest
 {
-    private const string EmployeeName = "Ranga  Akunuri";
+    private const string EmployeeName = "Testing  qa";
 
     private DashboardPage DashboardPage => PageObject<DashboardPage>();
 

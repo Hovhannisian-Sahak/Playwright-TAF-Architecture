@@ -8,7 +8,7 @@ namespace PlaywrightTAF.Tests.UiTests;
 
 public class UserManagementTests : AdminTest
 {
-    private const string EmployeeName = "Ranga  Akunuri";
+    private const string EmployeeName = "Testing  qa";
     private const string UserPassword = "TestUser123!@#Aa";
     private const string ChangePassword = "TestUser123!@#Aab";
 
