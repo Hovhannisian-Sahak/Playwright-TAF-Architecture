@@ -21,11 +21,22 @@ public class EditUserPage : UserManagementPageBase
     private ILocator PasswordRow => Page.Locator(".user-password-row");
     private ILocator SaveButton => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
 
-    public async Task EditFirstSearchResultAsync(string changedUsername, string changedPassword)
+    public Task EditFirstSearchResultAsync(string changedUsername, string changedPassword)
+    {
+        return EditFirstSearchResultAsync(changedUsername, changedPassword, role: null);
+    }
+
+    public async Task EditFirstSearchResultAsync(string changedUsername, string changedPassword, string? role)
     {
         await FirstEditButton.ClickAsync();
 
         await WaitForPageLoadAsync();
+
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            await SelectDropdownOptionAsync(Dropdowns, 0, role);
+            await SelectDropdownOptionAsync(Dropdowns, 1, "Enabled");
+        }
 
         await ChangePasswordCheckbox.ClickAsync();
         await PasswordRow.WaitForAsync();

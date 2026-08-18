@@ -9,7 +9,7 @@ public class DataImportPage : PimConfigurationBasePage
     public DataImportPage(IPage page) : base(page)
     {
     }
-    private ILocator DownloadButton => Page.GetByRole(AriaRole.Button, new() { Name = "Download" });
+    private ILocator DownloadButton => Page.GetByRole(AriaRole.Link, new() { Name = "Download" });
 
     protected override string PageUrl => BuildUrl(ConfigurationReader.Current.BaseUrl, "/web/index.php/pim/pimCsvImport");
 

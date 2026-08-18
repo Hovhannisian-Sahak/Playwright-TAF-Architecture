@@ -21,6 +21,7 @@ public abstract class UserManagementPageBase : BasePage
 
     protected ILocator PasswordInput => Page.Locator("input[type='password']").Nth(0);
     protected ILocator ConfirmPasswordInput => Page.Locator("input[type='password']").Nth(1);
+    protected ILocator Dropdowns => Page.Locator(".oxd-select-wrapper");
     protected ILocator AdminMenuLink => Page.GetByRole(AriaRole.Link, new() { Name = "Admin" });
     protected ILocator SearchUsernameInput => SearchFilter
         .Locator(".oxd-input-group")
@@ -32,7 +33,7 @@ public abstract class UserManagementPageBase : BasePage
     private ILocator NoRecordsFoundText => Page.Locator(".orangehrm-horizontal-padding")
         .GetByText("No Records Found", new() { Exact = true });
 
-    protected async Task OpenUserManagementAsync()
+    public async Task OpenUserManagementAsync()
     {
         await AdminMenuLink.ClickAsync();
         await WaitUntilVisibleAsync(SearchFilter);
@@ -48,6 +49,24 @@ public abstract class UserManagementPageBase : BasePage
         await FillAndExpectValueAsync(SearchUsernameInput, username);
 
         await SearchButton.ClickAsync();
+    }
+
+    public async Task<bool> IsUserListedAsync(string username)
+    {
+        try
+        {
+            await TableBody
+                .Locator(".oxd-table-row")
+                .Filter(new() { HasText = username })
+                .First
+                .WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+
+            return true;
+        }
+        catch (TimeoutException)
+        {
+            return false;
+        }
     }
 
     public async Task ExpectUserExistsAsync(string username)

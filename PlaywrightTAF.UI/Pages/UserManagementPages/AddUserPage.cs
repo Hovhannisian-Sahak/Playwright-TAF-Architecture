@@ -15,7 +15,6 @@ public class AddUserPage : UserManagementPageBase
 
     private ILocator AddButton => Page.GetByRole(AriaRole.Button, new() { Name = " Add " });
     private ILocator AddUserHeading => Page.GetByRole(AriaRole.Heading, new() { Name = "Add User" });
-    private ILocator Dropdowns => Page.Locator(".oxd-select-wrapper");
     private ILocator EmployeeNameInput => Page.Locator("input[placeholder='Type for hints...']");
     private ILocator EmployeeOptions => Page.Locator(".oxd-autocomplete-option");
     private ILocator SaveButton => Page.GetByRole(AriaRole.Button, new() { Name = "Save" });
@@ -34,7 +33,12 @@ public class AddUserPage : UserManagementPageBase
 
     public async Task CreateAdminUserAsync(string username, string employeeName, string password)
     {
-        await SelectDropdownOptionAsync(Dropdowns, 0, "Admin");
+        await CreateUserAsync("Admin", username, employeeName, password);
+    }
+
+    public async Task CreateUserAsync(string role, string username, string employeeName, string password)
+    {
+        await SelectDropdownOptionAsync(Dropdowns, 0, role);
         await SelectEmployeeAsync(employeeName);
         await SelectDropdownOptionAsync(Dropdowns, 1, "Enabled");
 

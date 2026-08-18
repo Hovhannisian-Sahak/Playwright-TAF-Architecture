@@ -28,6 +28,7 @@ public class UserManagementTests : AdminTest
         await AddUserPage.ExpectUserExistsAsync(newUsername);
 
         await DeleteUserPage.DeleteFirstSearchResultAsync();
+        UntrackUserFromCleanup(newUsername);
     }
 
     [Test]
@@ -38,11 +39,13 @@ public class UserManagementTests : AdminTest
 
         await AddUserPage.OpenAddUserFormAsync();
         await AddUserPage.CreateAdminUserAsync(newUsername, EmployeeName, UserPassword);
+        TrackUserForCleanup(newUsername);
         await DeleteUserPage.SearchUserAsync(newUsername);
 
         await DeleteUserPage.ExpectUserExistsAsync(newUsername);
 
         await DeleteUserPage.DeleteFirstSearchResultAsync();
+        UntrackUserFromCleanup(newUsername);
         await DeleteUserPage.SearchUserAsync(newUsername);
 
         await DeleteUserPage.ExpectUserDoesNotExistAsync(newUsername);
@@ -60,10 +63,13 @@ public class UserManagementTests : AdminTest
         await EditUserPage.ExpectUserExistsAsync(newUsername);
 
         await EditUserPage.EditFirstSearchResultAsync(changedUsername, ChangePassword);
+        UntrackUserFromCleanup(newUsername);
+        TrackUserForCleanup(changedUsername);
         await EditUserPage.SearchUserAsync(changedUsername);
 
         await EditUserPage.ExpectUserExistsAsync(changedUsername);
         await DeleteUserPage.DeleteFirstSearchResultAsync();
+        UntrackUserFromCleanup(changedUsername);
     }
 
     [Test]
@@ -72,7 +78,10 @@ public class UserManagementTests : AdminTest
     {
         var lastName = TestDataFactory.UniqueUsername("Admin");
         string filePath = TestDataFactory.UploadFilePath();
+        string attachmentComment = TestDataFactory.UniqueUsername("ProfileAttachment");
 
+        await TrackPersonalDetailsForCleanupAsync();
+        TrackPersonalAttachmentForCleanup(attachmentComment);
         await PersonalDetailsPage.OpenPersonalDetailsAsync();
         await PersonalDetailsPage.FillLastNameAsync(lastName);
         await PersonalDetailsPage.SelectNationalityAsync("Armenian");
@@ -82,7 +91,7 @@ public class UserManagementTests : AdminTest
         await PersonalDetailsPage.SavePersonalDetailsAsync();
         await PersonalDetailsPage.ExpectPersonalDetailsUpdatedAsync();
         await PersonalDetailsPage.OpenAttachmentFormAsync();
-        await PersonalDetailsPage.UploadFileAndMakeCommentAsync(filePath, "Test");
+        await PersonalDetailsPage.UploadFileAndMakeCommentAsync(filePath, attachmentComment);
         await PersonalDetailsPage.ExpectAttachmentSavedAsync();
     }
 
@@ -90,6 +99,7 @@ public class UserManagementTests : AdminTest
     {
         await AddUserPage.OpenAddUserFormAsync();
         await AddUserPage.CreateAdminUserAsync(username, EmployeeName, UserPassword);
+        TrackUserForCleanup(username);
         await AddUserPage.SearchUserAsync(username);
     }
 }

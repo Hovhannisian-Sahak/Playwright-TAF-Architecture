@@ -81,7 +81,19 @@ public abstract class UiBaseTest
                 TestContext.CurrentContext.Test.FullName);
         }
 
-        await DisposeTestResourcesAsync();
+        try
+        {
+            await CleanupTestDataAsync();
+        }
+        finally
+        {
+            await DisposeTestResourcesAsync();
+        }
+    }
+
+    protected virtual Task CleanupTestDataAsync()
+    {
+        return Task.CompletedTask;
     }
 
     private async Task CaptureFailureScreenshotAsync()

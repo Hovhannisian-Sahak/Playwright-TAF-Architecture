@@ -32,6 +32,9 @@ public class PersonalDetailsPage : BasePage
     private ILocator FileButton => Page.Locator(".oxd-file-button");
     private ILocator FileInput => Page.Locator(".oxd-file-input-div");
     private ILocator CommentInput => Page.GetByPlaceholder("Type comment here");
+    private ILocator ConfirmDeleteButton => Page.Locator(".orangehrm-modal-footer")
+        .Locator("button")
+        .Nth(1);
 
     public async Task OpenPersonalDetailsAsync()
     {
@@ -49,6 +52,11 @@ public class PersonalDetailsPage : BasePage
         await ClearFillAndExpectValueAsync(LastNameInput, lastName);
     }
 
+    public Task<string> GetLastNameAsync()
+    {
+        return LastNameInput.InputValueAsync();
+    }
+
     public async Task SelectNationalityAsync(string nationality)
     {
         await SelectDropdownOptionAsync(Dropdowns, 0, nationality);
@@ -57,6 +65,11 @@ public class PersonalDetailsPage : BasePage
     public async Task ExpectNationalityAsync(string nationality)
     {
         await Expect(Dropdowns.Nth(0)).ToContainTextAsync(nationality);
+    }
+
+    public async Task<string> GetNationalityAsync()
+    {
+        return (await Dropdowns.Nth(0).InnerTextAsync()).Trim();
     }
 
     public async Task SetBirthDateAsync()
@@ -69,6 +82,16 @@ public class PersonalDetailsPage : BasePage
         await CalendarMenu.GetByText("November", new() { Exact = true }).ClickAsync();
 
         await CalendarDates.GetByText("19", new() { Exact = true }).ClickAsync();
+    }
+
+    public async Task SetBirthDateValueAsync(string birthDate)
+    {
+        await ClearFillAndExpectValueAsync(DateInputs.Nth(1), birthDate);
+    }
+
+    public Task<string> GetBirthDateAsync()
+    {
+        return DateInputs.Nth(1).InputValueAsync();
     }
 
     public async Task ExpectBirthDateAsync()
@@ -106,5 +129,22 @@ public class PersonalDetailsPage : BasePage
     public async Task ExpectAttachmentSavedAsync()
     {
         await _toastMessage.WaitForSavedAsync();
+    }
+
+    public async Task DeleteAttachmentByCommentAsync(string comment)
+    {
+        var attachmentRow = Page.Locator(".oxd-table-row")
+            .Filter(new() { HasText = comment })
+            .First;
+
+        await WaitUntilVisibleAsync(attachmentRow);
+        await attachmentRow
+            .Locator(".oxd-table-cell-actions")
+            .Locator("button")
+            .First
+            .ClickAsync();
+
+        await ConfirmDeleteButton.ClickAsync();
+        await _toastMessage.WaitForDeletedAsync();
     }
 }
