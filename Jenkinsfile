@@ -9,6 +9,7 @@ pipeline {
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         CONFIGURATION = 'Release'
+        TAF_Headless = 'true'
         REPORTPORTAL_URL = 'https://demo.reportportal.io/api/v1/'
         REPORTPORTAL_PROJECT = 'hovhannisian-sahak_personal'
         PERF_VUS = '3'
