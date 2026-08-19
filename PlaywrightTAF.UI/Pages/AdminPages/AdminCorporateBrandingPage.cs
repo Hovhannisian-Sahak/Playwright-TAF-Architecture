@@ -76,4 +76,12 @@ public class AdminCorporateBrandingPage : BasePageAdmin
         await _toastMessage.WaitForSavedAsync();
         await WaitForPageLoadAsync();
     }
+
+    public async Task RestoreDefaultsAsync()
+    {
+        await OpenAsync();
+        await ResetToDefaultAsync();
+        await PublishAsync();
+        await ExpectSuccessfullySavedAsync();
+    }
 }
