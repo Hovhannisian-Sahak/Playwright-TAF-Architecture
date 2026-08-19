@@ -20,9 +20,9 @@ public abstract class ApiClient
     protected async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request)
         where T : class
     {
-        RestResponse<T> response = await ExecuteWithLoggingAsync(
-            request,
-            () => Client.ExecuteAsync<T>(request));
+        RestResponse<T> response = await ExecuteRawAsync<T>(request);
+
+        EnsureSuccessfulResponse(response);
 
         if (response.Data is null)
         {
@@ -34,7 +34,24 @@ public abstract class ApiClient
 
     protected async Task<RestResponse> ExecuteAsync(RestRequest request)
     {
-        return await ExecuteWithLoggingAsync(
+        RestResponse response = await ExecuteRawAsync(request);
+
+        EnsureSuccessfulResponse(response);
+
+        return response;
+    }
+
+    protected Task<RestResponse<T>> ExecuteRawAsync<T>(RestRequest request)
+        where T : class
+    {
+        return ExecuteWithLoggingAsync(
+            request,
+            () => Client.ExecuteAsync<T>(request));
+    }
+
+    protected Task<RestResponse> ExecuteRawAsync(RestRequest request)
+    {
+        return ExecuteWithLoggingAsync(
             request,
             () => Client.ExecuteAsync(request));
     }
@@ -56,8 +73,6 @@ public abstract class ApiClient
             request.Method,
             request.Resource,
             stopwatch.ElapsedMilliseconds);
-
-        EnsureSuccessfulResponse(response);
 
         return response;
     }
