@@ -24,12 +24,16 @@ if (Test-Path $configPath) {
     }
 }
 
-if ([string]::IsNullOrWhiteSpace($env:REPORTPORTAL_API_KEY)) {
-    $config.enabled = $false
-} else {
+$hasReportPortalApiKey = -not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_API_KEY)
+
+if ($hasReportPortalApiKey) {
     $config.enabled = $true
     $config.server.apiKey = $env:REPORTPORTAL_API_KEY
     $config.server.authentication.uuid = $env:REPORTPORTAL_API_KEY
+} else {
+    $config.enabled = $false
+    $config.server.apiKey = ''
+    $config.server.authentication.uuid = ''
 }
 
 if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_URL)) {
@@ -64,14 +68,9 @@ if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_LAUNCH_TAGS)) {
     $config.launch.tags = @($tags)
 }
 
-$json = $config | ConvertTo-Json -Depth 10
-$configPaths = @($configPath)
 $outputConfigPath = Join-Path $testProjectPath "bin\$env:CONFIGURATION\net8.0\ReportPortal.config.json"
 
 if (Test-Path (Split-Path $outputConfigPath -Parent)) {
-    $configPaths += $outputConfigPath
-}
-
-foreach ($path in $configPaths) {
-    $json | Set-Content $path -Encoding UTF8
+    $json = $config | ConvertTo-Json -Depth 10
+    $json | Set-Content $outputConfigPath -Encoding UTF8
 }
