@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 using PlaywrightTAF.Core.Authentication;
@@ -13,71 +14,46 @@ public static class AuthSetup
 {
     public static async Task EnsureUserExistsAsync(Credentials userCredentials, string employeeName)
     {
-        using var playwright = await Playwright.CreateAsync();
-
-        var configuration = ConfigurationReader.Current;
-
-        IBrowserType browserType = configuration.Browser.ToLowerInvariant() switch
+        await RunWithAuthenticatedPageAsync(async (configuration, services, context) =>
         {
-            "firefox" => playwright.Firefox,
-            "webkit" => playwright.Webkit,
-            _ => playwright.Chromium
-        };
+            var loginPage = services.GetRequiredService<LoginPage>();
+            await loginPage.LoginAsync(configuration.Admin.Username, configuration.Admin.Password);
 
-        var browser = await browserType.LaunchAsync(
-            new()
+            var deleteUserPage = services.GetRequiredService<DeleteUserPage>();
+            await deleteUserPage.OpenUserManagementAsync();
+            await deleteUserPage.SearchUserAsync(userCredentials.Username);
+
+            if (await deleteUserPage.IsUserListedAsync(userCredentials.Username))
             {
-                Headless = true
-            });
-
-        var context = await browser.NewContextAsync(
-            new()
+                var editUserPage = services.GetRequiredService<EditUserPage>();
+                await editUserPage.EditFirstSearchResultAsync(userCredentials.Username, userCredentials.Password, "ESS");
+            }
+            else
             {
-                BaseURL = configuration.BaseUrl
-            });
-
-        var page = await context.NewPageAsync();
-        page.SetDefaultTimeout(configuration.DefaultTimeoutMilliseconds);
-
-        await page.GotoAsync(
-            configuration.BaseUrl,
-            new()
-            {
-                WaitUntil = WaitUntilState.Commit,
-                Timeout = configuration.DefaultTimeoutMilliseconds * 2
-            });
-
-        using var services = new ServiceCollection()
-            .AddSingleton(page)
-            .AddUiPageObjects()
-            .BuildServiceProvider();
-
-        var loginPage = services.GetRequiredService<LoginPage>();
-        await loginPage.LoginAsync(configuration.Admin.Username, configuration.Admin.Password);
-
-        var deleteUserPage = services.GetRequiredService<DeleteUserPage>();
-        await deleteUserPage.OpenUserManagementAsync();
-        await deleteUserPage.SearchUserAsync(userCredentials.Username);
-
-        if (await deleteUserPage.IsUserListedAsync(userCredentials.Username))
-        {
-            var editUserPage = services.GetRequiredService<EditUserPage>();
-            await editUserPage.EditFirstSearchResultAsync(userCredentials.Username, userCredentials.Password, "ESS");
-        }
-        else
-        {
-            var addUserPage = services.GetRequiredService<AddUserPage>();
-            await addUserPage.OpenAddUserFormAsync();
-            await addUserPage.CreateUserAsync("ESS", userCredentials.Username, employeeName, userCredentials.Password);
-        }
-
-        await browser.CloseAsync();
+                var addUserPage = services.GetRequiredService<AddUserPage>();
+                await addUserPage.OpenAddUserFormAsync();
+                await addUserPage.CreateUserAsync("ESS", userCredentials.Username, employeeName, userCredentials.Password);
+            }
+        });
     }
 
     public static async Task CreateAuthStateAsync(Credentials credentials, string storageStatePath)
     {
         AuthStatePaths.EnsureDirectoryExists();
 
+        await RunWithAuthenticatedPageAsync(async (configuration, services, context) =>
+        {
+            var loginPage = services.GetRequiredService<LoginPage>();
+
+            await loginPage.LoginAsync(credentials.Username, credentials.Password);
+
+            await context.StorageStateAsync(new() { Path = storageStatePath });
+        });
+    }
+
+    private static async Task RunWithAuthenticatedPageAsync(
+        Func<AppConfiguration, IServiceProvider, IBrowserContext, Task> action)
+    {
         using var playwright = await Playwright.CreateAsync();
 
         var configuration = ConfigurationReader.Current;
@@ -101,28 +77,30 @@ public static class AuthSetup
                 BaseURL = configuration.BaseUrl
             });
 
-        var page = await context.NewPageAsync();
-        page.SetDefaultTimeout(configuration.DefaultTimeoutMilliseconds);
+        try
+        {
+            var page = await context.NewPageAsync();
+            page.SetDefaultTimeout(configuration.DefaultTimeoutMilliseconds);
 
-        await page.GotoAsync(
-            configuration.BaseUrl,
-            new()
-            {
-                WaitUntil = WaitUntilState.Commit,
-                Timeout = configuration.DefaultTimeoutMilliseconds * 2
-            });
+            await page.GotoAsync(
+                configuration.BaseUrl,
+                new()
+                {
+                    WaitUntil = WaitUntilState.Commit,
+                    Timeout = configuration.DefaultTimeoutMilliseconds * 2
+                });
 
-        using var services = new ServiceCollection()
-            .AddSingleton(page)
-            .AddUiPageObjects()
-            .BuildServiceProvider();
+            using var services = new ServiceCollection()
+                .AddSingleton(page)
+                .AddUiPageObjects()
+                .BuildServiceProvider();
 
-        var loginPage = services.GetRequiredService<LoginPage>();
-
-        await loginPage.LoginAsync(credentials.Username, credentials.Password);
-
-        await context.StorageStateAsync(new() { Path = storageStatePath });
-
-        await browser.CloseAsync();
+            await action(configuration, services, context);
+        }
+        finally
+        {
+            await context.CloseAsync();
+            await browser.CloseAsync();
+        }
     }
 }
