@@ -5,6 +5,7 @@ using Microsoft.Playwright;
 using PlaywrightTAF.Core.Authentication;
 using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.Tests.DependencyInjection;
+using PlaywrightTAF.Tests.Infrastructure;
 using PlaywrightTAF.UI.Pages;
 using PlaywrightTAF.UI.Pages.UserManagementPages;
 
@@ -58,18 +59,7 @@ public static class AuthSetup
 
         var configuration = ConfigurationReader.Current;
 
-        IBrowserType browserType = configuration.Browser.ToLowerInvariant() switch
-        {
-            "firefox" => playwright.Firefox,
-            "webkit" => playwright.Webkit,
-            _ => playwright.Chromium
-        };
-
-        var browser = await browserType.LaunchAsync(
-            new()
-            {
-                Headless = true
-            });
+        var browser = await PlaywrightBrowserFactory.LaunchBrowserAsync(playwright, configuration, headless: true);
 
         var context = await browser.NewContextAsync(
             new()
