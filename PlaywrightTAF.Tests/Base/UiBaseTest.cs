@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Allure.Net.Commons;
 using Allure.NUnit;
@@ -10,6 +11,7 @@ using PlaywrightTAF.Core.Authentication;
 using PlaywrightTAF.Core.Configuration;
 using PlaywrightTAF.Core.Logging;
 using PlaywrightTAF.Tests.DependencyInjection;
+using PlaywrightTAF.Tests.Infrastructure;
 using PlaywrightTAF.UI.Pages;
 using Serilog;
 
@@ -100,8 +102,9 @@ public abstract class UiBaseTest
     {
         Directory.CreateDirectory("screenshots");
 
-        string testName = TestContext.CurrentContext.Test.Name;
-        string screenshotPath = Path.Combine("screenshots", $"{testName}.png");
+        string testName = TestContext.CurrentContext.Test.FullName ?? TestContext.CurrentContext.Test.Name;
+        string screenshotFileName = $"{SanitizeFileName(testName)}-{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}.png";
+        string screenshotPath = Path.Combine("screenshots", screenshotFileName);
 
         try
         {
@@ -142,6 +145,14 @@ public abstract class UiBaseTest
         Playwright?.Dispose();
     }
 
+    private static string SanitizeFileName(string value)
+    {
+        char[] invalidChars = Path.GetInvalidFileNameChars();
+        var sanitizedChars = value.Select(character => invalidChars.Contains(character) ? '_' : character);
+
+        return string.Concat(sanitizedChars);
+    }
+
     private async Task DisposeTestResourcesAsync()
     {
         if (Services is IDisposable disposableServices)
@@ -171,20 +182,12 @@ public abstract class UiBaseTest
 
     protected virtual IBrowserType GetBrowserType()
     {
-        return Configuration.Browser.ToLowerInvariant() switch
-        {
-            "firefox" => Playwright.Firefox,
-            "webkit" => Playwright.Webkit,
-            _ => Playwright.Chromium
-        };
+        return PlaywrightBrowserFactory.GetBrowserType(Playwright, Configuration.Browser);
     }
 
     protected virtual Task<IBrowser> LaunchBrowserAsync()
     {
-        return GetBrowserType().LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = Configuration.Headless
-        });
+        return PlaywrightBrowserFactory.LaunchBrowserAsync(Playwright, Configuration);
     }
 
     protected virtual async Task<IPage> CreatePageAsync(IBrowserContext context)
