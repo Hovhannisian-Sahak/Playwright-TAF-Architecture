@@ -80,13 +80,35 @@ public static class ConfigurationReader
     private static bool GetBool(IConfiguration configuration, string key, bool defaultValue)
     {
         string? value = configuration[key];
-        return bool.TryParse(value, out bool parsedValue) ? parsedValue : defaultValue;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return defaultValue;
+        }
+
+        if (bool.TryParse(value, out bool parsedValue))
+        {
+            return parsedValue;
+        }
+
+        throw new InvalidOperationException($"Configuration value '{key}' must be 'true' or 'false'. Actual value: '{value}'.");
     }
 
     private static int GetInt(IConfiguration configuration, string key, int defaultValue)
     {
         string? value = configuration[key];
-        return int.TryParse(value, out int parsedValue) ? parsedValue : defaultValue;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return defaultValue;
+        }
+
+        if (int.TryParse(value, out int parsedValue))
+        {
+            return parsedValue;
+        }
+
+        throw new InvalidOperationException($"Configuration value '{key}' must be an integer. Actual value: '{value}'.");
     }
 
     private static Authentication.Credentials GetCredentials(IConfiguration configuration, string sectionName, Authentication.Credentials defaultCredentials)

@@ -20,9 +20,9 @@ public class UserPermissionTests : UserTest
     {
         await AuthSetup.EnsureUserExistsAsync(ConfigurationReader.Current.User, EmployeeName);
 
-        if (File.Exists(AuthStatePaths.User))
+        if (File.Exists(AuthStatePaths.CurrentRunUser))
         {
-            File.Delete(AuthStatePaths.User);
+            File.Delete(AuthStatePaths.CurrentRunUser);
         }
 
         await base.OneTimeSetUpAsync();

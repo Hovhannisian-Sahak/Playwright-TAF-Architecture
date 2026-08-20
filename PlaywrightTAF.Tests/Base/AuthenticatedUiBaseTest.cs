@@ -61,7 +61,7 @@ public abstract class AuthenticatedUiBaseTest : UiBaseTest
     public override async Task OneTimeTearDownAsync()
     {
         await base.OneTimeTearDownAsync();
-        Logger.Information("Kept shared storage auth state {StorageStatePath}", StorageStatePath);
+        Logger.Information("Kept run-scoped storage auth state for test-run cleanup: {StorageStatePath}", StorageStatePath);
     }
 
     internal static void DeleteCreatedAuthStates()

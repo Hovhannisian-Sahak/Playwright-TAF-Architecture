@@ -16,13 +16,13 @@ public sealed class AppConfiguration
 
     public Credentials Admin { get; init; } = new Credentials
     {
-        Username = "Admin",
-        Password = "admin123"
+        Username = string.Empty,
+        Password = string.Empty
     };
 
     public Credentials User { get; init; } = new Credentials
     {
-        Username = "Users",
-        Password = "users123"
+        Username = string.Empty,
+        Password = string.Empty
     };
 }

@@ -18,7 +18,7 @@ public abstract class AdminTest : AuthenticatedUiBaseTest
 
     protected override Credentials Credentials => ConfigurationReader.Current.Admin;
 
-    protected override string StorageStatePath => AuthStatePaths.Admin;
+    protected override string StorageStatePath => AuthStatePaths.CurrentRunAdmin;
 
     protected void TrackUserForCleanup(string username)
     {

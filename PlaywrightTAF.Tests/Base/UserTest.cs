@@ -7,5 +7,5 @@ public abstract class UserTest : AuthenticatedUiBaseTest
 {
     protected override Credentials Credentials => ConfigurationReader.Current.User;
 
-    protected override string StorageStatePath => AuthStatePaths.User;
+    protected override string StorageStatePath => AuthStatePaths.CurrentRunUser;
 }
