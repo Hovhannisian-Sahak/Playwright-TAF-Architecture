@@ -94,14 +94,20 @@ Main test configuration:
 PlaywrightTAF.Tests/appsettings.json
 ```
 
-Current defaults:
+Create a local config from the committed example:
+
+```powershell
+Copy-Item PlaywrightTAF.Tests\appsettings.example.json PlaywrightTAF.Tests\appsettings.json
+```
+
+Example local config:
 
 ```json
 {
   "BaseUrl": "https://opensource-demo.orangehrmlive.com/",
   "ApiBaseUrl": "https://conduit-api.bondaracademy.com",
   "Browser": "chromium",
-  "Headless": false,
+  "Headless": true,
   "DefaultTimeoutMilliseconds": 30000,
   "Admin": {
     "Username": "Admin",
