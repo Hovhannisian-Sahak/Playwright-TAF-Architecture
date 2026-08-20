@@ -68,9 +68,17 @@ if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_LAUNCH_TAGS)) {
     $config.launch.tags = @($tags)
 }
 
-$outputConfigPath = Join-Path $testProjectPath "bin\$env:CONFIGURATION\net8.0\ReportPortal.config.json"
-
-if (Test-Path (Split-Path $outputConfigPath -Parent)) {
-    $json = $config | ConvertTo-Json -Depth 10
-    $json | Set-Content $outputConfigPath -Encoding UTF8
+$outputConfigPath = if (-not [string]::IsNullOrWhiteSpace($env:REPORTPORTAL_CONFIG_OUTPUT_PATH)) {
+    $env:REPORTPORTAL_CONFIG_OUTPUT_PATH
+} else {
+    Join-Path $testProjectPath "bin\$env:CONFIGURATION\net8.0\ReportPortal.config.json"
 }
+
+$outputConfigDirectory = Split-Path $outputConfigPath -Parent
+
+if (-not (Test-Path $outputConfigDirectory)) {
+    New-Item -ItemType Directory -Path $outputConfigDirectory | Out-Null
+}
+
+$json = $config | ConvertTo-Json -Depth 10
+$json | Set-Content $outputConfigPath -Encoding UTF8
